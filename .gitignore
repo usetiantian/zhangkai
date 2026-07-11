@@ -1,0 +1,44 @@
+# 敏感文件
+.env
+auth.json
+auth.lock
+*.db
+*.db-shm
+*.db-wal
+state-snapshots/
+
+# 缓存
+cache/
+audio_cache/
+image_cache/
+images/
+models_dev_cache.json
+ollama_cloud_models_cache.json
+provider_models_cache.json
+
+# 配置（含API key）
+config.yaml
+config.yaml.bak.*
+
+# 运行时
+logs/
+sessions/
+sandboxes/
+lsp/
+bin/
+hooks/
+cron/
+skills/  (蓝莓自己的skills，不是Hermes自带的)
+pairing/
+pastes/
+processes.json
+sandboxes/
+interrupt_debug.log
+verification_evidence.db
+.update_check
+.hermes_history
+.skills_prompt_snapshot.json
+
+# Python
+__pycache__/
+*.pyc
