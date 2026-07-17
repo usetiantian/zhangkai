@@ -208,7 +208,14 @@ class Nexus:
             soul_path=os.path.join(os.path.dirname(__file__), "..", ".claude", "SOUL.md"),
             constitution_path=os.path.join(os.path.dirname(__file__), "..", ".claude", "constitution.md")
         )
-        return builder.build(action, conv_ctx, knowledge)
+        user_ctx = self.user_cog.get_context(user_id)
+        full_ctx = user_ctx + "
+" + conv_ctx if conv_ctx else user_ctx
+        state_snap = self.state.snapshot()
+        if state_snap["description"] != "正常":
+            full_ctx += "
+" + state_snap["description"]
+        return builder.build(action, full_ctx, knowledge)
 
     def _fallback_reply(self, action: str, report: dict) -> str:
         replies = {
