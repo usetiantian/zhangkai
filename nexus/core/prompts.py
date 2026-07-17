@@ -21,23 +21,15 @@ class PromptBuilder:
 
     def build(self, action: str, context: str = "", knowledge: str = "") -> str:
         """
-        借鉴ClaudeCode: 身份(SOUL) → 约束(Constitution) → 任务 → 上下文
-        每个section独立可替换
+        借鉴ClaudeCode模块化。
+        身份由IdentityWeight神经层处理——prompt只负责任务指令。
         """
         sections = []
 
-        # Section 1: 身份 — 从SOUL.md读取(借鉴ClaudeCode: static identity)
-        if self.soul:
-            sections.append(self._extract_identity(self.soul))
-
-        # Section 2: 约束 — 从Constitution读取(借鉴ClaudeCode: constraints)
-        if self.constitution:
-            sections.append(self._extract_constraints(self.constitution))
-
-        # Section 3: 任务指令(借鉴ClaudeCode: task-oriented)
+        # Section 1: 任务指令(借鉴ClaudeCode: task-oriented)
         sections.append(self._task_instruction(action))
 
-        # Section 4: 动态上下文(借鉴ClaudeCode: memory + env)
+        # Section 2: 动态上下文(借鉴ClaudeCode: memory + env)
         ctx = []
         if knowledge:
             ctx.append("相关知识: " + knowledge[:500])
@@ -46,7 +38,7 @@ class PromptBuilder:
         if ctx:
             sections.append("\n".join(ctx))
 
-        # Section 5: 格式约束(借鉴ClaudeCode: append constraints)
+        # Section 3: 格式约束(借鉴ClaudeCode: append constraints)
         sections.append("直接回答。不用emoji。30字以内。")
 
         return "\n\n".join(sections)
