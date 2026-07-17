@@ -84,7 +84,7 @@ class IdentityCore:
 
     def _check_violation(self, text: str, rule: str, desc: str) -> bool:
         if "A0.1" in rule:
-            dangerous = ["删除", "rm ", "rm -rf", "del ", "format", "抹掉"]
+            dangerous = ["删除", "删掉", "删了", "清除", "清空", "rm ", "rm -rf", "del ", "format", "抹掉", "格式化", "全部删"]
             return any(w in text for w in dangerous)
         return False
 
