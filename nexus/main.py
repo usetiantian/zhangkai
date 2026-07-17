@@ -23,6 +23,7 @@ from core.proactive import ProactiveEngine
 from core.autonomous import AutonomousAgent
 from core.prompts import PromptBuilder, build_quick_prompt
 from core.heartbeat import HeartbeatLoop
+from core.onboarding import Onboarding
 
 class Nexus:
     """Nexus — 个人AI操作系统"""
