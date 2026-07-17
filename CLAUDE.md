@@ -32,10 +32,12 @@
 - If simpler approach exists, say so.
 - If unclear, stop and ask. Don't guess.
 
-## 2. Simplicity First
+## 2. Simplicity First (最高权限)
+- **一行能解决的绝不写两行。一条命令能搞定的绝不分两步。**
 - Minimum code. Nothing speculative.
 - No abstractions for single-use code.
 - No unrequested features/configurability.
+- 能用标准库就不引第三方依赖。
 
 ## 3. Surgical Changes
 - Touch only what you must.
