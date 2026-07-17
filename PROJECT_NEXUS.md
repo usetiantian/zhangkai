@@ -783,3 +783,37 @@ Step 5: 写心跳记录 → HEARTBEAT.md
 6. 自主搜索学习引擎
 7. 时代更新定时任务
 8. 技能接口规范文档
+
+---
+
+## 开源项目调研（2026-07-17，避免重复造轮子）
+
+### 已下载研究的项目
+
+| 项目 | Stars | 对应Nexus模块 | 可复用内容 |
+|------|:--:|------|------|
+| **hiyouga/LlamaFactory** | 73,347 | LoRA微调训练管线 | 完整LoRA/QLoRA训练框架，支持Qwen全系列，被AWS/NVIDIA/阿里采用 |
+| **LeDat98/NexusRAG** | 335 | EvoKG+ChromaDB+RAG | 知识图谱+向量搜索+重排序混合管线，React+FastAPI+Docker，含MCP Server |
+| **Leon-Sander/Local-Multimodal-AI-Chat** | 203 | 资料喂养+多模态对话 | 本地PDF RAG、图片对话、Ollama集成，隐私优先 |
+| **jeremylongshore/claude-code-plugins-plus-skills** | 2,523 | 技能商店 | 425插件+2810技能的开放市场模型参考 |
+| **Haozhe-Xing/agent_learning** | 302 | 身份权重核心 | 系统Agent教程：LLM+记忆+RAG+工具调用 |
+| **Vasallo94/ObsidianRAG** | 106 | 资料喂养 | Obsidian笔记RAG问答，隐私优先 |
+| **nrl-ai/edgevox** | 11 | 语音管线 | 离线语音Agent框架，Whisper+Piper管线参考 |
+
+### 直接可复用的
+
+1. **LlamaFactory** — 不做自己的LoRA训练代码，直接用它的。支持Qwen2-VL和Qwen3-VL，4-bit QLoRA开箱即用。
+2. **NexusRAG** — 架构和Nexus四件套高度一致（向量+图谱+重排序）。前端UI可以直接fork改。它的MCP Server可以直接嫁接进Nexus。
+3. **Local-Multimodal-AI-Chat** — PDF拖拽上传+本地模型对话的完整实现。资料喂养通道直接参考。
+
+### 不需要自己写的
+
+- 文档解析：pdfplumber/python-docx/python-pptx/openpyxl（成熟开源库）
+- 向量数据库：ChromaDB（已有）
+- 图数据库：Neo4j（已有）
+- 语音识别：Whisper（已有模型文件）
+- 语音合成：Piper TTS（已有模型文件）
+- 图像分类：CLIP（已有模型文件）
+- LLM推理：transformers（已有代码）
+- LoRA训练：LlamaFactory（已下载）
+- RAG管线：参考NexusRAG（已下载）
