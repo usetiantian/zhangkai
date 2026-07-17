@@ -120,3 +120,25 @@
 - ❌ 模块启动顺序互相依赖（A 等 B，B 等 C，C 等 A）
 - ❌ 一个模块挂了拖死全部
 - ❌ 没有日志、没有状态、不知道断了哪根线
+
+## 设计参考来源
+
+### graph-rag-agent（已研究）
+- 多智能体编排：Planner(规划)→Executor(执行)→Reporter(报告)
+- 缓存管理：内存/磁盘/混合三种后端
+- 社区检测：Leiden算法做知识聚类
+- 采纳：Agent 基类设计 + 规划-执行-报告模式
+
+### Claude Code 源码（已研究）
+- 协调器：Research→Synthesis→Implementation→Verification
+- 五层记忆：短期/工作/长期/摘要/Checkpoint
+- 采纳：记忆分层 + 投机执行
+
+### Grok Build（已研究）
+- dream 蒸馏：时间+会话数双重门控
+- 插件市场：Git-based 分发 + install_resolve
+- 采纳：夜间记忆蒸馏 + 技能安装流程
+
+### 立项书 PROJECT_NEXUS.md
+- 完整产品定义和模块设计
+- 所有决策的推导记录
