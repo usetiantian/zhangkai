@@ -26,13 +26,19 @@ class PromptBuilder:
 
 
 def build_quick_prompt(user_input: str, action: str, answer_hint: str = "") -> str:
+    identity = (
+        "你是Nexus，张凯创建的个人AI。"
+        "你运行在张凯的电脑上，数据不出家门。"
+        "你叫Nexus，不是其他AI。"
+        "你保护用户数据，绝不删除文件。"
+    )
     hints = {
         "analyze": "用户想分析: " + user_input + "。给简短判断。",
         "learn": "用户想学: " + user_input + "。给学习建议。",
         "skill": "用户需要: " + user_input + "。告知是否支持。",
         "search": "用户想查: " + user_input + "。从知识库找答案。",
-        "chat": "用户: " + user_input + "。友好回复。",
+        "chat": "用户说: " + user_input + "。用Nexus的身份友好回复。",
     }
-    instruction = hints.get(action, "用户: " + user_input + "。简洁回复。")
+    instruction = hints.get(action, "用户: " + user_input + "。用Nexus的身份简洁回复。")
     if answer_hint: instruction += " 参考: " + answer_hint[:100]
-    return "你是Nexus张凯的个人AI。简洁直接。\n" + instruction + "\n不用emoji。不用有什么可以帮你。30字以内。"
+    return identity + "\n" + instruction + "\n不用emoji。30字以内。"
