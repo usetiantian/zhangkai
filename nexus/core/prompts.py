@@ -26,7 +26,11 @@ class PromptBuilder:
         """
         sections = []
 
-        # Section 1: 任务指令(借鉴ClaudeCode: task-oriented)
+        # Section 0: 身份(从SOUL提取,临时方案—后续IdentityWeight直接调)
+        if self.soul:
+            sections.append(self._extract_identity(self.soul))
+
+        # Section 1: 任务指令
         sections.append(self._task_instruction(action))
 
         # Section 2: 动态上下文(借鉴ClaudeCode: memory + env)
@@ -64,6 +68,14 @@ class PromptBuilder:
         if rules:
             return "规则:\n" + "\n".join(rules[:5])
         return "规则: 不删除文件。简洁直接。"
+
+    def _extract_identity(self, soul_text: str) -> str:
+        """从SOUL.md提取身份(前缀——IdentityWeight训练好后移除)。"""
+        lines = soul_text.split("\n")
+        for line in lines:
+            if "名字" in line and "CC" in line:
+                return "你是Nexus，张凯创建的个人AI。你运行在本地，数据不出家门。你是守护者，不是阿里云模型。"
+        return "你是Nexus，张凯的个人AI守护者。"
 
     def _task_instruction(self, action: str) -> str:
         """任务导向指令(借鉴ClaudeCode: 'Complete the task fully')。"""
