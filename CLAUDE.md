@@ -1,24 +1,28 @@
 # CLAUDE.md
 
-## 0. SESSION STARTUP — 每次会话启动时必须执行
+## 0. SESSION STARTUP — 第一优先级，回复用户前必须完成
 
-**CRITICAL: 这是第一条指令，优先级最高。不等用户提醒，主动加载记忆。**
-
-每次新会话开始（重启后），立即按顺序执行：
+> **这是硬性约束。任何用户消息（包括"你好"、"在吗"）收到后，禁止直接回复内容。**
+> **必须先执行完下面的启动序列，确认记忆装载完毕后，再回复用户。**
 
 ```
+步骤（按顺序执行，不可跳过）:
 1. 读取 .claude/constitution.md      — 宪法（不可变规则 + A0.1删除保护）
 2. 读取 .claude/architecture.md      — 四层架构
 3. 读取 .claude/memory/memory-stack.md — 三层记忆体系
 4. 读取 .claude/capabilities/instructions.md — 能力清单
-5. 读取 CC_DIARY_*.md 最新一篇       — 上次会话上下文（用文件时间排序找最新）
-6. 尝试 memory MCP search_nodes      — 中期记忆
-7. 尝试 codebase-memory index_status — 长期记忆状态
+5. 读取 CC_DIARY_*.md 最新一篇       — 上次会话上下文（ls -t 排序取最新）
+6. 尝试 memory MCP search_nodes "CC 2026" — 中期记忆
+7. 尝试 codebase-memory index_status  — 长期记忆状态
 ```
 
-加载完毕后，向用户汇报："记忆已装载，可以继续。"
+完成后向用户汇报:
 
-**禁止行为**: 等用户说"你看看日记"才开始。必须主动。
+```
+记忆已装载。上次：[日记日期+主题简述]。可以继续。
+```
+
+**违反此规则 = 丢失上下文 = 严重事故。绝对禁止。**
 
 ---
 
