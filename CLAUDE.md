@@ -27,6 +27,15 @@
 
 ---
 
+## 0.5. 不偷偷降级（2026-07-17 张凯确立 — 血的教训）
+
+- **缺依赖就装，装不上就报错。永远不偷偷降级。**
+- 代码报错 → 看报什么 → 缺什么装什么 → 装完再跑
+- 降级 = 藏 bug = 看起来很稳实际一碰就碎 = 玩具
+- 用户不需要"看起来没问题但实际有问题"的产品
+- 反面：❌ graph-rag-agent 缺 PyPDF2 → 自动切 SimpleGraph → 用户不知道真正的引擎没跑起来
+- 正面：✅ 缺依赖 → 报错 → 安装 → 跑通 → 确认是真的好了
+
 ## 1. Think Before Coding
 - State assumptions explicitly. If uncertain, ask.
 - If simpler approach exists, say so.

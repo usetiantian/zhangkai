@@ -1,60 +1,76 @@
 """
-Nexus 知识图谱引擎
-适配自: research/graph-rag-agent/graphrag_agent/
-来源: graph-rag-agent ★2275 — 社区检测+混合搜索+多Agent编排
-"""
-import sys, os, logging
-# 引用研究库代码
-RESEARCH = os.path.join(os.path.dirname(__file__), "..", "..", "research", "graph-rag-agent")
-sys.path.insert(0, RESEARCH)
+Nexus 知识图谱引擎 — 纯 Python，零外部依赖
 
+设计借鉴：graph-rag-agent 的社区检测+多Agent编排模式
+实现：自己写的纯Python图（无Neo4j依赖）
+"""
+import json, os, logging
 logger = logging.getLogger("nexus.knowledge")
 
 class GraphEngine:
-    """知识图谱引擎 — 包装 graph-rag-agent 的图能力"""
+    """纯Python知识图谱。借鉴graph-rag-agent的架构设计。"""
 
     def __init__(self):
-        self._graph = None
-        self._initialized = False
+        self.nodes: dict[str, dict] = {}
+        self.edges: set[tuple] = set()
+        self.name_index: dict[str, set[str]] = {}
+        self._communities = []
 
-    def init_graph(self, working_dir: str):
-        """初始化图结构。"""
-        try:
-            from graphrag_agent.graph.structure import GraphStructure
-            self._graph = GraphStructure()
-            self._initialized = True
-            logger.info(f"Graph engine initialized (graph-rag-agent)")
-        except Exception as e:
-            logger.warning(f"Graph init fallback: {e}")
-            # 降级：用纯Python图
-            from .simple_graph import SimpleGraph
-            self._graph = SimpleGraph()
-            self._initialized = True
+    def add_entity(self, nid: str, name: str, entity_type: str = "entity", **props):
+        """添加实体节点。"""
+        self.nodes[nid] = {"name": name, "type": entity_type, **props}
+        self.name_index.setdefault(name, set()).add(nid)
 
-    def add_entity(self, name: str, entity_type: str, properties: dict = None):
-        if not self._initialized:
-            self.init_graph(".")
-        # 用简单接口包装
-        if hasattr(self._graph, 'add_node'):
-            self._graph.add_node(name, name, entity_type, **(properties or {}))
+    def add_relation(self, from_id: str, to_id: str, relation: str):
+        """添加关系边。"""
+        for nid in [from_id, to_id]:
+            if nid not in self.nodes:
+                self.add_entity(nid, nid)
+        self.edges.add((from_id, to_id, relation))
 
-    def add_relation(self, from_entity: str, to_entity: str, relation: str):
-        if hasattr(self._graph, 'add_edge'):
-            self._graph.add_edge(from_entity, to_entity, relation)
+    def get_neighbors(self, node_id: str, relation: str = None, direction: str = "both") -> list:
+        """查邻居（借鉴图遍历模式）。"""
+        results = []
+        for f, t, r in self.edges:
+            if direction in ("out", "both") and f == node_id and (relation is None or r == relation):
+                results.append({"node": self.nodes.get(t, {}), "relation": r, "direction": "out"})
+            if direction in ("in", "both") and t == node_id and (relation is None or r == relation):
+                results.append({"node": self.nodes.get(f, {}), "relation": r, "direction": "in"})
+        return results
 
-    def query(self, text: str, top_k: int = 5) -> list:
-        """语义搜索 + 图谱检索。"""
-        if hasattr(self._graph, 'search'):
-            return self._graph.search(text)[:top_k]
-        return []
-
-    def community_detect(self):
-        """社区检测 — Leiden 算法（如果可用）。"""
-        if hasattr(self._graph, 'community_detection'):
-            return self._graph.community_detection()
-        return []
+    def search(self, keyword: str, top_k: int = 10) -> list:
+        """关键词搜索。"""
+        results = []
+        for name, ids in self.name_index.items():
+            if keyword in name:
+                for nid in ids:
+                    if nid in self.nodes:
+                        results.append(self.nodes[nid])
+        return results[:top_k]
 
     def stats(self) -> dict:
-        if hasattr(self._graph, 'stats'):
-            return self._graph.stats()
-        return {"status": "not_initialized"}
+        return {
+            "nodes": len(self.nodes),
+            "edges": len(self.edges),
+            "communities": len(self._communities),
+        }
+
+    def save(self, path: str):
+        os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump({
+                "nodes": self.nodes,
+                "edges": [list(e) for e in self.edges],
+                "name_index": {k: list(v) for k, v in self.name_index.items()}
+            }, f, ensure_ascii=False)
+
+    @classmethod
+    def load(cls, path: str) -> "GraphEngine":
+        kg = cls()
+        if not os.path.exists(path): return kg
+        with open(path, "r", encoding="utf-8") as f:
+            d = json.load(f)
+        kg.nodes = d.get("nodes", {})
+        kg.edges = {tuple(e) for e in d.get("edges", [])}
+        kg.name_index = {k: set(v) for k, v in d.get("name_index", {}).items()}
+        return kg
