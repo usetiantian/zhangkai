@@ -26,7 +26,7 @@ logger = logging.getLogger("qiankun")
 # 核心分析流程
 # ===========================================
 
-def analyze_stock(code: str, fast: bool = False):
+def analyze_stock(code: str, fast: bool = False, compare: bool = False):
     """完整分析一只股票"""
     fetcher = DataFetcher()
     
@@ -100,7 +100,7 @@ def analyze_stock(code: str, fast: bool = False):
         }
         
         # 根据QS模块是否可用选择模式
-        model_available = not fast
+        model_available = not fast or compare  # compare模式强制启用AI
         if model_available:
             try:
                 import urllib.request
@@ -114,8 +114,33 @@ def analyze_stock(code: str, fast: bool = False):
         if "error" in result:
             print(f"  [X] 陪审团异常: {result['error']}")
             return
-        
-        # 显示投票结果
+
+        # Qwen vs 简易规则 对比模式
+        if compare and model_available:
+            sep = "=" * 50
+            print(f"\n  [CMP] Qwen vs 简易投票 对比")
+            cmp_result = run_panel(stock_data, model_available=False)
+            print(f"\n  {sep}")
+            print(f"  {'':>12} {'Qwen AI':>15} {'简易规则':>15}")
+            print(f"  {'-'*50}")
+            print(f"  {'买入':>12} {result['buy']:>15} {cmp_result['buy']:>15}")
+            print(f"  {'卖出':>12} {result['sell']:>15} {cmp_result['sell']:>15}")
+            print(f"  {'持有':>12} {result['hold']:>15} {cmp_result['hold']:>15}")
+            print(f"  {'综合':>12} {result['verdict']:>15} {cmp_result['verdict']:>15}")
+            diff_count = 0
+            for v_q, v_s in zip(result['votes'], cmp_result['votes']):
+                if v_q['vote'] != v_s['vote']:
+                    diff_count += 1
+                    if diff_count <= 5:
+                        q_name = v_q['name']
+                        q_vote = v_q['vote']
+                        s_vote = v_s['vote']
+                        q_reason = v_q['reason'][:60]
+                        print(f"  [!] {q_name}: Qwen={q_vote} vs 规则={s_vote} | {q_reason}")
+            agree_pct = (result['total'] - diff_count) / result['total'] * 100
+            print(f"\n  分歧: {diff_count}/{result['total']} 一致率: {agree_pct:.0f}%")
+            print(f"  {sep}")
+
         print(f"\n  {'-'*40}")
         print(f"  陪审团投票结果 ({result['total']}位代表)")
         print(f"  {'-'*40}")
@@ -727,6 +752,7 @@ if __name__ == "__main__":
   用法:
     python main.py 002185          分析华天科技
     python main.py 002185 --fast   快速模式（不调AI）
+    python main.py 002185 --compare 对比模式(Qwen vs 简易投票)
     python main.py scan            扫描超卖股票
     python main.py scan --lhb      扫描+龙虎榜加成
     python main.py scan --notify   扫描+飞书推送
@@ -739,6 +765,7 @@ if __name__ == "__main__":
     fast = "--fast" in sys.argv
     use_lhb = "--lhb" in sys.argv
     use_notify = "--notify" in sys.argv
+    use_compare = "--compare" in sys.argv
 
     if arg == "scan":
         scan_oversold(lhb_filter=use_lhb, notify=use_notify)
@@ -748,6 +775,6 @@ if __name__ == "__main__":
     elif arg == "config":
         show_config()
     elif arg.replace(".","").isdigit():
-        analyze_stock(arg, fast=fast)
+        analyze_stock(arg, fast=fast, compare=use_compare)
     else:
         print(f"未知命令: {arg}")
