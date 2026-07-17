@@ -21,6 +21,7 @@ from learner.engine import AutoLearner, DocumentIngester
 from memory.context import ConversationContext
 from core.proactive import ProactiveEngine
 from core.autonomous import AutonomousAgent
+from core.prompts import PromptBuilder, build_quick_prompt
 
 class Nexus:
     """Nexus — 个人AI操作系统"""
@@ -167,18 +168,14 @@ class Nexus:
         return self._fallback_reply(action, report)
 
     def _build_prompt(self, user_input: str, decision: dict, report: dict, conv_ctx: str = "") -> str:
-        """构建Qwen推理prompt——注入对话上下文。"""
+        """构建Qwen推理prompt——借鉴ClaudeCode模块化+静态动态分离。"""
         action = decision["action"]
         info = self.rag.search(user_input)
         knowledge = "\n".join([r["text"][:200] for r in info[:2]]) if info else ""
 
-        templates = {
-            "analyze": f"[对话背景]\n{conv_ctx}\n\n[知识库]\n{knowledge}\n\n用户问: {user_input}\n你是Nexus，请用50字以内回答。",
-            "learn": f"[对话背景]\n{conv_ctx}\n\n用户想学: {user_input}\n请给出简短学习建议(50字)。",
-            "skill": f"[对话背景]\n{conv_ctx}\n\n用户需要: {user_input}\n告知支持(30字)。",
-            "chat": f"[对话背景]\n{conv_ctx}\n\n用户说: {user_input}\nNexus友好回复(20字):",
-        }
-        return templates.get(action, f"[对话背景]\n{conv_ctx}\n\n用户: {user_input}\n简洁回复(20字):")
+        # 用PromptBuilder(借鉴ClaudeCode)替代原来硬编码的模板
+        builder = PromptBuilder()
+        return builder.build(action, conv_ctx, knowledge)
 
     def _fallback_reply(self, action: str, report: dict) -> str:
         replies = {
