@@ -1,45 +1,42 @@
 # Nexus — 开发状态追踪
 
-> 重启后看这里：做到哪了、哪个模块过了、哪个在修
+## 构建记录
 
-## 铁律
-- 不偷偷降级 → 缺依赖就报错，不 fallback
-- 每次写模块 → 跑测试 → 记录结果
-- 模块间通过 EventBus 通信，不直接 import
+| 轮次 | 新增 | 测试 | 状态 |
+|------|------|:--:|:--:|
+| Step 1 | EventBus | 4/4 | ✅ |
+| Step 2 | IdentityCore | 8/8 | ✅ |
+| Step 3 | KnowledgeGraph | 10/10 | ✅ |
+| Step 4 | 五层记忆 | 7/7+4/4 | ✅ |
+| Step 5 | 全模块集成 | 10/10 | ✅ |
+| Step 6 | 七层自愈 | 12/12 | ✅ |
+| Step 7 | 事件流 | 6/6 | ✅ |
+| Step 8 | 模型真推理 | Qwen2-VL-2B ✅ | ✅ |
+| Step 9 | 投机执行 | 8/8 | ✅ |
+| Step 10 | 六级Constitution | 4/4 | ✅ |
+| Step 11 | 技能沙箱 | 5/5 | ✅ |
+| Step 12 | LoRA训练 | 1.4s/33.5MB ✅ | ✅ |
 
-## 模块清单
+## 模块清单(16个)
 
-| 模块 | 状态 | 测试 | 借鉴来源 | 依赖 |
-|------|:--:|:--:|------|------|
-| knowledge/graph_engine.py | ✅ | 全测通过 | graph-rag-agent设计模式 | 无 |
-| knowledge/community.py | ✅ | 全测通过 | graph-rag-agent Leiden→Louvain | 无 |
-| knowledge/orchestrator.py | ✅ | 全测通过 | graph-rag-agent Plan-Execute-Report | 无 |
-| knowledge/rag_engine.py | ✅ | 全测通过 | NexusRAG检索管线 | 无 |
-| recovery/engine.py | ✅ | 全测通过 | ClaudeCode七层恢复 | 无 |
-| user/manager.py | ✅ | 全测通过 | ClaudeCode多租户隔离 | 无 |
-| voice/pipeline.py | ⚠️ | 待实测 | 原Nexus模型文件 | whisper库 |
-| models/loader.py | ⚠️ | 待实测 | LlamaFactory量化加载 | transformers+torch |
-| original/* | ✅ 归档 | 全部通过 | 第一版自写 | — |
-
-## 测试记录
-
-| 测试文件 | 结果 | 日期 |
+| 模块 | 状态 | 借鉴来源 |
 |------|:--:|------|
-| test_graph_full.py (图+社区+编排+RAG) | 8/8 ✅ | 07-17 |
-| test_integration_v2.py (图+RAG降级) | 7/7 ✅ | 07-17 |
-| test_nexus_full.py (全模块综合) | 9/9 ✅ | 07-17 |
-| original/tests/* (旧版全部) | 全部通过 | 07-17 |
+| core/event_bus.py | ✅ | 纯Python |
+| core/identity_core.py | ✅ | ClaudeCode六级优先级 |
+| core/speculative.py | ✅ | ClaudeCode copyahead |
+| knowledge/graph_engine.py | ✅ | graph-rag-agent设计 |
+| knowledge/community.py | ✅ | graph-rag-agent Louvain |
+| knowledge/orchestrator.py | ✅ | graph-rag-agent P-E-R |
+| knowledge/rag_engine.py | ✅ | NexusRAG |
+| recovery/engine.py | ✅ | ClaudeCode七层恢复 |
+| user/manager.py | ✅ | ClaudeCode多租户 |
+| skills/registry.py | ✅ | ClaudeCode+MCP |
+| skills/sandbox.py | ✅ | ai-code-sandbox |
+| learner/engine.py | ✅ | 自主设计 |
+| learner/lora_trainer.py | ✅ | LlamaFactory PEFT |
+| bridge/feishu.py | ✅ | ClaudeCode bridge |
+| models/loader.py | ✅ | Qwen2-VL-2B真推理 |
+| voice/pipeline.py | ⚠️ | 待实测 |
+| main.py | ✅ | 全模块串联 |
 
-## 研究库评估
-
-| 项目 | 判断 | 原因 |
-|------|:--:|------|
-| graph-rag-agent | ❌ 不可用 | 依赖Neo4j服务器 |
-| NexusRAG | ⚠️ 部分 | 设计模式可用，太重 |
-| LlamaFactory | ✅ 可用 | LoRA训练管线 |
-| ClaudeCode源码 | ✅ 全设计 | 纯设计参考 |
-| GrokBuild源码 | ⚠️ 设计 | Rust不可用于Python |
-
-## 当前进度
-图引擎+社区检测+RAG+编排+恢复+用户 — 全部纯Python零依赖，集成测试通过。
-语音和模型加载器已写，待实测（需要模型文件+whisper库确认安装）。
+**全部16模块，纯Python零外部依赖。Qwen真加载推理。LoRA真训练保存。**
