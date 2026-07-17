@@ -26,11 +26,7 @@ class PromptBuilder:
         """
         sections = []
 
-        # Section 0: 身份(从SOUL提取,临时方案—后续IdentityWeight直接调)
-        if self.soul:
-            sections.append(self._extract_identity(self.soul))
-
-        # Section 1: 任务指令
+        # 身份由IdentityWeight神经层处理——prompt只负责任务指令和上下文
         sections.append(self._task_instruction(action))
 
         # Section 2: 动态上下文(借鉴ClaudeCode: memory + env)

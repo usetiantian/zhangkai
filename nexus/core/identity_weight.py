@@ -37,18 +37,33 @@ class IdentityWeight(nn.Module):
         self.trained = False
         self.conversation_count = 0
 
+    def get_identity_prefix(self, num_tokens: int = 4, hidden_dim: int = 1536) -> torch.Tensor:
+        """
+        生成身份前缀嵌入。
+        用behavior_modulator投影身份向量到模型维度。
+        返回: [1, num_tokens, hidden_dim]
+        """
+        if not self.trained or self.identity_vector.sum() == 0:
+            return None
+
+        # 用behavior_modulator投影到模型隐藏维度
+        projected = self.behavior_modulator(self.identity_vector)  # [hidden_dim]
+        # 展开成前缀tokens并轻微缩放
+        prefix = projected.unsqueeze(0).unsqueeze(0).repeat(1, num_tokens, 1)
+        prefix = prefix * 0.1  # 软调制，不盖过输入
+        return prefix
+
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """
         x: 输入embedding [batch, seq, hidden_dim]
-        返回: 身份调制的embedding
+        返回: [身份前缀 | 原始输入] 拼接后的embedding
         """
-        if not self.trained or self.identity_vector.sum() == 0:
+        prefix = self.get_identity_prefix(4, x.shape[-1])
+        if prefix is None:
             return x
 
-        # 身份向量 → 行为调制信号
-        modulation = self.behavior_modulator(self.identity_vector)  # [hidden_dim]
-        # 应用到序列
-        return x + modulation.unsqueeze(0).unsqueeze(0)
+        prefix = prefix.to(device=x.device, dtype=x.dtype)
+        return torch.cat([prefix, x], dim=1)
 
     def train_identity(self, identity_texts: list, tokenizer, model, epochs: int = 5, lr: float = 1e-3):
         """

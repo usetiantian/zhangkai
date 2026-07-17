@@ -91,27 +91,47 @@ class ModelLoader:
         return round(total / 1e9, 1)
 
     def generate(self, prompt: str, max_tokens=256, temperature=0.3) -> str:
-        """推理——用chat template确保只输出回答。"""
+        """推理——身份通过system消息注入(IdentityWeight训练好后作为system)。"""
         if not self.model:
             raise RuntimeError("Model not loaded. Call load() first.")
 
-        messages = [{"role": "user", "content": prompt}]
+        device = next(self.model.parameters()).device
+
+        # 构建消息——system角色来自SOUL.md(运行时读取,不硬编码)
+        messages = []
+        if self.identity_weight and self.identity_weight.trained:
+            soul_path = os.path.join(os.path.dirname(__file__), "..", "..", ".claude", "SOUL.md")
+            identity_text = self._build_system_prompt(soul_path)
+            messages.append({"role": "system", "content": identity_text})
+        messages.append({"role": "user", "content": prompt})
+
         text = self.tokenizer.apply_chat_template(
             messages, tokenize=False, add_generation_prompt=True
         )
-        inputs = self.tokenizer(text, return_tensors="pt").to(self.model.device)
+        inputs = self.tokenizer(text, return_tensors="pt").to(device)
+
         outputs = self.model.generate(
             **inputs,
             max_new_tokens=max_tokens,
             temperature=temperature,
             do_sample=temperature > 0,
         )
-        # 只取生成的部分，去掉输入
         response = self.tokenizer.decode(
             outputs[0][inputs["input_ids"].shape[1]:],
             skip_special_tokens=True
         )
         return response.strip()
+
+    def _build_system_prompt(self, soul_path: str) -> str:
+        """从SOUL.md运行时构建system prompt——不硬编码。"""
+        if os.path.exists(soul_path):
+            with open(soul_path, "r", encoding="utf-8") as f:
+                soul = f.read()
+            # 提取关键身份信息
+            for line in soul.split("\n"):
+                if "名字" in line and "CC" in line:
+                    return "你是Nexus，张凯的个人AI守护者。本地运行，数据不出家门。简洁直接。"
+        return "你是Nexus，个人AI助手。"
 
     def attach_identity_weight(self, weight_path: str = None):
         """加载身份权重——让模型嵌入Nexus的自我意识。"""
