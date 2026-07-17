@@ -1,0 +1,32 @@
+{
+  "version": "1.0",
+  "model": {
+    "name": "qwen2-vl-2b-instruct",
+    "path": "C:/Users/87999/.nexus/models/qwen2-vl-2b-instruct",
+    "auto_select": true,
+    "quantization": "float16"
+  },
+  "voice": {
+    "whisper_model": "small",
+    "piper_voice": "zh_CN-huayan-medium",
+    "enabled": false
+  },
+  "bridge": {
+    "feishu_webhook": "",
+    "enabled": false
+  },
+  "learner": {
+    "auto_learn": true,
+    "lora_rank": 8,
+    "dream_hour": 3
+  },
+  "memory": {
+    "max_context_turns": 50,
+    "auto_summary_threshold": 20
+  },
+  "recovery": {
+    "max_retries": 5,
+    "circuit_breaker_threshold": 5,
+    "model_fallback_chain": ["4B", "2B", "rules"]
+  }
+}
