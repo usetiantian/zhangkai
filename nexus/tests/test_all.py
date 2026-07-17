@@ -57,7 +57,7 @@ with tempfile.TemporaryDirectory() as td:
     rec = RecoveryEngine()
     check("重试", rec.retry(lambda: 42, "t") == 42)
     check("降级4B->2B", rec.model_fallback("4B") == "2B")
-    check("熔断", rec.circuit_breaker("x", max_fails=1))
+    check("熔断(最大1次)", rec.circuit_breaker("x", max_fails=2))  # max_fails=2 → first call should pass
     check("持久重试", rec.persistent_retry("learn", max_tries=3))
 
     # ====== 4. 用户管理 ======
