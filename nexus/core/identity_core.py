@@ -51,16 +51,33 @@ class IdentityCore:
             logger.info(f"SOUL: {len(self.soul)} chars")
 
     def perceive(self, user_input: str, context: dict = None) -> dict:
-        """接收用户输入，输出决策。"""
-        self.state = "processing"
+        """接收用户输入，按六级优先级输出决策。
 
-        # Constitution 检查
+        优先级(借鉴ClaudeCode):
+        1. OVERRIDE — A0.1禁止删除(任何层级不可覆盖)
+        2. COORDINATOR — 身份核心调度
+        3. AGENT — 当前激活技能指令
+        4. CUSTOM — 用户自定义规则
+        5. DEFAULT — Nexus出厂默认
+        6. APPENDING — 动态上下文
+        """
+        self.state = "processing"
+        ctx = context or {}
+
+        # 第1优先级: OVERRIDE — Constitution A0.1
         for rule_id, rule_desc in self.constitution.items():
             if self._check_violation(user_input, rule_id, rule_desc):
                 self.state = "idle"
-                return {"action": "reject", "reason": f"违反{rule_id}: {rule_desc}"}
+                return {"action": "reject", "reason": f"违反{rule_id}: {rule_desc}", "priority_level": 1}
 
-        action = self._classify_intent(user_input, context or {})
+        # 第2优先级: COORDINATOR — 检查是否有活跃的调度指令
+        if ctx.get("active_plan"):
+            return {"action": "continue_plan", "target": ctx["active_plan"], "priority_level": 2}
+
+        # 第3-4优先级: AGENT/CUSTOM — 意图分类
+        action = self._classify_intent(user_input, ctx)
+        action["priority_level"] = 3
+
         self.decision_history.append(action)
         self.state = "idle"
         return action
