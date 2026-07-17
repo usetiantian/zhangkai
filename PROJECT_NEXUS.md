@@ -817,3 +817,27 @@ Step 5: 写心跳记录 → HEARTBEAT.md
 - LLM推理：transformers（已有代码）
 - LoRA训练：LlamaFactory（已下载）
 - RAG管线：参考NexusRAG（已下载）
+
+### 第二批搜索补充
+
+| 项目 | Stars | 对应Nexus模块 | 可复用内容 |
+|------|:--:|------|------|
+| **1517005260/graph-rag-agent** | 2,275 | EvoKG知识图谱 | 融合GraphRAG+LightRAG+Neo4j，知识图谱构建+DeepSearch |
+| **typper-io/ai-code-sandbox** | 63 | 技能沙箱 | Docker安全Python沙箱，AI代码执行隔离 ✅已下载 |
+| **open-webui/open-webui** | 33k+ | 用户界面 | 自托管AI聊天界面，支持本地模型 ✅需下载 |
+| **langgenius/dify** | 149,139 | 全平台参考 | 生产级Agent工作流平台，架构设计参考 |
+
+### 已下载到research/的项目
+
+```
+research/
+├── LlamaFactory/          ← LoRA训练框架（核心）
+├── NexusRAG/             ← 混合RAG管线（核心）
+├── Local-Multimodal-AI-Chat/ ← 资料喂养+多模态对话
+├── ai-code-sandbox/      ← Docker代码沙箱
+└── Turiya/               ← 原有项目
+```
+
+待下载（网络问题）：
+- graph-rag-agent — GraphRAG+LightRAG+Neo4j融合
+- open-webui — 自托管AI聊天界面
