@@ -7,7 +7,7 @@ import os, yaml, random, logging
 
 logger = logging.getLogger("qiankun.panel")
 
-PERSONAS_DIR = os.path.join(os.path.dirname(__file__), "personas")
+PERSONAS_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "personas")
 
 # 人格分组
 GROUPS = {
@@ -55,7 +55,8 @@ def select_relevant_personas(personas: list, stock_info: dict, count: int = 12) 
     """
     # 优先选中国人格（更懂A股）+ 每组至少1个代表人物
     selected = []
-    group_quota = {"F": 3, "E": 2, "A": 2, "B": 1, "D": 1, "C": 1, "G": 1}
+    # 超短线模式：优先游资(F)和技术派(D)
+    group_quota = {"F": 4, "D": 3, "E": 2, "A": 1, "B": 1, "C": 1, "G": 0}
     
     by_group = {}
     for p in personas:

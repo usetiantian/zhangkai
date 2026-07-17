@@ -22,40 +22,40 @@ logging.basicConfig(
 )
 logger = logging.getLogger("qiankun")
 
-# ═══════════════════════════════════════════
+# ===========================================
 # 核心分析流程
-# ═══════════════════════════════════════════
+# ===========================================
 
 def analyze_stock(code: str, fast: bool = False):
     """完整分析一只股票"""
     fetcher = DataFetcher()
     
     try:
-        # ── 第1步：获取数据 ──
+        # -- 第1步：获取数据 --
         print_header(f"乾坤·UZI 分析 {code}")
         
         rt = fetcher.get_realtime(code)
         kline = fetcher.get_kline(code, days=60)
         
         if not rt and not kline:
-            print("  ❌ 无法获取数据，请检查网络和股票代码")
+            print("  [X] 无法获取数据，请检查网络和股票代码")
             return
         
         name = rt.get("name", code) if rt else code
         indicators = calc_indicators(kline) if kline else {}
         rsi = indicators.get("rsi")
         
-        print(f"\n  📊 {name} 现价 {rt.get('price','?')}  涨跌 {rt.get('change_pct','?'):+.2f}%")
+        print(f"\n  [{name}] 现价 {rt.get('price','?')}  涨跌 {rt.get('change_pct','?'):+.2f}%")
         if rsi:
-            rsi_color = "🔴" if rsi < 30 else ("🟡" if rsi < 40 else "🟢")
+            rsi_color = "[-]" if rsi < 30 else ("[~]" if rsi < 40 else "[+]")
             print(f"  {rsi_color} RSI(14): {rsi}")
         if indicators.get("ma5") and indicators.get("ma20"):
-            print(f"  📈 MA5: {indicators['ma5']}  MA20: {indicators['ma20']}")
-            print(f"  📉 趋势: {indicators.get('recent_trend','')}")
+            print(f"  [UP] MA5: {indicators['ma5']}  MA20: {indicators['ma20']}")
+            print(f"  [DN] 趋势: {indicators.get('recent_trend','')}")
         
-        # ── 第2步：AI分析 ──
-        print(f"\n{'─'*50}")
-        print("  🤖 AI 分析 (Qwen3-VL-4B 本地)")
+        # -- 第2步：AI分析 --
+        print(f"\n{'-'*50}")
+        print("  [AI] AI 分析 (Qwen3-VL-4B 本地)")
         
         ai_analysis = ""
         if not fast:
@@ -66,13 +66,13 @@ def analyze_stock(code: str, fast: bool = False):
                 print(f"  趋势判断: {ai.get('trend','?')}")
                 print(f"  操作建议: {ai.get('advice','?')}")
             except Exception as e:
-                print(f"  ⚠️  Qwen未运行，跳过AI分析")
+                print(f"  [!]  Qwen未运行，跳过AI分析")
         else:
-            print("  ⏩ 快速模式，跳过AI分析")
+            print("  [>>] 快速模式，跳过AI分析")
         
-        # ── 第3步：投资人格陪审团 ──
-        print(f"\n{'─'*50}")
-        print("  🎓 投资人格陪审团")
+        # -- 第3步：投资人格陪审团 --
+        print(f"\n{'-'*50}")
+        print("  [JURY] 投资人格陪审团")
         
         personas = load_personas()
         print(f"  已加载 {len(personas)} 位投资大师")
@@ -92,33 +92,37 @@ def analyze_stock(code: str, fast: bool = False):
                 urllib.request.urlopen("http://127.0.0.1:1234/v1/models", timeout=2)
             except Exception:
                 model_available = False
-                print("  ⚠️  LM Studio未运行，使用简易投票模式")
+                print("  [!]  LM Studio未运行，使用简易投票模式")
         
         result = run_panel(stock_data, model_available=model_available)
+
+        if "error" in result:
+            print(f"  [X] 陪审团异常: {result['error']}")
+            return
         
         # 显示投票结果
-        print(f"\n  {'─'*40}")
+        print(f"\n  {'-'*40}")
         print(f"  陪审团投票结果 ({result['total']}位代表)")
-        print(f"  {'─'*40}")
-        print(f"  🟢 买入: {result['buy']}  |  🔴 卖出: {result['sell']}  |  🟡 持有: {result['hold']}  |  ⚪ 弃权: {result['abstain']}")
+        print(f"  {'-'*40}")
+        print(f"  [+] 买入: {result['buy']}  |  [-] 卖出: {result['sell']}  |  [~] 持有: {result['hold']}  |  * 弃权: {result['abstain']}")
         print(f"  综合判断: {result['verdict']}")
         
         # 按组显示
         print(f"\n  分组投票:")
         for g, counts in result["by_group"].items():
             gname = result["groups"].get(g, g)
-            bar = "█" * counts["买"] + "▇" * counts["持"] + "░" * counts["卖"]
+            bar = "*" * counts["买"] + "*" * counts["持"] + "*" * counts["卖"]
             print(f"  {g}.{gname:<8} {counts['买']}买 {counts['卖']}卖 {counts['持']}持 |{bar}")
         
         # 显示部分投票详情（前6位）
         print(f"\n  代表人物观点:")
         for v in result["votes"][:6]:
-            emoji = "🟢" if v["vote"]=="买入" else ("🔴" if v["vote"]=="卖出" else "🟡")
+            emoji = "[+]" if v["vote"]=="买入" else ("[-]" if v["vote"]=="卖出" else "[~]")
             print(f"  {emoji} {v['name']} → {v['vote']} | {v['reason'][:100]}")
         
-        # ── 第4步：生成报告 ──
-        print(f"\n{'─'*50}")
-        print("  📄 生成报告...")
+        # -- 第4步：生成报告 --
+        print(f"\n{'-'*50}")
+        print("  [RPT] 生成报告...")
         
         report = generate_report(code, name, rt, kline, indicators, 
                                 ai_analysis, result)
@@ -131,65 +135,92 @@ def analyze_stock(code: str, fast: bool = False):
         with open(report_path, "w", encoding="utf-8") as f:
             f.write(report)
         
-        print(f"  ✅ 报告: output/{os.path.basename(report_path)}")
-        print(f"  🌐 用浏览器打开即可查看\n")
+        print(f"  [OK] 报告: output/{os.path.basename(report_path)}")
+        print(f"  [WEB] 用浏览器打开即可查看\n")
         
     finally:
         fetcher.close()
 
 
-# ═══════════════════════════════════════════
+# ===========================================
 # 超卖扫描
-# ═══════════════════════════════════════════
+# ===========================================
 
 def scan_oversold():
-    """扫描RSI超卖股票"""
+    """扫描RSI超卖股票（超短线版）"""
     fetcher = DataFetcher()
-    
+
     try:
-        print_header("乾坤·UZI 超卖扫描")
-        
+        print_header("乾坤·UZI 超短线扫描")
+
         stocks = fetcher.get_stock_list()
         if not stocks:
-            print("  ❌ 无法获取股票列表")
+            print("  [X] 无法获取股票列表")
             return
-        
+
         print(f"  共 {len(stocks)} 只股票，正在扫描...")
-        
+        print(f"  超短线信号: 量比>2 + RSI<45 + 近期放量\n")
+
         results = []
-        scan_count = min(len(stocks), 300)  # 最多扫300只
+        scan_count = min(len(stocks), 300)
         for i, (code, name) in enumerate(stocks[:scan_count], 1):
             if i % 100 == 0:
                 print(f"  进度: {i}/{scan_count}")
-            
+
             kline = fetcher.get_kline(code, days=30)
             if not kline or len(kline) < 15:
                 continue
-            
-            rsi = calc_rsi(kline)
-            if rsi is None or rsi >= 40:
+
+            # 超短线指标
+            indicators = calc_indicators(kline)
+            rsi = indicators.get("rsi")
+            vol_ratio = indicators.get("vol_ratio", 1)
+
+            # 超短线筛选条件
+            if rsi is None:
                 continue
-            
+            if rsi >= 45:  # 放宽RSI（超短线不只看超卖）
+                continue
+            if vol_ratio < 1.5:  # 量比太低不关注
+                continue
+
             rt = fetcher.get_realtime(code)
             change_pct = rt.get("change_pct", 0) if rt else 0
-            
-            results.append({
-                "code": code, "name": name, "rsi": round(rsi, 1),
-                "price": rt.get("price", 0) if rt else 0,
-                "change_pct": change_pct,
-            })
-        
-        results.sort(key=lambda x: x["rsi"])
-        
-        print(f"\n  ✅ 发现 {len(results)} 只超卖股票（RSI<40）:\n")
-        print(f"  {'代码':<10} {'名称':<10} {'RSI':<8} {'现价':<10} {'涨跌'}")
-        print(f"  {'─'*50}")
+
+            # 信号强度评分
+            score = 0
+            if rsi < 30: score += 3
+            elif rsi < 35: score += 2
+            elif rsi < 40: score += 1
+            if vol_ratio > 3: score += 3
+            elif vol_ratio > 2: score += 2
+            if change_pct < -5: score += 2  # 大跌后反弹概率高
+            if change_pct > 2: score += 1   # 已有资金介入
+
+            if score >= 3:  # 至少3分才入选
+                results.append({
+                    "code": code, "name": name,
+                    "rsi": round(rsi, 1),
+                    "vol_ratio": round(vol_ratio, 1),
+                    "price": rt.get("price", 0) if rt else 0,
+                    "change_pct": change_pct,
+                    "score": score,
+                    "signal": "STRONG" if score >= 5 else ("GOOD" if score >= 4 else "WATCH"),
+                })
+
+        results.sort(key=lambda x: x["score"], reverse=True)
+
+        print(f"\n  [OK] 发现 {len(results)} 只超短线候选:\n")
+        print(f"  {'代码':<10} {'名称':<10} {'RSI':<8} {'量比':<8} {'涨跌':<10} {'评分':<6} {'信号'}")
+        print(f"  {'-'*65}")
         for r in results[:20]:
-            print(f"  {r['code']:<10} {r['name']:<10} {r['rsi']:<8.1f} {r['price']:<10.2f} {r['change_pct']:+.2f}%")
-        
+            sig = r["signal"]
+            sig_str = "[BUY]" if sig=="STRONG" else ("[++]" if sig=="GOOD" else "[+]")
+            print(f"  {r['code']:<10} {r['name']:<10} {r['rsi']:<8.1f} {r['vol_ratio']:<8.1f} {r['change_pct']:>+8.2f}%  {r['score']:<6} {sig_str}")
+
         if len(results) > 20:
             print(f"\n  ... 还有 {len(results)-20} 只")
-        
+
         # 保存
         output_path = os.path.join(
             os.path.dirname(__file__), "output",
@@ -198,15 +229,15 @@ def scan_oversold():
         os.makedirs(os.path.dirname(output_path), exist_ok=True)
         with open(output_path, "w", encoding="utf-8") as f:
             json.dump(results, f, ensure_ascii=False, indent=2)
-        print(f"\n  ✅ 保存: output/{os.path.basename(output_path)}\n")
-        
+        print(f"\n  [OK] 保存: output/{os.path.basename(output_path)}\n")
+
     finally:
         fetcher.close()
 
 
-# ═══════════════════════════════════════════
+# ===========================================
 # 技术指标
-# ═══════════════════════════════════════════
+# ===========================================
 
 def calc_rsi(kline: list, period: int = 14):
     if len(kline) < period + 1:
@@ -241,9 +272,9 @@ def calc_indicators(kline: list) -> dict:
             "vol_ratio":vol_ratio, "latest_close":closes[-1]}
 
 
-# ═══════════════════════════════════════════
+# ===========================================
 # 报告生成
-# ═══════════════════════════════════════════
+# ===========================================
 
 def generate_report(code, name, rt, kline, indicators, ai_text, panel_result):
     rt = rt or {}
@@ -255,7 +286,7 @@ def generate_report(code, name, rt, kline, indicators, ai_text, panel_result):
     # 构建投票表格
     vote_rows = ""
     for v in panel_result.get("votes", [])[:12]:
-        emoji = {"买入":"🟢","卖出":"🔴","持有":"🟡","弃权":"⚪"}.get(v["vote"],"⚪")
+        emoji = {"买入":"[+]","卖出":"[-]","持有":"[~]","弃权":"*"}.get(v["vote"],"*")
         vote_rows += f"""
         <tr>
           <td>{emoji}</td>
@@ -272,7 +303,7 @@ def generate_report(code, name, rt, kline, indicators, ai_text, panel_result):
     if ai_text:
         ai_html = f"""
         <div class="ai-box">
-          <h3>🤖 AI 分析 (Qwen3-VL-4B 本地)</h3>
+          <h3>[AI] AI 分析 (Qwen3-VL-4B 本地)</h3>
           <p style="color:#bbb;font-size:14px;line-height:1.8;">{ai_text}</p>
         </div>"""
     
@@ -330,7 +361,7 @@ def generate_report(code, name, rt, kline, indicators, ai_text, panel_result):
 
 <div class="grid">
   <div class="card">
-    <h3>📊 技术指标</h3>
+    <h3>[DATA] 技术指标</h3>
     <table>
       <tr><td>RSI(14)</td><td>{ind.get('rsi','-')}</td></tr>
       <tr><td>MA5</td><td>{ind.get('ma5','-')}</td></tr>
@@ -353,9 +384,9 @@ def generate_report(code, name, rt, kline, indicators, ai_text, panel_result):
 </div>
 
 <div class="verdict verdict-{'bullish' if panel_result.get('verdict')=='偏多' else 'bearish' if panel_result.get('verdict')=='偏空' else 'neutral'}">
-  <h2>🎓 投资人格陪审团裁决</h2>
+  <h2>[JURY] 投资人格陪审团裁决</h2>
   <div class="stats">
-    🟢 {panel_result.get('buy',0)} 买 &nbsp;|&nbsp; 🔴 {panel_result.get('sell',0)} 卖 &nbsp;|&nbsp; 🟡 {panel_result.get('hold',0)} 持
+    [+] {panel_result.get('buy',0)} 买 &nbsp;|&nbsp; [-] {panel_result.get('sell',0)} 卖 &nbsp;|&nbsp; [~] {panel_result.get('hold',0)} 持
   </div>
   <div style="font-size:18px;margin-top:10px">
     综合判断: <strong>{panel_result.get('verdict','?')}</strong> &nbsp; ({panel_result.get('total',0)}位代表投票)
@@ -372,7 +403,7 @@ def generate_report(code, name, rt, kline, indicators, ai_text, panel_result):
 <div class="footer">
   乾坤·UZI v1.0 | 数据: pytdx/baostock/腾讯qt | AI: Qwen3-VL-4B (本地)<br>
   陪审团: 51位投资大师人格 | {datetime.now().strftime('%Y-%m-%d %H:%M')}<br>
-  ⚠️ 风险提示：本报告仅供学习参考，不构成投资建议。股市有风险，投资需谨慎。
+  [!] 风险提示：本报告仅供学习参考，不构成投资建议。股市有风险，投资需谨慎。
 </div>
 
 </div>
@@ -380,20 +411,20 @@ def generate_report(code, name, rt, kline, indicators, ai_text, panel_result):
 </html>"""
 
 
-# ═══════════════════════════════════════════
+# ===========================================
 # 工具
-# ═══════════════════════════════════════════
+# ===========================================
 
 def print_header(title: str):
     print(f"""
-╔══════════════════════════════════════════╗
-║  {title}
-║  {datetime.now().strftime('%Y-%m-%d %H:%M')}
-╚══════════════════════════════════════════╝""")
++==========================================+
+|  {title}
+|  {datetime.now().strftime('%Y-%m-%d %H:%M')}
++==========================================+""")
 
-# ═══════════════════════════════════════════
+# ===========================================
 # 入口
-# ═══════════════════════════════════════════
+# ===========================================
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:

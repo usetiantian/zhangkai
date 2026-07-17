@@ -75,20 +75,31 @@ class PyTdxSource:
             data = self.api.get_security_quotes([(market, code)])
             if data:
                 row = data[0]
+                # pytdx 字段名可能是 name 或 其他，尝试多个
+                name = row.get("name", "") or row.get("NAME", "") or ""
+                if not name:
+                    # 用股票列表反查名称
+                    all_fields = dir(row) if hasattr(row, '__dict__') else []
+                    for f in all_fields:
+                        if not f.startswith('_'):
+                            val = getattr(row, f, '')
+                            if isinstance(val, str) and len(val) > 1 and len(val) < 10 and '一' <= val[0] <= '鿿':
+                                name = val
+                                break
                 return {
                     "code": code,
-                    "name": row.get("name", ""),
-                    "price": row.get("price", 0),
+                    "name": name,
+                    "price": row.get("price", 0) or row.get("last_close", 0),
                     "open": row.get("open", 0),
                     "high": row.get("high", 0),
                     "low": row.get("low", 0),
-                    "pre_close": row.get("last_close", 0),
-                    "volume": row.get("vol", 0),
+                    "pre_close": row.get("last_close", 0) or row.get("pre_close", 0),
+                    "volume": row.get("vol", 0) or row.get("volume", 0),
                     "amount": row.get("amount", 0),
                     "change_pct": round(
-                        (row.get("price", 0) - row.get("last_close", 1)) 
-                        / row.get("last_close", 1) * 100, 2
-                    ) if row.get("last_close", 0) > 0 else 0,
+                        ((row.get("price", 0) or row.get("last_close", 1)) - (row.get("last_close", 1) or row.get("pre_close", 1)))
+                        / (row.get("last_close", 1) or row.get("pre_close", 1)) * 100, 2
+                    ) if (row.get("last_close", 0) or row.get("pre_close", 0)) > 0 else 0,
                 }
         except Exception as e:
             logger.warning(f"pytdx实时报价失败 {code}: {e}")
@@ -103,6 +114,28 @@ class PyTdxSource:
             return [(row["code"], row["name"]) for row in data] if data else None
         except Exception as e:
             logger.warning(f"pytdx获取股票列表失败: {e}")
+        return None
+
+    def get_intraday(self, code: str, market: int = 0, period: int = 5):
+        """获取5分钟K线（超短线核心数据）"""
+        if not self._connect():
+            return None
+        try:
+            # category=4 是5分钟线
+            data = self.api.get_security_bars(
+                4, market, code, 0, 48  # 48根5分钟线 = 4小时交易时间
+            )
+            if data:
+                return [{
+                    "time": str(row["datetime"]),
+                    "open": row["open"],
+                    "high": row["high"],
+                    "low": row["low"],
+                    "close": row["close"],
+                    "volume": row["vol"],
+                } for row in data]
+        except Exception as e:
+            logger.debug(f"pytdx5分钟线失败 {code}: {e}")
         return None
 
     def close(self):
