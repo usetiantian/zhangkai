@@ -929,3 +929,65 @@ Claude Code 的四大系统和 Nexus 设计高度对齐：
 - 权限系统根据 Tool 声明决定是否放行
 
 Nexus 的技能商店应遵循同一模型——飞书推送是 Tool，CAD画图是 Tool，股票分析是 Tool。统一注册，统一权限检查，统一调用。
+
+### 完整可复用清单（逐文件对照）
+
+#### A. 记忆系统 → Nexus 三层记忆
+| Claude Code 实现 | Nexus 复用 |
+|------|------|
+| `memory/MEMORY.md` 索引入口，限制200行 | 主索引设计 |
+| YAML frontmatter + Markdown 正文格式 | 记忆文件结构 |
+| `type: user/feedback/project/reference` 四类 | 记忆分类模型 |
+| KAIROS `logs/YYYY/MM/YYYY-MM-DD.md` 追加日志 | 短期记忆追加存储 |
+| 夜间 `/dream` 蒸馏日志→更新 MEMORY.md | 中期记忆定期汇总 |
+| `sanitizePath()` 防路径注入 | 安全加固 |
+| worktree 共享同记忆目录 | 多窗口协同 |
+
+#### B. 安全系统 → Nexus 技能沙箱
+| Claude Code 实现 | Nexus 复用 |
+|------|------|
+| 6级权限模型 (default/plan/acceptEdits/dontAsk/bypass/auto) | 技能权限分级 |
+| 23种 AST 命令注入检测器 (bashSecurity.ts) | 技能上架安全扫描 |
+| Shell 差异检测 (JS解析器 vs 真实Shell理解不同) | 沙箱加固 |
+| 路径安全检查 (敏感目录黑名单) | 文件访问控制 |
+| PermissionResult: allow/ask/deny/passthrough | 权限决策模型 |
+| 规则数据结构: source(来源) + behavior(行为) + value(值) | 权限规则引擎 |
+
+#### C. 协调器架构 → Nexus 身份核心调度
+| Claude Code 实现 | Nexus 复用 |
+|------|------|
+| 4阶段任务模型: Research→Synthesis→Implementation→Verification | 身份核心调度四件套的流程 |
+| 协调器必须自己做 Synthesis（不给 worker 模糊指令） | 身份核心决策原则 |
+| Worker 并行调研 + 协调器串行派发任务 | 四件套并行查询汇合 |
+| Continue vs Spawn 决策矩阵 | 上下文管理策略 |
+| AsyncLocalStorage 实现 in-process 隔离 | 多用户身份隔离 |
+
+#### D. 插件市场 → Nexus 技能商店
+| Claude Code 实现 | Nexus 复用 |
+|------|------|
+| 插件结构: commands/ + skills/ + hooks/ + agents/ + mcp-servers/ | 技能包目录规范 |
+| SKILL.md + frontmatter 定义技能 | 技能描述格式 |
+| Git/GitHub/npm/URL 四种安装源 | 技能商店分发渠道 |
+| `marketplace.json` 清单文件 | 商店目录索引 |
+| `plugins/known_marketplaces.json` 多市场管理 | 去中心化商店 |
+| 插件 ID: `{name}@{marketplace}` | 技能标识规范 |
+| 解压→验证→加载 安装流程 | 技能安装安全流程 |
+
+#### E. 工具系统 → Nexus Tool 抽象
+| Claude Code 实现 | Nexus 复用 |
+|------|------|
+| 每个 Tool = Zod schema + permissions + execute() | 技能接口规范 |
+| MCP 协议统一内置/外部工具 | 统一的技能调用协议 |
+| ToolPermissionContext 权限上下文 | 技能权限声明 |
+| toolPool.ts 工具池管理 | 技能加载/卸载管理 |
+| BashTool 19个安全检查文件 | 高危技能多层防护 |
+
+#### F. 其他关键模式
+| Claude Code 实现 | Nexus 复用 |
+|------|------|
+| Task.ts 状态机: pending→running→completed/failed/killed | 任务系统状态模型 |
+| AbortController 真正取消 + outputOffset 追踪 | 任务中断机制 |
+| Cron Jitter 控制 (避免 thundering herd) | 凌晨3点自主学习调度 |
+| tokenBudget.ts Token预算解析(+500k/+1M/+2B) | Token消耗追踪 |
+| bridge/ 跨进程通信 (REPL Bridge + Remote Bridge) | 手机↔Box通信桥 |
+| Teammate Context (AsyncLocalStorage 隔离) | 多用户LoRA无冲突切换 |
