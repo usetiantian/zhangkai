@@ -20,6 +20,7 @@ from skills.registry import SkillRegistry
 from learner.engine import AutoLearner, DocumentIngester
 from memory.context import ConversationContext
 from core.proactive import ProactiveEngine
+from core.autonomous import AutonomousAgent
 
 class Nexus:
     """Nexus — 个人AI操作系统"""
@@ -41,6 +42,7 @@ class Nexus:
         self.ingester = DocumentIngester(self.rag, self.graph)
         self.context = ConversationContext()
         self.proactive = ProactiveEngine()
+        self.autonomous = AutonomousAgent()
 
         # 加载 Constitution
         constitution_path = os.path.join(os.path.dirname(__file__), "..", ".claude", "constitution.md")
@@ -134,6 +136,11 @@ class Nexus:
         hint = ""
         if suggestions and self.proactive.should_suggest(user_id):
             hint = f"\n[主动建议] {suggestions[0]['suggestion']}"
+
+        # 每5轮对话后，自主引擎心跳一次
+        ctx_stats = self.context.stats(user_id)
+        if ctx_stats["turns"] % 5 == 0:
+            self.autonomous.tick(self)
 
         return {"reply": reply + hint, "action": decision["action"]}
 
