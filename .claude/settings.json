@@ -1,4 +1,3 @@
-# CC Capability Extensions
-# Converted from Grok Build open-source analysis — 2026-07-17
-
-instructions: ./capabilities/instructions.md
+{
+    "instructions": "./capabilities/instructions.md"
+}
