@@ -174,6 +174,22 @@ Nexus 最初有 WorldModel（世界模型）做统一感知和预测。后来发
 - 代码 ✅ Qwen
 - 视频 ⚠️ 不直接支持，抽帧后逐帧分析
 
+### 2.9 模型加载方式
+
+**不依赖 LM Studio**。Python transformers 直接加载量化后的 .safetensors 文件。
+Nexus 源码已验证：`Qwen2VLForConditionalGeneration.from_pretrained()` + `load_in_4bit=True`。
+打包时把模型文件 + transformers + bitsandbytes 打进安装包，用户双击即用。
+
+**测试版 vs 发布版**：
+
+| | 测试版（张凯用） | 发布版（用户用） |
+|------|:--:|:--:|
+| 模型 | Qwen3-VL-4B | Qwen2-VL-2B（基础）/ 4B（增强） |
+| 硬件 | RTX 5080 16GB | RTX 5060 8-12GB |
+| 加载 | 本地直接加载 | 本地直接加载（同一套代码） |
+
+张凯决定：开发/测试阶段用 Qwen3-VL-4B，确保最高推理质量。发布时自动适配用户显卡。
+
 ---
 
 ## 三、学习系统（六大模块详细实现）
