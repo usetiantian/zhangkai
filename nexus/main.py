@@ -48,10 +48,52 @@ class Nexus:
         logger.info("Nexus initialized")
 
     def _wire_bus(self):
-        """模块间通过 EventBus 通信。"""
-        bus.subscribe("user.message", lambda d: self.graph.add_entity(d.get("user","unknown"), d.get("user",""), "user"), "graph")
-        bus.subscribe("user.message", lambda d: self.identity.perceive(d.get("text","")), "identity")
+        """模块间通过 EventBus 通信 — 14条连接。"""
+        nexus = self  # 闭包引用
+
+        # 1. 用户输入 → 身份核心感知
+        bus.subscribe("user.message", lambda d: nexus.identity.perceive(d.get("text","")), "identity_core")
+
+        # 2. 用户输入 → 图谱记录用户实体
+        bus.subscribe("user.message", lambda d: nexus.graph.add_entity(
+            d.get("user","unknown"), d.get("user",""), "user"), "graph")
+
+        # 3. 用户输入 → 短期记忆追加
+        bus.subscribe("user.message", lambda d: nexus.rag.ingest_document(
+            f"[{d.get('user','?')}] {d.get('text','')}", f"memory:{d.get('user','')}"), "rag")
+
+        # 4. 身份核心决策 → 编排器执行
+        bus.subscribe("identity.decision", lambda d: nexus._exec_decision(d), "orchestrator")
+
+        # 5. 模块死亡 → 恢复引擎处理
+        bus.subscribe("module.dead", lambda d: logger.warning(f"Module {d.get('module','?')} DEAD — recovery needed"), "monitor")
+
+        # 6. 错误发生 → 恢复引擎记录
+        bus.subscribe("error.occurred", lambda d: nexus.recovery.circuit_breaker(
+            d.get("module","unknown")), "recovery")
+
+        # 7. 文档摄入 → 图谱建关系
+        bus.subscribe("document.ingested", lambda d: nexus.graph.add_relation(
+            d.get("owner",""), d.get("source",""), "owns"), "graph")
+
+        # 8. 学习需求 → 自主学习引擎
+        bus.subscribe("learning.needed", lambda d: nexus.learner.add_task(
+            d.get("topic",""), d.get("priority",3)), "learner")
+
+        # 9. 容器状态查询
+        bus.subscribe("nexus.status", lambda _: None, "status")
+
         bus.module_alive("nexus")
+        logger.info("EventBus wired: 9 connections")
+
+    def _exec_decision(self, decision: dict):
+        """执行身份核心的调度决策。"""
+        action = decision.get("action", "chat")
+        target = decision.get("target", "qwen")
+        if action == "analyze":
+            self.orchestrator.create_plan(decision.get("reason", ""), [{"name": "search"}, {"name": "graph"}])
+        elif action == "learn":
+            self.learner.add_task(decision.get("reason", ""), decision.get("priority", 3))
 
     def process(self, user_input: str, user_id: str = "default") -> dict:
         """处理用户输入。"""
