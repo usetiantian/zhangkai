@@ -18,6 +18,7 @@ from recovery.engine import RecoveryEngine
 from user.manager import UserManager
 from skills.registry import SkillRegistry
 from learner.engine import AutoLearner, DocumentIngester
+from memory.context import ConversationContext
 
 class Nexus:
     """Nexus — 个人AI操作系统"""
@@ -37,6 +38,7 @@ class Nexus:
         self.skills = SkillRegistry()
         self.learner = AutoLearner()
         self.ingester = DocumentIngester(self.rag, self.graph)
+        self.context = ConversationContext()
 
         # 加载 Constitution
         constitution_path = os.path.join(os.path.dirname(__file__), "..", ".claude", "constitution.md")
@@ -96,15 +98,16 @@ class Nexus:
             self.learner.add_task(decision.get("reason", ""), decision.get("priority", 3))
 
     def process(self, user_input: str, user_id: str = "default") -> dict:
-        """处理用户输入。"""
+        """处理用户输入——带上下文记忆。"""
         # 自动创建用户
         user_path = os.path.join(self.users.data_dir, f"{user_id}.json")
         if not os.path.exists(user_path):
             self.users.create(user_id, user_id)
         self.users.switch(user_id)
 
-        # 身份核心分析意图
-        decision = self.identity.perceive(user_input)
+        # 注入对话上下文到身份核心
+        ctx_summary = self.context.get_context(user_id)
+        decision = self.identity.perceive(user_input, {"conversation_history": ctx_summary})
         if decision["action"] == "reject":
             return {"reply": f"操作被拒绝: {decision['reason']}", "action": "reject"}
 
@@ -116,20 +119,27 @@ class Nexus:
 
         report = self.orchestrator.generate_report()
 
-        # 用Qwen生成自然回复(如果可用)
-        reply = self._generate_reply(user_input, decision, report)
+        # 用Qwen生成自然回复(带上下文)
+        reply = self._generate_reply(user_input, decision, report, user_id)
+
+        # 记录对话到上下文
+        self.context.add(user_id, "user", user_input)
+        self.context.add(user_id, "nexus", reply)
 
         return {"reply": reply, "action": decision["action"]}
 
-    def _generate_reply(self, user_input: str, decision: dict, report: dict) -> str:
+    def _generate_reply(self, user_input: str, decision: dict, report: dict, user_id: str = "default") -> str:
         """用Qwen生成自然回复。不可用时降级为规则回复。"""
         action = decision["action"]
         if action == "reject":
             return f"[拒绝] {decision['reason']}"
 
+        # 获取对话上下文
+        conv_ctx = self.context.get_context(user_id)
+
         # 尝试Qwen
         try:
-            prompt = self._build_prompt(user_input, decision, report)
+            prompt = self._build_prompt(user_input, decision, report, conv_ctx)
             if len(prompt) < 50:
                 return self._fallback_reply(action, report)
             from models.loader import ModelLoader
@@ -140,19 +150,19 @@ class Nexus:
 
         return self._fallback_reply(action, report)
 
-    def _build_prompt(self, user_input: str, decision: dict, report: dict) -> str:
-        """构建Qwen推理prompt——借鉴ClaudeCode的静态动态分离。"""
+    def _build_prompt(self, user_input: str, decision: dict, report: dict, conv_ctx: str = "") -> str:
+        """构建Qwen推理prompt——注入对话上下文。"""
         action = decision["action"]
         info = self.rag.search(user_input)
-        context = "\n".join([r["text"][:200] for r in info[:2]]) if info else ""
+        knowledge = "\n".join([r["text"][:200] for r in info[:2]]) if info else ""
 
         templates = {
-            "analyze": f"用户问: {user_input}\n相关知识: {context}\n你是Nexus，请用50字以内回答。",
-            "learn": f"用户想学: {user_input}\n请给出一个简短的学习路径建议(50字以内)。",
-            "skill": f"用户需要: {user_input}\n告诉用户Nexus支持这个功能，请用30字以内回答。",
-            "chat": f"用户说: {user_input}\n你是Nexus个人AI助手。用20字以内友好回复。",
+            "analyze": f"[对话背景]\n{conv_ctx}\n\n[知识库]\n{knowledge}\n\n用户问: {user_input}\n你是Nexus，请用50字以内回答。",
+            "learn": f"[对话背景]\n{conv_ctx}\n\n用户想学: {user_input}\n请给出简短学习建议(50字)。",
+            "skill": f"[对话背景]\n{conv_ctx}\n\n用户需要: {user_input}\n告知支持(30字)。",
+            "chat": f"[对话背景]\n{conv_ctx}\n\n用户说: {user_input}\nNexus友好回复(20字):",
         }
-        return templates.get(action, f"用户: {user_input}\n简洁回复(20字以内):")
+        return templates.get(action, f"[对话背景]\n{conv_ctx}\n\n用户: {user_input}\n简洁回复(20字):")
 
     def _fallback_reply(self, action: str, report: dict) -> str:
         replies = {
