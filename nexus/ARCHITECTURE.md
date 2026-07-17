@@ -73,6 +73,15 @@
 - checkpoint_recovery.py # 崩溃恢复
     └── 状态：需开发
 
+## 铁律一：零外部依赖（张凯确立 2026-07-17）
+
+新 Nexus 是完全独立的系统。不依赖任何第三方服务：
+- ❌ 不用 Neo4j → 纯 Python 实现图谱
+- ❌ 不用 ChromaDB → numpy 向量索引
+- ❌ 不用 LM Studio → transformers 直接加载
+- ❌ 不用 Docker → 纯 Python 沙箱
+- ✅ 只依赖：Python 标准库 + transformers + numpy + torch
+
 ## 通信规则（铁律）
 
 ```
