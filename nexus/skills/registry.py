@@ -21,7 +21,13 @@ class SkillRegistry:
         matched = []
         for name, skill in self.skills.items():
             if skill["enabled"]:
-                score = sum(1 for kw in [skill["name"], skill["description"]] if kw in intent)
+                # 双向匹配——intent里有没有skill关键词，skill里有没有intent关键词
+                score = 0
+                for kw in [skill["name"], skill["description"]]:
+                    if kw in intent:
+                        score += 2
+                    elif any(c in intent for c in kw if len(c) >= 1):
+                        score += 0.5  # 部分字符匹配
                 if score > 0:
                     matched.append({"name": name, "score": score, **skill})
         return sorted(matched, key=lambda x: x["score"], reverse=True)
