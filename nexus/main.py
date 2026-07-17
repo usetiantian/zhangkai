@@ -115,7 +115,53 @@ class Nexus:
             self.orchestrator.execute_step(step, lambda s: self.rag.search(s["target"]))
 
         report = self.orchestrator.generate_report()
-        return {"reply": f"处理完成: {report['completed']}/{report['total_steps']}步", "action": decision["action"]}
+
+        # 用Qwen生成自然回复(如果可用)
+        reply = self._generate_reply(user_input, decision, report)
+
+        return {"reply": reply, "action": decision["action"]}
+
+    def _generate_reply(self, user_input: str, decision: dict, report: dict) -> str:
+        """用Qwen生成自然回复。不可用时降级为规则回复。"""
+        action = decision["action"]
+        if action == "reject":
+            return f"[拒绝] {decision['reason']}"
+
+        # 尝试Qwen
+        try:
+            prompt = self._build_prompt(user_input, decision, report)
+            if len(prompt) < 50:
+                return self._fallback_reply(action, report)
+            from models.loader import ModelLoader
+            if hasattr(self, '_loader') and self._loader.model:
+                return self._loader.generate(prompt, max_tokens=100)
+        except Exception:
+            pass
+
+        return self._fallback_reply(action, report)
+
+    def _build_prompt(self, user_input: str, decision: dict, report: dict) -> str:
+        """构建Qwen推理prompt——借鉴ClaudeCode的静态动态分离。"""
+        action = decision["action"]
+        info = self.rag.search(user_input)
+        context = "\n".join([r["text"][:200] for r in info[:2]]) if info else ""
+
+        templates = {
+            "analyze": f"用户问: {user_input}\n相关知识: {context}\n你是Nexus，请用50字以内回答。",
+            "learn": f"用户想学: {user_input}\n请给出一个简短的学习路径建议(50字以内)。",
+            "skill": f"用户需要: {user_input}\n告诉用户Nexus支持这个功能，请用30字以内回答。",
+            "chat": f"用户说: {user_input}\n你是Nexus个人AI助手。用20字以内友好回复。",
+        }
+        return templates.get(action, f"用户: {user_input}\n简洁回复(20字以内):")
+
+    def _fallback_reply(self, action: str, report: dict) -> str:
+        replies = {
+            "analyze": "已分析。建议结合RSI和量比综合判断。",
+            "learn": "已加入学习队列，稍后为你整理资料。",
+            "skill": "Nexus支持这个功能。",
+            "chat": "你好！有什么可以帮你的？",
+        }
+        return replies.get(action, f"处理完成({report['completed']}步)")
 
     def status(self) -> dict:
         return {
