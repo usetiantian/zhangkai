@@ -177,8 +177,9 @@ def is_real_stock(code: str) -> bool:
     # 指数: 399xxx, 395xxx, 000xxx(000300等)
     return False
 
-def scan_oversold(lhb_filter: bool = False):
+def scan_oversold(lhb_filter: bool = False, notify: bool = False):
     """扫描RSI超卖股票（超短线版）"""
+    import os
     fetcher = DataFetcher()
 
     try:
@@ -327,7 +328,19 @@ def scan_oversold(lhb_filter: bool = False):
         os.makedirs(os.path.dirname(output_path), exist_ok=True)
         with open(output_path, "w", encoding="utf-8") as f:
             json.dump(results, f, ensure_ascii=False, indent=2)
-        print(f"\n  [OK] 保存: output/{os.path.basename(output_path)}\n")
+        print(f"\n  [OK] 保存: output/{os.path.basename(output_path)}")
+
+        # 飞书推送
+        if notify:
+            try:
+                from notify.feishu import send_scan_results
+                if send_scan_results(results):
+                    print(f"  [OK] 飞书推送成功")
+                else:
+                    print(f"  [!] 飞书推送失败（webhook未配置？）")
+            except Exception as e:
+                print(f"  [X] 飞书推送异常: {e}")
+        print()
 
     finally:
         fetcher.close()
@@ -716,6 +729,7 @@ if __name__ == "__main__":
     python main.py 002185 --fast   快速模式（不调AI）
     python main.py scan            扫描超卖股票
     python main.py scan --lhb      扫描+龙虎榜加成
+    python main.py scan --notify   扫描+飞书推送
     python main.py lhb             查看龙虎榜
     python main.py config          查看/修改配置
 """)
@@ -724,9 +738,10 @@ if __name__ == "__main__":
     arg = sys.argv[1]
     fast = "--fast" in sys.argv
     use_lhb = "--lhb" in sys.argv
+    use_notify = "--notify" in sys.argv
 
     if arg == "scan":
-        scan_oversold(lhb_filter=use_lhb)
+        scan_oversold(lhb_filter=use_lhb, notify=use_notify)
     elif arg == "lhb":
         from data.lhb import print_lhb_summary
         print_lhb_summary()
