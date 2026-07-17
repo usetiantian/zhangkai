@@ -1,16 +1,16 @@
 @echo off
-chcp 65001 >nul
 cd /d "%~dp0"
 echo.
 echo   ==============================
-echo     Nexus — 个人AI平台
+echo     Nexus v1.0
 echo   ==============================
 echo.
-echo   [1] 运行全量测试... 
+echo   [1] Running tests...
 python tests\test_all.py
 echo.
-echo   [2] 运行能力演示...
+echo   [2] Running demo...
 python demo.py
 echo.
-echo   [3] Nexus 就绪。python main.py 启动交互模式
+echo   [3] Nexus ready. python main.py  to chat.
 echo.
+pause
