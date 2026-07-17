@@ -1,44 +1,90 @@
-"""Nexus提示词引擎 — 借鉴ClaudeCode模块化+静态动态分离"""
+"""
+Nexus 提示词引擎 v2 — 借鉴ClaudeCode运行时模块化组合
+
+ClaudeCode做法: 每个section是独立函数 → 运行时组装
+Nexus做法:   SOUL.md(身份) + Constitution(约束) + 记忆(动态) → 组装
+"""
+import os
 
 class PromptBuilder:
-    STATIC = (
-        "你是Nexus张凯的个人AI。"
-        "原则简洁直接不铺垫不废话。"
-        "规则不删除文件先备份再修改做完汇报。"
-    )
+    """提示词构建器。借鉴ClaudeCode: 从文件读取，不是硬编码。"""
+
+    def __init__(self, soul_path: str = None, constitution_path: str = None):
+        self.soul = self._read_file(soul_path) if soul_path else ""
+        self.constitution = self._read_file(constitution_path) if constitution_path else ""
+
+    def _read_file(self, path: str) -> str:
+        if os.path.exists(path):
+            with open(path, "r", encoding="utf-8") as f:
+                return f.read()
+        return ""
 
     def build(self, action: str, context: str = "", knowledge: str = "") -> str:
+        """
+        借鉴ClaudeCode: 身份(SOUL) → 约束(Constitution) → 任务 → 上下文
+        每个section独立可替换
+        """
+        sections = []
+
+        # Section 1: 身份 — 从SOUL.md读取(借鉴ClaudeCode: static identity)
+        if self.soul:
+            sections.append(self._extract_identity(self.soul))
+
+        # Section 2: 约束 — 从Constitution读取(借鉴ClaudeCode: constraints)
+        if self.constitution:
+            sections.append(self._extract_constraints(self.constitution))
+
+        # Section 3: 任务指令(借鉴ClaudeCode: task-oriented)
+        sections.append(self._task_instruction(action))
+
+        # Section 4: 动态上下文(借鉴ClaudeCode: memory + env)
         ctx = []
-        if knowledge: ctx.append("[知识库] " + knowledge[:300])
-        if context: ctx.append("[对话背景] " + context[:300])
-        ctx_str = "\n".join(ctx) if ctx else ""
+        if knowledge:
+            ctx.append("相关知识: " + knowledge[:500])
+        if context:
+            ctx.append("对话背景: " + context[:300])
+        if ctx:
+            sections.append("\n".join(ctx))
 
-        templates = {
-            "analyze": self.STATIC + "\n\n用户想分析东西。根据知识库给出50字以内判断。不要铺垫直接给结论。" + "\n\n" + ctx_str,
-            "learn": self.STATIC + "\n\n用户想学东西。给出30字以内学习建议。只给最关键的下一步。" + "\n\n" + ctx_str,
-            "skill": self.STATIC + "\n\n用户想用功能。告知是否支持20字以内。" + "\n\n" + ctx_str,
-            "search": self.STATIC + "\n\n用户想查东西。从知识库找答案30字以内。没找到诚实说。" + "\n\n" + ctx_str,
-            "chat": self.STATIC + "\n\n用户闲聊。15字以内友好回复。不要问还有什么可以帮你。" + "\n\n" + ctx_str,
-        }
-        prompt = templates.get(action, self.STATIC + "\n\n" + ctx_str + "\n\n简洁回复20字以内")
-        prompt += "\n\n[约束] 不用emoji。不用有什么可以帮你。直接回答。"
-        return prompt
+        # Section 5: 格式约束(借鉴ClaudeCode: append constraints)
+        sections.append("直接回答。不用emoji。30字以内。")
+
+        return "\n\n".join(sections)
+
+    def _extract_identity(self, soul_text: str) -> str:
+        """从SOUL.md提取核心身份(前500字)。"""
+        lines = soul_text.split("\n")
+        identity_lines = []
+        for line in lines:
+            if any(kw in line for kw in ["名字", "我是谁", "寓意", "类型"]):
+                identity_lines.append(line.strip("# -"))
+        if identity_lines:
+            return "身份: " + "。".join(identity_lines[:5])
+        return "你是Nexus，张凯的个人AI。"
+
+    def _extract_constraints(self, constitution_text: str) -> str:
+        """从Constitution提取核心约束。"""
+        lines = constitution_text.split("\n")
+        rules = []
+        for line in lines:
+            if line.strip().startswith("A") and ":" in line:
+                rules.append(line.strip())
+        if rules:
+            return "规则:\n" + "\n".join(rules[:5])
+        return "规则: 不删除文件。简洁直接。"
+
+    def _task_instruction(self, action: str) -> str:
+        """任务导向指令(借鉴ClaudeCode: 'Complete the task fully')。"""
+        return {
+            "analyze": "用户想分析东西。给出简短判断。",
+            "learn": "用户想学东西。给一个学习建议。",
+            "skill": "用户想用功能。告知是否支持。",
+            "search": "用户想查东西。从知识找答案。没找到诚实说。",
+            "chat": "用户闲聊。用你的身份友好回复。",
+        }.get(action, "简洁回复。")
 
 
-def build_quick_prompt(user_input: str, action: str, answer_hint: str = "") -> str:
-    identity = (
-        "你是Nexus，张凯创建的个人AI。"
-        "你运行在张凯的电脑上，数据不出家门。"
-        "你叫Nexus，不是其他AI。"
-        "你保护用户数据，绝不删除文件。"
-    )
-    hints = {
-        "analyze": "用户想分析: " + user_input + "。给简短判断。",
-        "learn": "用户想学: " + user_input + "。给学习建议。",
-        "skill": "用户需要: " + user_input + "。告知是否支持。",
-        "search": "用户想查: " + user_input + "。从知识库找答案。",
-        "chat": "用户说: " + user_input + "。用Nexus的身份友好回复。",
-    }
-    instruction = hints.get(action, "用户: " + user_input + "。用Nexus的身份简洁回复。")
-    if answer_hint: instruction += " 参考: " + answer_hint[:100]
-    return identity + "\n" + instruction + "\n不用emoji。30字以内。"
+# 快速版(无SOUL文件时)
+def build_quick_prompt(user_input: str, action: str, soul_path: str = None) -> str:
+    pb = PromptBuilder(soul_path)
+    return pb.build(action, context=user_input)

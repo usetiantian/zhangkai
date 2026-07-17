@@ -197,7 +197,10 @@ class Nexus:
         knowledge = "\n".join([r["text"][:200] for r in info[:2]]) if info else ""
 
         # 用PromptBuilder(借鉴ClaudeCode)替代原来硬编码的模板
-        builder = PromptBuilder()
+        builder = PromptBuilder(
+            soul_path=os.path.join(os.path.dirname(__file__), "..", ".claude", "SOUL.md"),
+            constitution_path=os.path.join(os.path.dirname(__file__), "..", ".claude", "constitution.md")
+        )
         return builder.build(action, conv_ctx, knowledge)
 
     def _fallback_reply(self, action: str, report: dict) -> str:
