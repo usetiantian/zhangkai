@@ -73,20 +73,61 @@ PC 版验证软件，Box 版卖给普通人。
 
 **推导记录**：张凯问"是从头开始做还是从模型开始呢？"。CC 分析：从开源模型开始是唯一现实路线。
 
-### 2.5 为什么复用 Nexus 已有模型？
+### 2.5 Nexus 四件套 — 模型协同流水线
 
-Nexus（被删除前）已经在 `.nexus/models/` 目录下集成了完整的多模态模型包：
+**四种输入 → 四个模型 → 两种输出：**
 
-| 模型 | 大小 | 用途 |
-|------|------|------|
-| Qwen2-VL-2B | 4.4GB | 视觉+文字+代码 |
-| Whisper small | 1GB | 语音识别（听） |
-| Piper TTS | 63MB | 中文语音合成(huayan) |
-| CLIP ViT-B-16 | 350MB | 图像理解 |
+```
+用户语音 ──→ Whisper ──→ 文字 ──→ Qwen2-VL-2B ──→ 文字 ──→ Piper ──→ 用户听到
+                1GB                   4.4GB                   63MB
+                (听)                 (想+看)                 (说)
+                                       │
+                                  ┌────┴────┐
+                                  │  LoRA   │ ← 用户专属微调层 ~200MB
+                                  │  RAG库  │ ← 实时知识注入
+                                  └─────────┘
 
-总大小 6GB。全部已下载在硬盘上。
+用户图片 ──→ CLIP ──→ 图像特征+标签 ──→ Qwen2-VL-2B ──→ 文字 ──→ Piper
+             350MB                          (视觉理解)
+             (看)
+```
 
-**推导记录**：张凯说"Nexus 里面内置的不也是视觉模型吗？"让 CC 去 `.nexus/models/` 查看。发现模型文件齐全，无需重新下载。CC 早期使用 LM Studio 调用 Qwen3-VL-4B，但 Nexus 的项目应使用 Nexus 自己的 Qwen2-VL-2B（直接本地加载，不依赖 LM Studio）。
+**各场景调用流水线：**
+
+| 用户操作 | 模型调用链 | 延迟目标 |
+|------|------|:--:|
+| 说话 | Whisper→Qwen→Piper | <3秒 |
+| 打字 | Qwen→Piper(可选) | <2秒 |
+| 发图片 | CLIP+Qwen→Piper(可选) | <3秒 |
+| 说话+发图 | Whisper+CLIP+Qwen→Piper | <4秒 |
+| 查实时信息 | Qwen+RAG | <2秒 |
+| 写代码 | Qwen | <2秒 |
+| 后台学习 | Qwen→搜索→RAG→LoRA | 后台,不限时 |
+
+**四件套明细：**
+
+| 模型 | 大小 | 文件位置 | 作用 | 输入 | 输出 |
+|------|------|------|------|------|------|
+| Qwen2-VL-2B | 4.4GB | `.nexus/models/qwen2-vl-2b-instruct/` | 大脑：思考、推理、看图、写代码 | 文本/文本+图片 | 文本 |
+| Whisper small | 1GB | `.nexus/models/whisper/` | 耳朵：语音转文字 | .wav 音频流 | 中文文本 |
+| Piper TTS | 63MB | `.nexus/models/speech/zh_CN-huayan-medium.onnx` | 嘴巴：文字转语音 | 中文文本 | .wav 音频流 |
+| CLIP ViT-B-16 | 350MB | `.nexus/models/clip/` | 眼睛：快速图像分类 | 图片文件 | 特征向量+标签 |
+
+**存储构成：**
+
+共享层（所有用户一样，只读，不动）：
+Qwen基座 4.4GB + Whisper 1GB + Piper 63MB + CLIP 350MB = **合计 ~6GB**
+
+用户专属层（每用户独立）：
+LoRA adapter ~200MB + 三层记忆(累积) + RAG向量库 ~500MB = **合计 ~700MB/用户**
+
+**关键设计决策：**
+
+Qwen2-VL-2B 而非 Qwen3-VL-4B：Nexus 已有完备代码配置；2B 更省显存，留给 LoRA+RAG 更多空间；VL=多模态，图+文+代码全支持。
+
+CLIP vs Qwen-VL 分工：CLIP 轻量快速分类；Qwen-VL 深度理解推理。简单看图→CLIP先分类；复杂看图→CLIP提取特征→喂Qwen-VL推理。
+
+Whisper+Piper 延迟目标：Whisper<500ms + Qwen<2s + Piper<300ms = 总<3秒，用户感觉实时。
 
 ### 2.6 为什么不需要自博弈？
 
