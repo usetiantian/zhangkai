@@ -1,0 +1,17 @@
+# 乾坤·UZI 依赖 — 全免费·全国内可用
+
+# 数据源
+pytdx>=1.72
+baostock>=0.8.8
+
+# 可选：量化分析
+pandas>=2.0
+numpy>=1.24
+
+# 可选：图表生成
+matplotlib>=3.7
+mplfinance>=0.12
+
+# 可选：Web服务（如需启动Web界面）
+# fastapi>=0.100
+# uvicorn>=0.22
