@@ -319,13 +319,29 @@ class TencentQtSource:
 # 统一接口：三级降级
 # ═══════════════════════════════════════════
 
+class AdataSource:
+    """adata 补充数据——股票列表"""
+
+    def get_stock_list(self):
+        try:
+            import adata
+            df = adata.stock.info.all_code()
+            if df is not None and len(df) > 0:
+                return [(row['stock_code'], row['short_name'])
+                        for _, row in df.iterrows()]
+        except Exception:
+            pass
+        return None
+
+
 class DataFetcher:
-    """数据获取统一入口 — 三级自动降级"""
+    """数据获取统一入口 — 四级降级"""
 
     def __init__(self):
         self.pytdx = PyTdxSource()
         self.baostock = BaoStockSource()
         self.tencent = TencentQtSource()
+        self.adata = AdataSource()
 
     def get_kline(self, code: str, days: int = 60):
         """获取K线 — pytdx → baostock 降级"""
@@ -354,14 +370,17 @@ class DataFetcher:
         return None
 
     def get_stock_list(self):
-        """获取股票列表"""
+        """获取股票列表 — adata(5532只) → pytdx(1000只) 降级"""
+        # Level 1: adata 最全
+        stocks = self.adata.get_stock_list()
+        if stocks and len(stocks) > 100:
+            logger.info(f"adata 股票列表: {len(stocks)}只")
+            return stocks
+        # Level 2: pytdx
         stocks = self.pytdx.get_stock_list()
         if stocks:
-            return stocks
-        data = self.baostock.get_stock_list()
-        if data:
-            return [(s["code"], s["name"]) for s in data]
-        return None
+            logger.info(f"pytdx 股票列表: {len(stocks)}只")
+        return stocks
 
     def close(self):
         self.pytdx.close()

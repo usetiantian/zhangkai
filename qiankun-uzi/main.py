@@ -146,6 +146,22 @@ def analyze_stock(code: str, fast: bool = False):
 # 超卖扫描
 # ===========================================
 
+def is_real_stock(code: str) -> bool:
+    """筛掉指数，只保留个股"""
+    c = code.strip()
+    # 深圳主板/中小板: 000001-004999
+    if c.startswith('00') and len(c) == 6: return c[0:4] != '0000'
+    # 创业板: 300xxx
+    if c.startswith('30'): return True
+    # 上海主板: 600xxx-609xxx
+    if c.startswith('60'): return True
+    # 科创板: 688xxx
+    if c.startswith('688'): return True
+    # 北交所: 8xxxxx
+    if c.startswith(('83','87')): return True
+    # 指数: 399xxx, 395xxx, 000xxx(000300等)
+    return False
+
 def scan_oversold():
     """扫描RSI超卖股票（超短线版）"""
     fetcher = DataFetcher()
@@ -158,8 +174,14 @@ def scan_oversold():
             print("  [X] 无法获取股票列表")
             return
 
-        print(f"  共 {len(stocks)} 只股票，正在扫描...")
-        print(f"  超短线信号: 量比>2 + RSI<45 + 近期放量\n")
+        # 筛掉指数
+        stocks = [(c, n) for c, n in stocks if is_real_stock(c)]
+        if not stocks:
+            print("  [X] 筛选后无个股")
+            return
+
+        print(f"  共 {len(stocks)} 只个股，正在扫描...")
+        print(f"  超短线信号: 量比>1.5 + RSI<45 + 近期放量\n")
 
         results = []
         scan_count = min(len(stocks), 300)
