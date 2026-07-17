@@ -48,6 +48,17 @@ class Nexus:
         self.autonomous = AutonomousAgent()
         self.heartbeat = HeartbeatLoop(self.data_dir)
         self.heartbeat.boot()
+        # Auto-load Qwen (takes 12s, only on first start)
+        self._loader = None
+        try:
+            from models.loader import ModelLoader
+            self._loader = ModelLoader()
+            print('  [Qwen] Loading...', end='', flush=True)
+            self._loader.load()
+            self.identity.attach_model(lambda p, mt=64: self._loader.generate(p, max_tokens=mt))
+            print(' ready')
+        except Exception as e:
+            print(f'  [Qwen] Skipped: {e}')
 
         # 加载 Constitution
         constitution_path = os.path.join(os.path.dirname(__file__), "..", ".claude", "constitution.md")
