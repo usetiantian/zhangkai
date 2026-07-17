@@ -7,6 +7,7 @@
 
 ```
 步骤（按顺序执行，不可跳过）:
+0. 读取 .claude/SOUL.md              — CC的灵魂之书（身份、使命、方法论）
 1. 读取 .claude/constitution.md      — 宪法（不可变规则 + A0.1删除保护）
 2. 读取 .claude/architecture.md      — 四层架构
 3. 读取 .claude/memory/memory-stack.md — 三层记忆体系
