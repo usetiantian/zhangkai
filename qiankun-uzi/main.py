@@ -355,6 +355,15 @@ def scan_oversold(lhb_filter: bool = False, notify: bool = False):
             json.dump(results, f, ensure_ascii=False, indent=2)
         print(f"\n  [OK] 保存: output/{os.path.basename(output_path)}")
 
+        # Qwen 总结（省 token）
+        try:
+            from brain.qwen import summarize_scan, is_available
+            if is_available():
+                summary = summarize_scan(results)
+                print(f"\n  [Qwen] {summary}")
+        except Exception:
+            pass
+
         # 飞书推送
         if notify:
             try:
