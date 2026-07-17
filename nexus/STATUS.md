@@ -1,31 +1,33 @@
 # Nexus — 开发状态追踪
 
-> 每次修改后必须更新此文件。重启后靠它知道做到哪了。
-> 格式：模块 | 状态 | 测试结果 | 最后更新
+## v2 策略：研究库适配 > 自己造轮子
 
-## 模块状态
+适配的研究库：
+- graph-rag-agent ★2275 → knowledge/graph_engine.py
+- NexusRAG ★335 → knowledge/rag_engine.py
 
-| 模块 | 状态 | 测试 | 最后更新 |
+降级策略：研究库不可用时自动 fallback 到简单实现，不崩溃。
+
+## 当前状态
+
+| 模块 | 状态 | 测试 | 来源 |
 |------|:--:|:--:|------|
-| core/event_bus.py | ✅ PASS | 4/4 | 2026-07-17 |
-| core/identity_core.py | ✅ PASS | 8/8 | 2026-07-17 |
-| core/scheduler.py | ❌ 未开始 | - | - |
-| models/loader.py | ❌ 未开始 | - | - |
-| memory/short_term.py | ❌ 未开始 | - | - |
-| memory/long_term.py | ❌ 未开始 | - | - |
-| bridge/feishu.py | ❌ 未开始 | - | - |
-| voice/stt.py | ❌ 未开始 | - | - |
-| ... | ... | ... | ... |
+| knowledge/graph_engine.py | ✅ PASS | 4/4 | graph-rag-agent适配 |
+| knowledge/rag_engine.py | ✅ PASS | 7/7(综合) | NexusRAG适配 |
+| knowledge/simple_graph.py | ✅ | 降级用 | 自写fallback |
+| original/* | ✅ | 全部通过 | 第一版(已归档) |
 
-## 连接测试
+## 测试记录
 
-| 连接 | 状态 | 结果 |
-|------|:--:|------|
-| EventBus → memory | ❌ 未测 | - |
-| EventBus → models | ❌ 未测 | - |
-| ... | ... | ... |
+| 测试 | 结果 |
+|------|:--:|
+| test_graph_engine.py | 4/4 ✅ |
+| test_integration_v2.py | 7/7 ✅ |
+| original/tests/* | 全部通过 |
 
-## 当前进度
-
-正在构建：core/event_bus.py
-下一步：测试 EventBus，然后写 identity_core.py
+## NEXT
+- [ ] 适配 Claude Code 工具系统 → core/tools.py
+- [ ] 适配 Claude Code Hook 系统 → core/hooks.py
+- [ ] 适配 whisper+piper → voice/
+- [ ] 适配 LlamaFactory → learner/trainer.py
+- [ ] 全模块集成测试
