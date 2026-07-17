@@ -19,6 +19,7 @@ from user.manager import UserManager
 from skills.registry import SkillRegistry
 from learner.engine import AutoLearner, DocumentIngester
 from memory.context import ConversationContext
+from core.proactive import ProactiveEngine
 
 class Nexus:
     """Nexus — 个人AI操作系统"""
@@ -39,6 +40,7 @@ class Nexus:
         self.learner = AutoLearner()
         self.ingester = DocumentIngester(self.rag, self.graph)
         self.context = ConversationContext()
+        self.proactive = ProactiveEngine()
 
         # 加载 Constitution
         constitution_path = os.path.join(os.path.dirname(__file__), "..", ".claude", "constitution.md")
@@ -126,7 +128,14 @@ class Nexus:
         self.context.add(user_id, "user", user_input)
         self.context.add(user_id, "nexus", reply)
 
-        return {"reply": reply, "action": decision["action"]}
+        # 主动引擎观察+思考+建议
+        self.proactive.observe(user_id, decision["action"])
+        suggestions = self.proactive.think(user_id, decision["action"])
+        hint = ""
+        if suggestions and self.proactive.should_suggest(user_id):
+            hint = f"\n[主动建议] {suggestions[0]['suggestion']}"
+
+        return {"reply": reply + hint, "action": decision["action"]}
 
     def _generate_reply(self, user_input: str, decision: dict, report: dict, user_id: str = "default") -> str:
         """用Qwen生成自然回复。不可用时降级为规则回复。"""
