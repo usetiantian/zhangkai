@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>乾坤·UZI — A股超短线AI</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,sans-serif;background:#0a0e27;color:#e0e0e0;min-height:100vh}
+.header{background:linear-gradient(135deg,#111633,#0d1230);padding:20px;text-align:center;border-bottom:1px solid #1a2040}
+.header h1{font-size:22px;color:#4a9eff}
+.header p{font-size:12px;color:#666;margin-top:4px}
+.search{padding:16px;display:flex;gap:8px}
+.search input{flex:1;padding:12px 16px;border-radius:8px;border:1px solid #1a2040;background:#111633;color:#fff;font-size:16px;outline:none}
+.search input:focus{border-color:#4a9eff}
+.search button{padding:12px 20px;border-radius:8px;border:none;background:#4a9eff;color:#fff;font-size:16px;font-weight:bold;cursor:pointer}
+.tabs{display:flex;border-bottom:1px solid #1a2040;padding:0 16px}
+.tab{flex:1;padding:12px;text-align:center;color:#666;font-size:14px;cursor:pointer;border-bottom:2px solid transparent}
+.tab.active{color:#4a9eff;border-bottom-color:#4a9eff}
+.content{padding:16px}
+.card{background:#111633;border-radius:8px;padding:16px;margin-bottom:12px;border:1px solid #1a2040}
+.card .stock{display:flex;justify-content:space-between;align-items:center}
+.card .name{font-size:16px;font-weight:bold;color:#fff}
+.card .code{font-size:12px;color:#666}
+.card .price{font-size:20px;font-weight:bold}
+.card .price.up{color:#ff4444}.card .price.down{color:#44ff44}
+.card .tags{margin-top:8px;display:flex;gap:6px;flex-wrap:wrap}
+.tag{padding:2px 8px;border-radius:4px;font-size:11px}
+.tag.buy{background:#1a3a1a;color:#4caf50}
+.tag.sell{background:#3a1a1a;color:#f44336}
+.tag.lhb{background:#1a2a3a;color:#4a9eff}
+.tag.rsi{background:#2a2a1a;color:#ff9800}
+.analysis{padding:16px;margin-top:12px;background:#0d1230;border-radius:8px;border:1px solid #1e3a60;display:none}
+.analysis h3{color:#ff9800;font-size:14px;margin-bottom:8px}
+.analysis p{font-size:14px;line-height:1.6;color:#bbb}
+.loading{text-align:center;padding:40px;color:#666}
+.empty{text-align:center;padding:40px;color:#666;font-size:14px}
+.footer{text-align:center;padding:20px;color:#444;font-size:11px;border-top:1px solid #1a2040;margin-top:20px}
+.toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#333;color:#fff;padding:12px 24px;border-radius:8px;font-size:14px;display:none;z-index:999}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>乾坤·UZI</h1>
+  <p>A股超短线AI分析 · 51位投资大师陪审</p>
+</div>
+
+<div class="search">
+  <input type="text" id="codeInput" placeholder="输入股票代码 如 002185" maxlength="6" inputmode="numeric">
+  <button onclick="analyze()">分析</button>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('scan')">今日扫描</div>
+  <div class="tab" onclick="switchTab('lhb')">龙虎榜</div>
+</div>
+
+<div class="content" id="content">
+  <div class="loading">加载中...</div>
+</div>
+
+<div class="footer">
+  乾坤·UZI v1.0 | 数据:pytdx/新浪龙虎榜 | AI:Qwen本地<br>
+  ⚠️ 仅供学习参考，不构成投资建议
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== 数据加载 =====
+let scanData = [];
+let lhbData = [];
+
+async function loadData() {
+  try {
+    // 加载最新扫描结果
+    const scanRes = await fetch('output/latest_scan.json?' + Date.now());
+    scanData = await scanRes.json();
+  } catch(e) { scanData = []; }
+
+  try {
+    // 加载龙虎榜数据
+    const lhbRes = await fetch('output/latest_lhb.json?' + Date.now());
+    lhbData = await lhbRes.json();
+  } catch(e) { lhbData = []; }
+
+  switchTab('scan');
+}
+
+// ===== 标签切换 =====
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+
+  if (tab === 'scan') renderScan();
+  else renderLHB();
+}
+
+// ===== 渲染扫描结果 =====
+function renderScan() {
+  const c = document.getElementById('content');
+  if (!scanData.length) {
+    c.innerHTML = '<div class="empty">今日暂无超短线信号<br><small>收盘后数据更稳定</small></div>';
+    return;
+  }
+  c.innerHTML = scanData.map((r,i) => {
+    const cls = r.change_pct > 0 ? 'up' : 'down';
+    const sig = r.signal === 'STRONG' ? '🔴' : r.signal === 'GOOD' ? '🟡' : '🟢';
+    let tags = '';
+    if (r.lhb_signal) tags += `<span class="tag lhb">🐉龙虎榜${r.lhb_signal}</span>`;
+    tags += `<span class="tag rsi">RSI ${r.rsi}</span>`;
+    if (r.score >= 6) tags += `<span class="tag buy">评分${r.score}</span>`;
+    else if (r.score >= 4) tags += `<span class="tag sell">评分${r.score}</span>`;
+
+    return `<div class="card" onclick="quickAnalyze('${r.code}')">
+      <div class="stock">
+        <div><div class="name">${sig} ${r.name || r.code}</div><div class="code">${r.code}</div></div>
+        <div class="price ${cls}">${r.price.toFixed(2)}<br><small>${r.change_pct>0?'+':''}${r.change_pct.toFixed(2)}%</small></div>
+      </div>
+      <div class="tags">${tags}</div>
+      ${r.intraday_trend ? `<div style="font-size:12px;color:#888;margin-top:6px">日内: ${r.intraday_trend}</div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+// ===== 渲染龙虎榜 =====
+function renderLHB() {
+  const c = document.getElementById('content');
+  if (!lhbData.length) {
+    c.innerHTML = '<div class="empty">龙虎榜数据加载中...</div>';
+    return;
+  }
+  c.innerHTML = '<div style="font-size:14px;color:#4a9eff;margin-bottom:12px">净买入 Top 10</div>' +
+    lhbData.slice(0,10).map(r => {
+      const net = r.net_amount / 10000;
+      return `<div class="card">
+        <div class="stock">
+          <div><div class="name">${r.name || r.code}</div><div class="code">${r.code}</div></div>
+          <div style="text-align:right">
+            <div style="color:#4caf50;font-weight:bold">+${net.toFixed(0)}万</div>
+            <div class="code">买${(r.buy_amount/10000).toFixed(0)}万 卖${(r.sell_amount/10000).toFixed(0)}万</div>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+}
+
+// ===== 快速分析 =====
+function quickAnalyze(code) {
+  document.getElementById('codeInput').value = code;
+  analyze();
+}
+
+// ===== 单只分析 =====
+async function analyze() {
+  const code = document.getElementById('codeInput').value.trim();
+  if (!code || code.length < 6) {
+    showToast('请输入6位股票代码');
+    return;
+  }
+
+  const c = document.getElementById('content');
+  c.innerHTML = '<div class="loading">正在分析 ' + code + '...</div>';
+
+  try {
+    const res = await fetch('output/' + code + '_latest.json?' + Date.now());
+    const data = await res.json();
+    renderAnalysis(code, data);
+  } catch(e) {
+    // 降级：显示预生成的HTML
+    c.innerHTML = '<div class="analysis" style="display:block">' +
+      '<h3>📊 ' + code + '</h3>' +
+      '<p>请稍后查看完整分析报告。<br>收盘后数据更准确。</p>' +
+      '<p style="margin-top:8px;font-size:12px;color:#666">每日15:05自动更新</p>' +
+      '</div>';
+  }
+}
+
+function renderAnalysis(code, data) {
+  const c = document.getElementById('content');
+  const chg = data.change_pct || 0;
+  const cls = chg > 0 ? 'up' : 'down';
+
+  c.innerHTML = `
+    <div class="card">
+      <div style="text-align:center">
+        <div style="font-size:14px;color:#888">${data.name || code}</div>
+        <div class="price ${cls}" style="font-size:36px;margin:8px 0">${data.price || '-'}</div>
+        <div style="color:${chg>0?'#ff4444':'#44ff44'}">${chg>0?'+':''}${chg.toFixed(2)}%</div>
+      </div>
+    </div>
+    <div class="card">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:14px">
+        <div>RSI <b style="color:#ff9800">${data.rsi || '-'}</b></div>
+        <div>量比 <b>${data.vol_ratio || '-'}</b></div>
+        <div>评分 <b style="color:#4caf50">${data.score || '-'}</b></div>
+        <div>信号 <b>${data.signal || '-'}</b></div>
+      </div>
+    </div>
+    ${data.analysis ? `<div class="analysis" style="display:block"><h3>AI分析</h3><p>${data.analysis}</p></div>` : ''}
+    <div class="analysis" style="display:block">
+      <h3>陪审团投票</h3>
+      <p>买入 ${data.buy||0} | 卖出 ${data.sell||0} | 持有 ${data.hold||0}</p>
+      <p style="margin-top:4px">综合判断: <b>${data.verdict || '待分析'}</b></p>
+    </div>`;
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.display = 'block';
+  setTimeout(() => t.style.display = 'none', 2000);
+}
+
+// 启动
+loadData();
+</script>
+</body>
+</html>

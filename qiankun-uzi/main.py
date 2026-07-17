@@ -346,14 +346,19 @@ def scan_oversold(lhb_filter: bool = False, notify: bool = False):
             print(f"\n  ... 还有 {len(results)-20} 只")
 
         # 保存
-        output_path = os.path.join(
-            os.path.dirname(__file__), "output",
-            f"scan_{datetime.now().strftime('%Y%m%d_%H%M')}.json"
-        )
-        os.makedirs(os.path.dirname(output_path), exist_ok=True)
+        output_dir = os.path.join(os.path.dirname(__file__), "output")
+        os.makedirs(output_dir, exist_ok=True)
+
+        # 完整结果
+        output_path = os.path.join(output_dir, f"scan_{datetime.now().strftime('%Y%m%d_%H%M')}.json")
         with open(output_path, "w", encoding="utf-8") as f:
             json.dump(results, f, ensure_ascii=False, indent=2)
-        print(f"\n  [OK] 保存: output/{os.path.basename(output_path)}")
+
+        # 手机App用的最新结果
+        latest_path = os.path.join(output_dir, "latest_scan.json")
+        with open(latest_path, "w", encoding="utf-8") as f:
+            json.dump(results, f, ensure_ascii=False)
+        print(f"\n  [OK] 保存: output/{os.path.basename(output_path)} → 手机打开 app.html 可查看")
 
         # Qwen 总结（省 token）
         try:

@@ -76,6 +76,14 @@ def get_lhb_list() -> list:
             break
 
     logger.info(f"龙虎榜获取: {len(all_data)}条")
+
+    # 保存为手机App用的最新数据
+    import os, json
+    output_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "output")
+    os.makedirs(output_dir, exist_ok=True)
+    with open(os.path.join(output_dir, "latest_lhb.json"), "w", encoding="utf-8") as f:
+        json.dump(all_data, f, ensure_ascii=False)
+
     return all_data
 
 
