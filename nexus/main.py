@@ -174,12 +174,20 @@ class Nexus:
             prompt = self._build_prompt(user_input, decision, report, conv_ctx)
             if len(prompt) < 50:
                 return self._fallback_reply(action, report)
-            from models.loader import ModelLoader
-            if hasattr(self, '_loader') and self._loader.model:
+            if self._loader is not None and self._loader.model:
                 return self._loader.generate(prompt, max_tokens=100)
         except Exception:
             pass
 
+        if self._loader is not None:
+            from core.prompts import build_quick_prompt
+            qp = build_quick_prompt(user_input, action)
+            try:
+                raw = self._loader.generate(qp, max_tokens=50)
+                # Qwen有时返回prompt原文 → 过滤掉
+                if len(raw) > 10 and "你是Nexus" not in raw[:20] and raw != qp:
+                    return raw.strip()
+            except: pass
         return self._fallback_reply(action, report)
 
     def _build_prompt(self, user_input: str, decision: dict, report: dict, conv_ctx: str = "") -> str:

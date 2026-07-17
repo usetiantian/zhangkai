@@ -60,12 +60,21 @@ class ModelLoader:
 
         logger.info(f"Loading {model_name} from {model_path}")
 
-        self.model = Qwen2VLForConditionalGeneration.from_pretrained(
-            model_path,
-            dtype=torch.float16,
-            device_map="auto",
-            low_cpu_mem_usage=True,
-        )
+        try:
+            self.model = Qwen2VLForConditionalGeneration.from_pretrained(
+                model_path,
+                dtype=torch.float16,
+                device_map="auto",
+                low_cpu_mem_usage=True,
+            )
+        except Exception:
+            self.model = Qwen2VLForConditionalGeneration.from_pretrained(
+                model_path,
+                dtype=torch.float16,
+                low_cpu_mem_usage=True,
+            )
+            if torch.cuda.is_available():
+                self.model = self.model.cuda()
         self.tokenizer = AutoTokenizer.from_pretrained(model_path)
         self.processor = AutoProcessor.from_pretrained(model_path)
 
@@ -80,14 +89,28 @@ class ModelLoader:
         total = sum(p.numel() for p in self.model.parameters())
         return round(total / 1e9, 1)
 
-    def generate(self, prompt: str, max_tokens=256) -> str:
-        """推理——借鉴Qwen2-VL的生成接口。"""
+    def generate(self, prompt: str, max_tokens=256, temperature=0.3) -> str:
+        """推理——用chat template确保只输出回答。"""
         if not self.model:
             raise RuntimeError("Model not loaded. Call load() first.")
 
-        inputs = self.tokenizer(prompt, return_tensors="pt").to(self.model.device)
-        outputs = self.model.generate(**inputs, max_new_tokens=max_tokens)
-        return self.tokenizer.decode(outputs[0], skip_special_tokens=True)
+        messages = [{"role": "user", "content": prompt}]
+        text = self.tokenizer.apply_chat_template(
+            messages, tokenize=False, add_generation_prompt=True
+        )
+        inputs = self.tokenizer(text, return_tensors="pt").to(self.model.device)
+        outputs = self.model.generate(
+            **inputs,
+            max_new_tokens=max_tokens,
+            temperature=temperature,
+            do_sample=temperature > 0,
+        )
+        # 只取生成的部分，去掉输入
+        response = self.tokenizer.decode(
+            outputs[0][inputs["input_ids"].shape[1]:],
+            skip_special_tokens=True
+        )
+        return response.strip()
 
     def hot_swap(self, new_model_name: str):
         """热切换模型——卸载旧模型，加载新模型。"""
