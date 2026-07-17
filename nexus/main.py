@@ -23,6 +23,8 @@ from core.proactive import ProactiveEngine
 from core.autonomous import AutonomousAgent
 from core.prompts import PromptBuilder, build_quick_prompt
 from core.heartbeat import HeartbeatLoop
+from core.state_awareness import StateAwareness
+from core.user_cognition import UserCognition
 from core.onboarding import Onboarding
 
 class Nexus:
@@ -47,6 +49,8 @@ class Nexus:
         self.proactive = ProactiveEngine()
         self.autonomous = AutonomousAgent()
         self.heartbeat = HeartbeatLoop(self.data_dir)
+        self.state = StateAwareness()
+        self.user_cog = UserCognition(os.path.join(self.data_dir, "users"))
         self.heartbeat.boot()
         # Auto-load Qwen (takes 12s, only on first start)
         self._loader = None
@@ -148,6 +152,9 @@ class Nexus:
 
         # 主动引擎观察+思考+建议
         self.proactive.observe(user_id, decision["action"])
+        self.state.interaction_count += 1
+        self.state.last_interaction = __import__("time").time()
+        self.user_cog.observe(user_id, decision["action"])
         suggestions = self.proactive.think(user_id, decision["action"])
         hint = ""
         if suggestions and self.proactive.should_suggest(user_id):
