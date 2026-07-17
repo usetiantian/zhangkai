@@ -991,3 +991,50 @@ Nexus 的技能商店应遵循同一模型——飞书推送是 Tool，CAD画图
 | tokenBudget.ts Token预算解析(+500k/+1M/+2B) | Token消耗追踪 |
 | bridge/ 跨进程通信 (REPL Bridge + Remote Bridge) | 手机↔Box通信桥 |
 | Teammate Context (AsyncLocalStorage 隔离) | 多用户LoRA无冲突切换 |
+
+---
+
+## Grok Build 源码分析（2026-07-17）
+
+### 源码位置
+`grok-build/` — xAI 开源，Rust 原生，62 个子模块。已下载到 workspace。
+
+### 10个可复用设计模式
+
+| Grok Build 模块 | Stars | 对应 Nexus | 可复用内容 |
+|------|:--:|------|------|
+| **xai-grok-memory** | - | 三层记忆 | Markdown存储+blake3哈希分区+会话日志 `YYYY-MM-DD-{slug}.md` + dream夜间蒸馏 |
+| **xai-grok-plugin-marketplace** | - | 技能商店 | Git源市场+目录索引+安装管线+依赖解析 `install_resolve` |
+| **xai-grok-sandbox** | - | 技能沙箱 | Landlock/Seatbelt OS级沙箱，workspace-scoped profiles |
+| **xai-grok-voice** | - | 语音输入 | xAI STT流式客户端+mic探测+多语言支持+语音管线 |
+| **xai-circuit-breaker** | - | 外部API调用 | HTTP熔断器，滑动窗口+错误率阈值+服务器/客户端预设 |
+| **xai-tool-protocol** | - | 技能通信 | JSON-RPC 2.0封装+工具能力描述+钩子事件+握手协议 |
+| **xai-grok-hooks** | - | 生命周期管理 | 4事件类型(session_start/pre_tool_use/post_tool_use/session_end)，文件发现 |
+| **xai-grok-compaction** | - | 上下文压缩 | 长会话上下文自动压缩，避免token溢出 |
+| **xai-grok-shell** | - | 命令执行 | 安全Shell执行+沙箱集成+命令审计 |
+| **xai-codebase-graph** | - | 代码理解 | tree-sitter AST解析+LSP语义分析+调用图谱 |
+
+### 重点详解
+
+**1. 记忆系统的 dream 蒸馏机制** (`xai-grok-memory/src/dream.rs`)：
+- DreamGate 门控：Disabled/TooSoon/TooFewSessions/Open
+- 基于时间+会话数量双重阈值
+- 锁定机制防并发
+- Nexus 复用：夜间3点自动蒸馏，完全相同逻辑
+
+**2. 插件市场** (`xai-grok-plugin-marketplace/src/`)：
+- Git源：官方市场 `xai-org/plugin-marketplace.git`
+- 目录结构：catalog(目录)/index(索引)/scanner(扫描)/installer(安装)/git(克隆)
+- install_resolve 依赖解析
+- Nexus 复用：技能商店的基础设施——Git仓库作为分发渠道，JSON索引作为目录
+
+**3. 熔断器** (`xai-circuit-breaker/src/`)：
+- 滑动窗口+最小样本+错误率阈值
+- 服务器端/客户端两种预设
+- BreakerState: 正常/断开/半开
+- Nexus 复用：调用外部LLM API时的熔断保护——DeepSeek挂了不能拖垮整个Nexus
+
+### 和Claude Code的互补
+- Claude Code → 应用层设计（Agent调度、记忆格式、权限模型）
+- Grok Build → 基础设施层（Rust沙箱、熔断器、工具协议、语音管线）
+- 两者结合 = Nexus 的完整技术栈
