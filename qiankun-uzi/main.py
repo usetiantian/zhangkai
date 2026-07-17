@@ -177,12 +177,30 @@ def is_real_stock(code: str) -> bool:
     # 指数: 399xxx, 395xxx, 000xxx(000300等)
     return False
 
-def scan_oversold():
+def scan_oversold(lhb_filter: bool = False):
     """扫描RSI超卖股票（超短线版）"""
     fetcher = DataFetcher()
 
     try:
-        print_header("乾坤·UZI 超短线扫描")
+        title = "乾坤·UZI 超短线扫描"
+        if lhb_filter:
+            title += " (龙虎榜加持)"
+
+        # 龙虎榜数据
+        lhb_list = []
+        lhb_codes = set()
+        if lhb_filter:
+            try:
+                from data.lhb import get_lhb_list, analyze_lhb_signal
+                lhb_list = get_lhb_list()
+                lhb_codes = {item["code"] for item in lhb_list}
+                print_header(title)
+                print(f"  龙虎榜上榜: {len(lhb_list)}只，扫描将优先匹配\n")
+            except Exception as e:
+                print(f"  [!] 龙虎榜数据获取失败: {e}，继续普通扫描")
+                lhb_filter = False
+        else:
+            print_header(title)
 
         stocks = fetcher.get_stock_list()
         if not stocks:
@@ -249,6 +267,14 @@ def scan_oversold():
                     if intraday_stats.get("surge"): score += 2  # 分时拉升=资金介入
                     if intraday_stats.get("vol_spike"): score += 1  # 放量异动
 
+            # 龙虎榜加分：游资已在场内
+            lhb_signal = {}
+            if lhb_filter and code in lhb_codes:
+                lhb_item = next((x for x in lhb_list if x["code"] == code), None)
+                if lhb_item:
+                    lhb_signal = analyze_lhb_signal(lhb_item)
+                    score += lhb_signal.get("score", 0)
+
             if score >= 3:  # 至少3分才入选
                 results.append({
                     "code": code, "name": name,
@@ -257,23 +283,38 @@ def scan_oversold():
                     "price": rt.get("price", 0) if rt else 0,
                     "change_pct": change_pct,
                     "score": score,
-                    "signal": "STRONG" if score >= 5 else ("GOOD" if score >= 4 else "WATCH"),
+                    "signal": "STRONG" if score >= 7 else ("GOOD" if score >= 5 else "WATCH"),
                     "intraday_trend": intraday_stats.get("trend", ""),
                     "limit_status": detect_limit_status(rt) if rt else "",
+                    "lhb_net": lhb_signal.get("net_amount", 0),
+                    "lhb_signal": lhb_signal.get("signal", ""),
+                    "lhb_reason": lhb_signal.get("reason", ""),
                 })
 
         results.sort(key=lambda x: x["score"], reverse=True)
 
         print(f"\n  [OK] 发现 {len(results)} 只超短线候选:\n")
-        print(f"  {'代码':<10} {'名称':<10} {'RSI':<8} {'量比':<8} {'涨跌':<10} {'评分':<6} {'日内':<10} {'信号'}")
-        print(f"  {'-'*75}")
+        has_lhb = any(r.get("lhb_signal") for r in results)
+        if has_lhb:
+            print(f"  {'代码':<10} {'名称':<10} {'RSI':<7} {'量比':<7} {'涨跌':<9} {'评分':<5} {'日内':<10} {'龙虎榜':<10} {'信号'}")
+            print(f"  {'-'*80}")
+        else:
+            print(f"  {'代码':<10} {'名称':<10} {'RSI':<8} {'量比':<8} {'涨跌':<10} {'评分':<6} {'日内':<10} {'信号'}")
+            print(f"  {'-'*75}")
         for r in results[:20]:
             sig = r["signal"]
             sig_str = "[BUY]" if sig=="STRONG" else ("[++]" if sig=="GOOD" else "[+]")
             intraday_info = r.get("intraday_trend", "")
             if r.get("limit_status") in ("near_up", "near_down"):
                 intraday_info = r["limit_status"]
-            print(f"  {r['code']:<10} {r['name']:<10} {r['rsi']:<8.1f} {r['vol_ratio']:<8.1f} {r['change_pct']:>+8.2f}%  {r['score']:<6} {intraday_info:<10} {sig_str}")
+            lhb_info = ""
+            if r.get("lhb_signal"):
+                lhb_net = r.get("lhb_net", 0)
+                lhb_info = f"{r['lhb_signal']}({lhb_net/10000:.1f}亿)"
+            if has_lhb:
+                print(f"  {r['code']:<10} {r['name']:<10} {r['rsi']:<7.1f} {r['vol_ratio']:<7.1f} {r['change_pct']:>+7.2f}%  {r['score']:<5} {intraday_info:<10} {lhb_info:<10} {sig_str}")
+            else:
+                print(f"  {r['code']:<10} {r['name']:<10} {r['rsi']:<8.1f} {r['vol_ratio']:<8.1f} {r['change_pct']:>+8.2f}%  {r['score']:<6} {intraday_info:<10} {sig_str}")
 
         if len(results) > 20:
             print(f"\n  ... 还有 {len(results)-20} 只")
@@ -674,15 +715,21 @@ if __name__ == "__main__":
     python main.py 002185          分析华天科技
     python main.py 002185 --fast   快速模式（不调AI）
     python main.py scan            扫描超卖股票
+    python main.py scan --lhb      扫描+龙虎榜加成
+    python main.py lhb             查看龙虎榜
     python main.py config          查看/修改配置
 """)
         sys.exit(0)
 
     arg = sys.argv[1]
     fast = "--fast" in sys.argv
+    use_lhb = "--lhb" in sys.argv
 
     if arg == "scan":
-        scan_oversold()
+        scan_oversold(lhb_filter=use_lhb)
+    elif arg == "lhb":
+        from data.lhb import print_lhb_summary
+        print_lhb_summary()
     elif arg == "config":
         show_config()
     elif arg.replace(".","").isdigit():
