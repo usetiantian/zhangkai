@@ -22,6 +22,7 @@ from memory.context import ConversationContext
 from core.proactive import ProactiveEngine
 from core.autonomous import AutonomousAgent
 from core.prompts import PromptBuilder, build_quick_prompt
+from core.heartbeat import HeartbeatLoop
 
 class Nexus:
     """Nexus — 个人AI操作系统"""
@@ -44,6 +45,8 @@ class Nexus:
         self.context = ConversationContext()
         self.proactive = ProactiveEngine()
         self.autonomous = AutonomousAgent()
+        self.heartbeat = HeartbeatLoop(self.data_dir)
+        self.heartbeat.boot()
 
         # 加载 Constitution
         constitution_path = os.path.join(os.path.dirname(__file__), "..", ".claude", "constitution.md")
