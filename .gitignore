@@ -52,3 +52,9 @@ C:Users87999claude-workspaceqiankunreferences/
 qiankun/references/
 qiankun/feishu_bot.py
 qiankun/feishu_ws.py
+
+# 乾坤·UZI 生成/安装文件
+qiankun-uzi/adata/
+qiankun-uzi/output/
+qiankun-uzi/config.json
+qiankun-uzi/__pycache__/

@@ -44,14 +44,29 @@ def analyze_stock(code: str, fast: bool = False):
         name = rt.get("name", code) if rt else code
         indicators = calc_indicators(kline) if kline else {}
         rsi = indicators.get("rsi")
-        
+
+        # 超短线指标
+        limit_status = detect_limit_status(rt) if rt else "unknown"
+        intraday = fetcher.get_intraday(code)  # 5分钟K线
+        intraday_stats = analyze_intraday(intraday) if intraday else {}
+
         print(f"\n  [{name}] 现价 {rt.get('price','?')}  涨跌 {rt.get('change_pct','?'):+.2f}%")
+        if limit_status in ("涨停", "跌停"):
+            print(f"  [!!] {limit_status}！注意风险")
+        elif limit_status in ("near_up", "near_down"):
+            print(f"  [!] 接近{limit_status}")
         if rsi:
             rsi_color = "[-]" if rsi < 30 else ("[~]" if rsi < 40 else "[+]")
             print(f"  {rsi_color} RSI(14): {rsi}")
         if indicators.get("ma5") and indicators.get("ma20"):
             print(f"  [UP] MA5: {indicators['ma5']}  MA20: {indicators['ma20']}")
             print(f"  [DN] 趋势: {indicators.get('recent_trend','')}")
+        if intraday_stats:
+            print(f"  [5M] 日内: {intraday_stats.get('trend','?')}", end="")
+            if intraday_stats.get("surge"): print(f" | [+]拉升 {intraday_stats['surge_count']}次", end="")
+            if intraday_stats.get("dump"): print(f" | [-]跳水 {intraday_stats['dump_count']}次", end="")
+            if intraday_stats.get("vol_spike"): print(f" | [@]放量 {intraday_stats['vol_spike_count']}次", end="")
+            print()
         
         # -- 第2步：AI分析 --
         print(f"\n{'-'*50}")
@@ -124,8 +139,8 @@ def analyze_stock(code: str, fast: bool = False):
         print(f"\n{'-'*50}")
         print("  [RPT] 生成报告...")
         
-        report = generate_report(code, name, rt, kline, indicators, 
-                                ai_analysis, result)
+        report = generate_report(code, name, rt, kline, indicators,
+                                ai_analysis, result, limit_status, intraday_stats)
         
         report_path = os.path.join(
             os.path.dirname(__file__), "output",
@@ -209,6 +224,12 @@ def scan_oversold():
             rt = fetcher.get_realtime(code)
             change_pct = rt.get("change_pct", 0) if rt else 0
 
+            # 筛涨停跌停
+            if rt:
+                ls = detect_limit_status(rt)
+                if ls in ("涨停", "跌停"):
+                    continue  # 涨停买不到，跌停不想抄
+
             # 信号强度评分
             score = 0
             if rsi < 30: score += 3
@@ -219,6 +240,15 @@ def scan_oversold():
             if change_pct < -5: score += 2  # 大跌后反弹概率高
             if change_pct > 2: score += 1   # 已有资金介入
 
+            # 超短线加分：日内分时
+            intraday_stats = {}
+            if score >= 2:
+                intraday = fetcher.get_intraday(code)
+                if intraday:
+                    intraday_stats = analyze_intraday(intraday)
+                    if intraday_stats.get("surge"): score += 2  # 分时拉升=资金介入
+                    if intraday_stats.get("vol_spike"): score += 1  # 放量异动
+
             if score >= 3:  # 至少3分才入选
                 results.append({
                     "code": code, "name": name,
@@ -228,17 +258,22 @@ def scan_oversold():
                     "change_pct": change_pct,
                     "score": score,
                     "signal": "STRONG" if score >= 5 else ("GOOD" if score >= 4 else "WATCH"),
+                    "intraday_trend": intraday_stats.get("trend", ""),
+                    "limit_status": detect_limit_status(rt) if rt else "",
                 })
 
         results.sort(key=lambda x: x["score"], reverse=True)
 
         print(f"\n  [OK] 发现 {len(results)} 只超短线候选:\n")
-        print(f"  {'代码':<10} {'名称':<10} {'RSI':<8} {'量比':<8} {'涨跌':<10} {'评分':<6} {'信号'}")
-        print(f"  {'-'*65}")
+        print(f"  {'代码':<10} {'名称':<10} {'RSI':<8} {'量比':<8} {'涨跌':<10} {'评分':<6} {'日内':<10} {'信号'}")
+        print(f"  {'-'*75}")
         for r in results[:20]:
             sig = r["signal"]
             sig_str = "[BUY]" if sig=="STRONG" else ("[++]" if sig=="GOOD" else "[+]")
-            print(f"  {r['code']:<10} {r['name']:<10} {r['rsi']:<8.1f} {r['vol_ratio']:<8.1f} {r['change_pct']:>+8.2f}%  {r['score']:<6} {sig_str}")
+            intraday_info = r.get("intraday_trend", "")
+            if r.get("limit_status") in ("near_up", "near_down"):
+                intraday_info = r["limit_status"]
+            print(f"  {r['code']:<10} {r['name']:<10} {r['rsi']:<8.1f} {r['vol_ratio']:<8.1f} {r['change_pct']:>+8.2f}%  {r['score']:<6} {intraday_info:<10} {sig_str}")
 
         if len(results) > 20:
             print(f"\n  ... 还有 {len(results)-20} 只")
@@ -290,21 +325,128 @@ def calc_indicators(kline: list) -> dict:
     else:
         trend = "?"
     vol_ratio = round(sum(volumes[-5:])/5 / (sum(volumes[-20:])/20), 2) if len(volumes)>=20 else 1
-    return {"rsi":rsi, "ma5":ma5, "ma20":ma20, "recent_trend":trend, 
+    return {"rsi":rsi, "ma5":ma5, "ma20":ma20, "recent_trend":trend,
             "vol_ratio":vol_ratio, "latest_close":closes[-1]}
+
+
+# ═══════════════════════════════════════════
+# 超短线专属指标
+# ═══════════════════════════════════════════
+
+def detect_limit_status(rt: dict) -> str:
+    """
+    涨停/跌停检测
+    A股：主板±10%，科创/创业±20%，北交±30%
+    返回: "涨停"/"跌停"/"near_up"/"near_down"/"normal"
+    """
+    price = rt.get("price", 0)
+    pre_close = rt.get("pre_close", 0)
+    if not price or not pre_close or pre_close == 0:
+        return "unknown"
+
+    change_pct = (price - pre_close) / pre_close * 100
+
+    # 判断板块
+    code = str(rt.get("code", ""))
+    if code.startswith("688") or code.startswith("30"):
+        limit = 20  # 科创板 创业板
+    elif code.startswith(("83", "87")):
+        limit = 30  # 北交所
+    else:
+        limit = 10  # 主板
+
+    if change_pct >= limit * 0.995:
+        return "涨停"
+    elif change_pct <= -limit * 0.995:
+        return "跌停"
+    elif change_pct >= limit * 0.85:
+        return "near_up"
+    elif change_pct <= -limit * 0.85:
+        return "near_down"
+    return "normal"
+
+
+def analyze_intraday(intraday: list) -> dict:
+    """
+    分析5分钟K线，检测：
+    - 分时拉升（短时间内快速上涨）
+    - 分时出货（短时间内快速下跌）
+    - 成交量异动
+    """
+    if not intraday or len(intraday) < 12:
+        return {"surge": False, "dump": False, "vol_spike": False,
+                "trend": "数据不足", "max_surge_pct": 0}
+
+    # 计算每根K线的涨跌幅
+    surges = []
+    dumps = []
+    vol_spikes = []
+    avg_vol = sum(k["volume"] for k in intraday) / len(intraday)
+
+    for i, bar in enumerate(intraday):
+        if i == 0:
+            continue
+        prev = intraday[i-1]
+        # 涨幅
+        chg = (bar["close"] - prev["close"]) / prev["close"] * 100
+        # 成交量倍数
+        vol_ratio = bar["volume"] / avg_vol if avg_vol > 0 else 1
+
+        if chg > 2.0:  # 2%以上拉升
+            surges.append({"time": bar["time"], "pct": round(chg, 2), "vol": round(vol_ratio, 1)})
+        if chg < -2.0:  # 2%以上跳水
+            dumps.append({"time": bar["time"], "pct": round(chg, 2), "vol": round(vol_ratio, 1)})
+        if vol_ratio > 3.0:  # 3倍均量
+            vol_spikes.append({"time": bar["time"], "vol_ratio": round(vol_ratio, 1)})
+
+    # 趋势判断：最近6根K线(30分钟)
+    recent = intraday[-6:]
+    first_close = recent[0]["close"]
+    last_close = recent[-1]["close"]
+    if first_close > 0:
+        trend_pct = (last_close - first_close) / first_close * 100
+        if trend_pct > 1.5:
+            trend = "快速拉升"
+        elif trend_pct > 0.5:
+            trend = "温和上涨"
+        elif trend_pct < -1.5:
+            trend = "快速下跌"
+        elif trend_pct < -0.5:
+            trend = "温和下跌"
+        else:
+            trend = "窄幅震荡"
+    else:
+        trend = "?"
+
+    max_surge = max([s["pct"] for s in surges]) if surges else 0
+
+    return {
+        "surge": len(surges) > 0,
+        "surge_count": len(surges),
+        "dump": len(dumps) > 0,
+        "dump_count": len(dumps),
+        "vol_spike": len(vol_spikes) > 0,
+        "vol_spike_count": len(vol_spikes),
+        "trend": trend,
+        "max_surge_pct": max_surge,
+        "surges": surges,
+        "dumps": dumps,
+        "vol_spikes": vol_spikes,
+    }
 
 
 # ===========================================
 # 报告生成
 # ===========================================
 
-def generate_report(code, name, rt, kline, indicators, ai_text, panel_result):
+def generate_report(code, name, rt, kline, indicators, ai_text, panel_result, limit_status="", intraday_stats=None):
     rt = rt or {}
     ind = indicators or {}
-    
+    intraday_stats = intraday_stats or {}
+
     change_pct = rt.get("change_pct", 0)
     c = "#ff4444" if change_pct > 0 else ("#44ff44" if change_pct < 0 else "#aaa")
-    
+
     # 构建投票表格
     vote_rows = ""
     for v in panel_result.get("votes", [])[:12]:
@@ -394,6 +536,17 @@ def generate_report(code, name, rt, kline, indicators, ai_text, panel_result):
   </div>
   
   <div class="card">
+    <h3>[5M] 超短线指标</h3>
+    <table>
+      <tr><td>涨停/跌停</td><td>{"[!!]" + limit_status if limit_status in ("涨停","跌停","near_up","near_down") else limit_status or "正常"}</td></tr>
+      <tr><td>日内趋势</td><td>{intraday_stats.get("trend","-")}</td></tr>
+      <tr><td>分时拉升</td><td>{"+" + str(intraday_stats.get("surge_count",0)) + "次" if intraday_stats.get("surge") else "无"}</td></tr>
+      <tr><td>分时跳水</td><td>{"-" + str(intraday_stats.get("dump_count",0)) + "次" if intraday_stats.get("dump") else "无"}</td></tr>
+      <tr><td>放量异动</td><td>{"@" + str(intraday_stats.get("vol_spike_count",0)) + "次" if intraday_stats.get("vol_spike") else "无"}</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
     <h3>💰 实时行情</h3>
     <table>
       <tr><td>开盘</td><td>{rt.get('open','-')}</td></tr>
@@ -444,6 +597,70 @@ def print_header(title: str):
 |  {datetime.now().strftime('%Y-%m-%d %H:%M')}
 +==========================================+""")
 
+def show_config():
+    """显示/修改系统配置"""
+    import os
+
+    config_path = os.path.join(os.path.dirname(__file__), "config.json")
+    default_config = {
+        "data_source": "pytdx",        # pytdx | baostock | tencent
+        "scan_limit": 300,             # 扫描股票数量上限
+        "rsi_threshold": 45,           # RSI 阈值
+        "vol_ratio_min": 1.5,          # 最低量比
+        "min_score": 3,                # 最低信号评分
+        "enable_ai": True,             # 启用 Qwen AI
+        "enable_jury": True,           # 启用陪审团
+        "ai_endpoint": "http://127.0.0.1:1234/v1",
+        "personas_dir": "personas",
+        "output_dir": "output",
+        "super_short_term": True,      # 超短线模式
+    }
+
+    config = {}
+    if os.path.exists(config_path):
+        import json
+        with open(config_path, "r", encoding="utf-8") as f:
+            config = json.load(f)
+
+    # merge defaults
+    for k, v in default_config.items():
+        config.setdefault(k, v)
+
+    if len(sys.argv) > 2 and sys.argv[2] == "set":
+        # 设置配置项: python main.py config set key value
+        if len(sys.argv) < 5:
+            print("  用法: python main.py config set <key> <value>")
+            return
+        key = sys.argv[3]
+        val = sys.argv[4]
+        if key in default_config:
+            # 类型转换
+            orig_type = type(default_config[key])
+            if orig_type == bool:
+                val = val.lower() in ("true", "1", "yes")
+            elif orig_type == int:
+                val = int(val)
+            elif orig_type == float:
+                val = float(val)
+            config[key] = val
+            import json
+            with open(config_path, "w", encoding="utf-8") as f:
+                json.dump(config, f, ensure_ascii=False, indent=2)
+            print(f"  [OK] {key} = {val}")
+        else:
+            print(f"  [X] 未知配置项: {key}")
+            print(f"  可用: {', '.join(default_config.keys())}")
+        return
+
+    # 显示配置
+    print_header("乾坤·UZI 系统配置")
+    print(f"\n  配置文件: {config_path}")
+    print(f"  {'-'*45}")
+    for k, v in config.items():
+        default_mark = " (默认)" if k in default_config and v == default_config[k] else ""
+        print(f"  {k:<25} = {str(v):<15}{default_mark}")
+    print(f"\n  修改: python main.py config set <key> <value>\n")
+
 # ===========================================
 # 入口
 # ===========================================
@@ -457,14 +674,17 @@ if __name__ == "__main__":
     python main.py 002185          分析华天科技
     python main.py 002185 --fast   快速模式（不调AI）
     python main.py scan            扫描超卖股票
+    python main.py config          查看/修改配置
 """)
         sys.exit(0)
-    
+
     arg = sys.argv[1]
     fast = "--fast" in sys.argv
-    
+
     if arg == "scan":
         scan_oversold()
+    elif arg == "config":
+        show_config()
     elif arg.replace(".","").isdigit():
         analyze_stock(arg, fast=fast)
     else:

@@ -342,6 +342,7 @@ class DataFetcher:
         self.baostock = BaoStockSource()
         self.tencent = TencentQtSource()
         self.adata = AdataSource()
+        self._name_cache = {}  # code→name 缓存，解决pytdx名称丢失问题
 
     def get_kline(self, code: str, days: int = 60):
         """获取K线 — pytdx → baostock 降级"""
@@ -360,13 +361,34 @@ class DataFetcher:
     def get_realtime(self, code: str):
         """获取实时报价 — pytdx → 腾讯qt 降级"""
         result = self.pytdx.get_realtime(code)
-        if result:
+
+        # 修名称：pytdx 经常返回空名称，用腾讯qt或本地缓存补
+        if result and not result.get("name"):
+            # 先查本地缓存
+            if code in self._name_cache:
+                result["name"] = self._name_cache[code]
+            else:
+                # 降级到腾讯qt拿名称
+                try:
+                    qt = self.tencent.get_realtime([code])
+                    if qt:
+                        key = list(qt.keys())[0]
+                        result["name"] = qt[key].get("name", code)
+                        self._name_cache[code] = result["name"]
+                except Exception:
+                    pass
+
+        if result and result.get("name"):
             return result
-        
+
+        # pytdx完全失败 → 腾讯qt
         result = self.tencent.get_realtime([code])
         if result:
             key = list(result.keys())[0]
-            return result[key]
+            qt_data = result[key]
+            if qt_data.get("name"):
+                self._name_cache[code] = qt_data["name"]
+            return qt_data
         return None
 
     def get_stock_list(self):
@@ -375,12 +397,18 @@ class DataFetcher:
         stocks = self.adata.get_stock_list()
         if stocks and len(stocks) > 100:
             logger.info(f"adata 股票列表: {len(stocks)}只")
+            self._name_cache.update({c: n for c, n in stocks})  # 缓存名称
             return stocks
         # Level 2: pytdx
         stocks = self.pytdx.get_stock_list()
         if stocks:
             logger.info(f"pytdx 股票列表: {len(stocks)}只")
+            self._name_cache.update({c: n for c, n in stocks})  # 缓存名称
         return stocks
+
+    def get_intraday(self, code: str):
+        """获取5分钟K线（超短线核心）"""
+        return self.pytdx.get_intraday(code)
 
     def close(self):
         self.pytdx.close()
