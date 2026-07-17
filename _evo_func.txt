@@ -1,0 +1,157 @@
+def import_evolution_roadmap() -> Dict:
+    """将毕业协议 + v6-v10 路线图导入 EvoKG (domain=evolution)"""
+    from nexus_agent.evokg import get_evokg, SubgraphType
+
+    kg = get_evokg()
+    imported = {"graduation_levels": 0, "evolution_stages": 0}
+
+    # ── 毕业协议 ──
+    for level_def in GRADUATION_PROTOCOL:
+        # 每个 Level 作为一个 knowledge node
+        content = (
+            f"毕业协议 Level {level_def['level']}: {level_def['name']} — "
+            f"需要 {level_def['rounds_required'] or '无上限'} 轮 — "
+            f"{level_def['description'][:200]}"
+        )
+        node_id = _content_to_node_id(content)
+        existing = kg.get_node(node_id)
+        if existing is not None:
+            continue
+
+        level_node = kg.add_node(
+            subgraph=SubgraphType.DOMAIN_KNOWLEDGE,
+            content=content,
+            node_id=node_id,
+            confidence=1.0,  # 硬编码种子, 置信度最高
+            metadata={
+                "domain": "evolution",
+                "layer": "graduation_protocol",
+                "level": level_def["level"],
+                "name": level_def["name"],
+                "rounds_required": level_def["rounds_required"],
+                "source": "evolution_roadmap",
+            },
+        )
+        if level_node:
+            imported["graduation_levels"] += 1
+
+        # 触发条件作为子节点
+        for cond in level_def["trigger_conditions"]:
+            cond_node_id = _content_to_node_id(f"graduation_L{level_def['level']}:{cond}")
+            existing_cond = kg.get_node(cond_node_id)
+            if existing_cond is not None:
+                continue
+            cond_node = kg.add_node(
+                subgraph=SubgraphType.DOMAIN_KNOWLEDGE,
+                content=f"毕业条件 L{level_def['level']}: {cond}",
+                node_id=cond_node_id,
+                confidence=1.0,
+                metadata={
+                    "domain": "evolution",
+                    "layer": "graduation_condition",
+                    "level": level_def["level"],
+                    "source": "evolution_roadmap",
+                },
+            )
+            if cond_node and level_node:
+                from nexus_agent.evokg import RelationType
+                kg.add_edge(
+                    source_id=level_node.id,
+                    target_id=cond_node.id,
+                    relation=RelationType.DEPENDS_ON,
+                    weight=0.9,
+                    evidence=f"Level {level_def['level']} 毕业需要此条件",
+                )
+
+    # ── v6.0-v10.0 进化阶段 ──
+    for stage in EVOLUTION_STAGES:
+        content = (
+            f"Nexus {stage['version']}: {stage['name']} — "
+            f"{stage.get('ceiling', stage.get('description', ''))[:200]}"
+        )
+        node_id = _content_to_node_id(content)
+        existing = kg.get_node(node_id)
+        if existing is not None:
+            continue
+
+        stage_node = kg.add_node(
+            subgraph=SubgraphType.DOMAIN_KNOWLEDGE,
+            content=content,
+            node_id=node_id,
+            confidence=0.95 if stage["status"] == "current" else 0.85,
+            metadata={
+                "domain": "evolution",
+                "layer": "stage",
+                "version": stage["version"],
+                "name": stage["name"],
+                "status": stage["status"],
+                "source": "evolution_roadmap",
+            },
+        )
+        if stage_node:
+            imported["evolution_stages"] += 1
+
+        # 能力描述作为子节点
+        for cap in stage.get("capabilities", []):
+            cap_node_id = _content_to_node_id(f"{stage['version']}:{cap}")
+            existing_cap = kg.get_node(cap_node_id)
+            if existing_cap is not None:
+                continue
+            cap_node = kg.add_node(
+                subgraph=SubgraphType.DOMAIN_KNOWLEDGE,
+                content=f"{stage['version']}: {cap}",
+                node_id=cap_node_id,
+                confidence=0.9,
+                metadata={
+                    "domain": "evolution",
+                    "layer": "capability_target",
+                    "version": stage["version"],
+                    "source": "evolution_roadmap",
+                },
+            )
+            if cap_node and stage_node:
+                from nexus_agent.evokg import RelationType
+                kg.add_edge(
+                    source_id=stage_node.id,
+                    target_id=cap_node.id,
+                    relation=RelationType.DEPENDS_ON,
+                    weight=0.85,
+                    evidence=f"{stage['version']} 需要此能力",
+                )
+
+        # 原则/前置条件
+        for prereq in stage.get("prerequisites", []):
+            prereq_node_id = _content_to_node_id(f"prereq_{stage['version']}:{prereq}")
+            existing_prereq = kg.get_node(prereq_node_id)
+            if existing_prereq is not None:
+                continue
+            prereq_node = kg.add_node(
+                subgraph=SubgraphType.DOMAIN_KNOWLEDGE,
+                content=f"前置条件 {stage['version']}: {prereq}",
+                node_id=prereq_node_id,
+                confidence=0.95,
+                metadata={
+                    "domain": "evolution",
+                    "layer": "prerequisite",
+                    "version": stage["version"],
+                    "source": "evolution_roadmap",
+                },
+            )
+            if prereq_node and stage_node:
+                from nexus_agent.evokg import RelationType
+                kg.add_edge(
+                    source_id=prereq_node.id,
+                    target_id=stage_node.id,
+                    relation=RelationType.DEPENDS_ON,
+                    weight=0.9,
+                    evidence=f"{stage['version']} 的前置条件",
+                )
+
+    # ── 连接毕业协议 ↔ 进化阶段 ──
+    _link_graduation_to_stages(kg)
+
+    logger.info(
+        "[EvolutionRoadmap] 导入完成: %d graduation levels, %d evolution stages",
+        imported["graduation_levels"], imported["evolution_stages"],
+    )
+    return imported

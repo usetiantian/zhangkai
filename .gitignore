@@ -1,0 +1,52 @@
+# CC 红线保护 Git 防护网
+# 只追踪重要文件，排除可重建的大文件
+
+# 排除
+node_modules/
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.pt
+*.pth
+*.lock
+dist/
+build/
+.cache/
+*.log
+.tasks/
+*.tar.gz
+*.zip
+*.rar
+*.mp4
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.webp
+*.ico
+*.pdf
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+*.db-shm
+.env
+.env.local
+*.key
+*.pem
+credentials/
+nul
+NUL
+con
+CON
+
+# 子仓库（各自独立git管理）
+grok-build/
+ECC/
+laap-agi/
+spec-kit/
+uzi-skill/
+research/
+C:Users87999claude-workspaceqiankunreferences/
+qiankun/references/

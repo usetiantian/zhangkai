@@ -1,0 +1,22 @@
+[2026-07-16 22:54:51] INFO web.app: A-share web app initialized
+INFO:     Started server process [7824]
+INFO:     Waiting for application startup.
+[2026-07-16 22:54:51] INFO web.app: Initializing services...
+[2026-07-16 22:54:51] INFO data.eastmoney_client: EastMoney client initialised (gateway=101.201.173.125, mode=auto)
+[2026-07-16 22:54:51] INFO web.watchlist_service: Migrated 0 watchlist items from stocks.yaml
+[2026-07-16 22:54:52] WARNING data.eastmoney_proxy: EastMoney call failed (no proxy): stock_zh_index_daily_em — ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+[2026-07-16 22:54:52] WARNING data.trading_calendar: akshare trading calendar failed: 'NoneType' object is not subscriptable
+[2026-07-16 22:54:57] WARNING data.trading_calendar: adata calendar timed out for 2026
+[2026-07-16 22:55:02] WARNING data.trading_calendar: adata calendar timed out for 2027
+[2026-07-16 22:55:02] INFO data.trading_calendar: TradingCalendar initialized (243 trading dates, 0 overrides, 38 holiday dates, 4 makeup days, 0 emergencies)
+[2026-07-16 22:55:06] INFO data.registry: Stock registry refreshed: 5201 stocks
+[2026-07-16 22:55:06] INFO web.app: Stock registry pre-warmed
+[2026-07-16 22:55:06] INFO web.notification_dispatcher: NotificationDispatcher initialized
+[2026-07-16 22:55:06] INFO market_intelligence.phase_engine: PhaseEngine initialized with 8 phase configs
+[2026-07-16 22:55:06] INFO data.global_market: GlobalMarketFetcher initialized (TTL=300s)
+[2026-07-16 22:55:06] INFO web.app: Backend ready
+INFO:     Application startup complete.
+ERROR:    [Errno 10048] error while attempting to bind on address ('127.0.0.1', 8000): [winerror 10048] 通常每个套接字地址(协议/网络地址/端口)只允许使用一次。
+INFO:     Waiting for application shutdown.
+[2026-07-16 22:55:06] INFO web.app: Shutting down...
+INFO:     Application shutdown complete.

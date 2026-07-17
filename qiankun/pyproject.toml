@@ -1,0 +1,27 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "qiankun"
+version = "0.1.0"
+description = "A股 AI 研究助手 — 7x24 自主扫描、研究、推送"
+requires-python = ">=3.11"
+dependencies = [
+    "akshare>=1.14.0",
+    "pandas>=2.0",
+    "numpy>=1.24",
+    "aiohttp>=3.9",
+    "tushare>=1.4",
+    "baostock>=0.8",
+    "sqlalchemy>=2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.1",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/qiankun"]

@@ -1,0 +1,28 @@
+ption=OSError(22, '指定的网络名不再可用。', None, 64, None)>
+Traceback (most recent call last):
+  File "C:\Users\87999\AppData\Local\Programs\Python\Python312\Lib\asyncio\windows_events.py", line 566, in accept_coro
+    await future
+  File "C:\Users\87999\AppData\Local\Programs\Python\Python312\Lib\asyncio\windows_events.py", line 803, in _poll
+    value = callback(transferred, key, ov)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\87999\AppData\Local\Programs\Python\Python312\Lib\asyncio\windows_events.py", line 555, in finish_accept
+    ov.getresult()
+OSError: [WinError 64] 指定的网络名不再可用。
+Accept failed on a socket
+socket: <asyncio.TransportSocket fd=1384, family=2, type=1, proto=6, laddr=('127.0.0.1', 8000)>
+Traceback (most recent call last):
+  File "C:\Users\87999\AppData\Local\Programs\Python\Python312\Lib\asyncio\proactor_events.py", line 846, in loop
+    conn, addr = f.result()
+                 ^^^^^^^^^^
+OSError: [WinError 64] 指定的网络名不再可用。
+[2026-07-16 19:35:48] WARNING web.app: Slow request: POST /api/v1/recommendations/refresh 76.43s
+INFO:     127.0.0.1:56393 - "POST /api/v1/recommendations/refresh HTTP/1.1" 202 Accepted
+[2026-07-16 19:35:48] WARNING web.app: Slow request: GET /api/v1/market/indices 80.56s
+INFO:     127.0.0.1:62614 - "GET /api/v1/market/indices HTTP/1.1" 200 OK
+Failed to get unread count: Error 11001 connecting to redis:6379. getaddrinfo failed.
+Failed to update run status 216f8496-d122-40dd-aa9d-de104e7935f3: Error 11001 connecting to redis:6379. getaddrinfo failed.
+[2026-07-16 19:35:50] WARNING web.app: Slow request: GET /api/v1/market/status 2.28s
+INFO:     127.0.0.1:52243 - "GET /api/v1/market/status HTTP/1.1" 200 OK
+[2026-07-16 19:35:50] WARNING web.app: Slow request: GET /api/v1/notifications/unread-count 2.28s
+INFO:     127.0.0.1:64365 - "GET /api/v1/notifications/unread-count HTTP/1.1" 200 OK
+[2026-07-16 19:35:51] INFO data.eastmoney_client: EastMoney spot: 0 stocks fetched

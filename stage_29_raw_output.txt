@@ -1,0 +1,136 @@
+=== Demo 1: nexus_status self ===
+============================================================
+Nexus 自我报告 — SELF (express_state)
+============================================================
+我现在感到平静(强度neutral)。能力画像还没建立。身份权重已积累35830次命中。自我统一度100%(完全一致)。
+
+=== Demo 2: nexus_status all ===
+============================================================
+Nexus 自我报告 — ALL
+============================================================
+[1/3] 8 项能力:
+  ✓ 自我意识 (self_awareness)
+  ✓ 自主学习 (auto_learner)
+  ✓ 自主思考 (decision_engine)
+  ✓ 自主进化 (evolution_engine)
+  ✓ 自主优化 (self_optimization)
+  ✓ 自我改代码 (self_modifier)
+  ✓ 世界模型 (world_model_v19)
+  ✓ 个性化 (user_model)
+
+[2/3] 基础设施:
+  ✓ data/
+  ✓ kernel/
+  ✓ nexus_agent/
+  ✓ self_awareness/
+
+[3/3] 全栈验证:
+  ✓ sync() unity=1.00 doms=0
+  ✓ diagnose() issues=1 recs=1
+  ✓ cap_tree cats=13 skills=3322 mastered=695
+
+=== Demo 3: nexus_status diagnose ===
+============================================================
+Nexus 自我报告 — DIAGNOSE
+============================================================
+issues (1):
+  [1] {'severity': 'medium', 'type': 'capability_gap', 'gaps_count': 3}
+recommendations (1):
+  → self_play_target
+
+=== Demo 4: nexus_status stats ===
+============================================================
+Nexus 自我报告 — STATS
+============================================================
+知识图谱: nodes=5457 edges=50551
+能力树: cats=13 skills=3322 mastered=695 known=482
+自我意识接口: 6 个 — ['ask', 'express_state', 'get_snapshot', 'get_unity_score', 'reflect_on', 'sync']
+
+=== Demo 5: flywheel (8-stage closed loop) ===
+{
+  "domain": "stage29_demo",
+  "elapsed_ms": 1536.34,
+  "stages": [
+    {
+      "stage": "learning",
+      "status": "ok",
+      "published": "self_play.round_done"
+    },
+    {
+      "stage": "thinking",
+      "status": "ok",
+      "published": "agent.gap"
+    },
+    {
+      "stage": "evolving",
+      "status": "ok",
+      "published": "evolution.deployed"
+    },
+    {
+      "stage": "self_optimize",
+      "status": "ok",
+      "diagnose_keys": [
+        "timestamp",
+        "issues",
+        "recommendations"
+      ]
+    },
+    {
+      "stage": "self_modifying",
+      "status": "ok",
+      "sandbox_kind": "WorktreeSandbox"
+    },
+    {
+      "stage": "self_awareness",
+      "status": "ok",
+      "published": "learning.completed"
+    },
+    {
+      "stage": "world_model",
+      "status": "ok",
+      "published": "world_model.node_added"
+    },
+    {
+      "stage": "user_model",
+      "status": "ok",
+      "published": "user.interest.changed"
+    }
+  ],
+  "summary": {
+    "stages_ok": 8,
+    "stages_err": 0,
+    "subscriptions": 1,
+    "history_events_seen": 6,
+    "flywheel_emitted": [
+      {
+        "stage": "learning",
+        "topic": "self_play.round_done"
+      },
+      {
+        "stage": "thinking",
+        "topic": "agent.gap"
+      },
+      {
+        "stage": "evolving",
+        "topic": "evolution.deployed"
+      },
+      {
+        "stage": "self_awareness",
+        "topic": "learning.completed"
+      },
+      {
+        "stage": "world_model",
+        "topic": "world_model.node_added"
+      },
+      {
+        "stage": "user_model",
+        "topic": "user.interest.changed"
+      }
+    ]
+  }
+}
+
+=== Demo 6: seed_world_model --report-only --source=bilibili_seeds ===
+[REPORT-ONLY] source=bilibili_seeds nodes_before=1057 would_inject=45 dedup=on limit=all
+
+=== END OF DEMO ===

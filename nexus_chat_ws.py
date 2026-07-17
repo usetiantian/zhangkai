@@ -1,0 +1,90 @@
+# -*- coding: utf-8 -*-
+"""Nexus 对话测试工具 — 通过 WebSocket 与 Nexus 交互"""
+import asyncio
+import json
+import sys
+import aiohttp
+
+# Fix Windows console encoding
+if sys.platform == 'win32':
+    import io
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
+
+WS_URL = "ws://127.0.0.1:19666/ws"
+TIMEOUT = 120  # seconds
+
+
+async def chat(message: str) -> str:
+    """Send a message to Nexus via WebSocket and return the response."""
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.ws_connect(WS_URL, timeout=TIMEOUT) as ws:
+                # Send chat message
+                await ws.send_json({"type": "chat", "content": message})
+                print(f"[→ Nexus] {message}", flush=True)
+
+                # Wait for response(s)
+                full_response = []
+                while True:
+                    try:
+                        msg = await asyncio.wait_for(ws.receive(), timeout=TIMEOUT)
+                    except asyncio.TimeoutError:
+                        break
+
+                    if msg.type == aiohttp.WSMsgType.TEXT:
+                        data = json.loads(msg.data)
+                        if data.get("type") == "chat_response":
+                            text = data.get("content", "")
+                            if isinstance(text, dict):
+                                text = text.get("content") or text.get("text") or json.dumps(text, ensure_ascii=False)
+                            full_response.append(str(text))
+                            print(f"[← Nexus] {text}", flush=True)
+                            return "\n".join(full_response)
+                        elif data.get("type") == "token":
+                            token = data.get("token", "")
+                            print(token, end="", flush=True)
+                            full_response.append(token)
+                        else:
+                            print(f"\n[other] {msg.data}", flush=True)
+                    elif msg.type == aiohttp.WSMsgType.CLOSED:
+                        break
+                    elif msg.type == aiohttp.WSMsgType.ERROR:
+                        break
+
+                return "\n".join(full_response)
+    except aiohttp.ClientConnectorError:
+        print("[ERROR] Cannot connect to Nexus. Is it running on port 19666?", flush=True)
+        return ""
+    except Exception as e:
+        print(f"[ERROR] {e}", flush=True)
+        return ""
+
+
+async def main():
+    if len(sys.argv) < 2:
+        print("Usage: python nexus_chat.py <message>")
+        print("       python nexus_chat.py -i  (interactive mode)")
+        return
+
+    if sys.argv[1] == "-i":
+        print("=== Nexus Chat (interactive mode) ===")
+        print("Type 'quit' to exit.\n")
+        while True:
+            try:
+                msg = input("You: ").strip()
+                if not msg:
+                    continue
+                if msg.lower() == "quit":
+                    break
+                await chat(msg)
+                print()
+            except (KeyboardInterrupt, EOFError):
+                break
+    else:
+        message = " ".join(sys.argv[1:])
+        await chat(message)
+
+
+if __name__ == "__main__":
+    asyncio.run(main())

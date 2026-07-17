@@ -1,0 +1,72 @@
+{
+  "wizard": {
+    "securityAcknowledgedAt": "2026-07-16T10:37:56.075Z",
+    "lastRunAt": "2026-07-16T15:36:08.294Z",
+    "lastRunVersion": "2026.7.2-beta.1",
+    "lastRunCommand": "configure",
+    "lastRunMode": "local"
+  },
+  "meta": {
+    "lastTouchedVersion": "2026.7.2-beta.1",
+    "lastTouchedAt": "2026-07-16T15:39:11.102Z"
+  },
+  "agents": {
+    "defaults": {
+      "models": {
+        "minimax/MiniMax-M3": {
+          "alias": "Minimax"
+        }
+      },
+      "model": {
+        "primary": "minimax/MiniMax-M3"
+      }
+    }
+  },
+  "plugins": {
+    "entries": {
+      "minimax": {
+        "enabled": true
+      }
+    }
+  },
+  "models": {
+    "mode": "merge",
+    "providers": {
+      "minimax": {
+        "baseUrl": "https://api.minimaxi.com/anthropic",
+        "models": [
+          {
+            "id": "MiniMax-M3",
+            "name": "MiniMax M3",
+            "reasoning": true,
+            "input": [
+              "text",
+              "image"
+            ],
+            "cost": {
+              "input": 0.6,
+              "output": 2.4,
+              "cacheRead": 0.12,
+              "cacheWrite": 0
+            },
+            "contextWindow": 1000000,
+            "maxTokens": 131072
+          }
+        ],
+        "api": "anthropic-messages",
+        "authHeader": true
+      }
+    }
+  },
+  "auth": {
+    "profiles": {
+      "minimax:cn": {
+        "provider": "minimax",
+        "mode": "sk-cp-3ib8TDr8_vVRJWDfdCJBBmB9eQvLGzw-A5GAte7Xbo5zu2qfaNdb3NzyUIPZ3cphl-QOkmyKl9E9M033HxaWG4IOOQ68vWzClsO9GcpjXO2jsj0cE2B9hiM"
+      }
+    }
+  },
+  "gateway": {
+    "mode": "local"
+  }
+}

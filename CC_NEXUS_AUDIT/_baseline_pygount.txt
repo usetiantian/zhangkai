@@ -1,0 +1,1 @@
+WARNING:pygount:cannot read .\logs\nexus_startup.log.1 using encoding cp1252: 'charmap' codec can't decode byte 0x8f in position 356: character maps to <undefined>

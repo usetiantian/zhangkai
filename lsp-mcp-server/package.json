@@ -1,0 +1,16 @@
+{
+  "name": "lsp-mcp-server",
+  "version": "1.0.0",
+  "description": "LSP MCP Server — bring Grok-Build-level code intelligence to Claude Code",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "latest",
+    "vscode-languageserver": "latest",
+    "vscode-languageserver-protocol": "latest",
+    "vscode-languageserver-types": "latest"
+  }
+}

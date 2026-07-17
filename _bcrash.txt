@@ -1,0 +1,21 @@
+ry engine disabled
+[2026-07-16 21:22:38] INFO prediction.qlib_adapter: Qlib not available ！ actuary engine disabled
+[2026-07-16 21:22:39] INFO prediction.qlib_adapter: Qlib not available ！ actuary engine disabled
+[2026-07-16 21:22:39] INFO prediction.qlib_adapter: Qlib not available ！ actuary engine disabled
+[2026-07-16 21:22:39] INFO prediction.qlib_adapter: Qlib not available ！ actuary engine disabled
+[2026-07-16 21:22:39] INFO prediction.qlib_adapter: Qlib not available ！ actuary engine disabled
+[2026-07-16 21:22:39] INFO prediction.qlib_adapter: Qlib not available ！ actuary engine disabled
+[2026-07-16 21:22:39] INFO prediction.qlib_adapter: Qlib not available ！ actuary engine disabled
+[2026-07-16 21:22:40] INFO prediction.qlib_adapter: Qlib not available ！ actuary engine disabled
+[2026-07-16 21:22:40] INFO prediction.qlib_adapter: Qlib not available ！ actuary engine disabled
+[2026-07-16 21:22:41] INFO prediction.qlib_adapter: Qlib not available ！ actuary engine disabled
+[2026-07-16 21:22:41] INFO prediction.qlib_adapter: Qlib not available ！ actuary engine disabled
+[2026-07-16 21:22:41] INFO prediction.qlib_adapter: Qlib not available ！ actuary engine disabled
+[2026-07-16 21:22:41] INFO prediction.qlib_adapter: Qlib not available ！ actuary engine disabled
+[2026-07-16 21:22:41] INFO prediction.qlib_adapter: Qlib not available ！ actuary engine disabled
+[2026-07-16 21:22:41] INFO prediction.qlib_adapter: Qlib not available ！ actuary engine disabled
+[2026-07-16 21:22:41] INFO prediction.qlib_adapter: Qlib not available ！ actuary engine disabled
+[2026-07-16 21:22:41] INFO prediction.qlib_adapter: Qlib not available ！ actuary engine disabled
+[2026-07-16 21:22:42] INFO prediction.qlib_adapter: Qlib not available ！ actuary engine disabled
+[2026-07-16 21:22:42] INFO prediction.qlib_adapter: Qlib not available ！ actuary engine disabled
+[2026-07-16 21:22:42] INFO prediction.qlib_adapter: Qlib not available ！ actuary engine disabled
