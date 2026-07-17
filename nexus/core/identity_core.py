@@ -90,6 +90,13 @@ class IdentityCore:
 
     def _classify_intent(self, text: str, context: dict) -> dict:
         """意图分类——规则版（后续升级 LLM 版）。"""
+
+        # 尝试深度推理(如果模型可用)
+        deep = self._deep_think(text, context)
+        if deep:
+            return deep
+
+        # 降级: 规则匹配
         if any(w in text for w in ["分析", "看看", "怎么看", "股票", "行情"]):
             return {"action": "analyze", "target": "stock_skill", "priority": 5}
         elif any(w in text for w in ["学习", "教我", "解释", "什么是"]):
@@ -100,6 +107,42 @@ class IdentityCore:
             return {"action": "search", "target": "chromadb", "priority": 3}
         else:
             return {"action": "chat", "target": "qwen", "priority": 2}
+
+    def _deep_think(self, text: str, context: dict) -> dict:
+        """
+        深度推理——用Qwen真正理解用户意图。
+        借鉴ClaudeCode的"模型即理解引擎"设计哲学。
+        输出JSON: {"action":"analyze|learn|skill|search|chat","target":"...","priority":1-5}
+        """
+        if not hasattr(self, '_generate') or not self._generate:
+            return None
+
+        try:
+            prompt = (
+                "你是一个意图分类器。分析用户输入，输出JSON格式的决策。\n"
+                "可能的action: analyze(分析事物), learn(学习知识), skill(使用技能), "
+                "search(搜索信息), chat(闲聊)\n"
+                "priority: 1(低)-5(高)\n"
+                "只输出JSON，不要解释。\n\n"
+                f"用户: {text}\n"
+                "输出: "
+            )
+            raw = self._generate(prompt, 80)
+            import json
+            # 尝试从输出中提取JSON
+            if "{" in raw and "}" in raw:
+                start = raw.index("{")
+                end = raw.rindex("}") + 1
+                data = json.loads(raw[start:end])
+                data.setdefault("priority", 3)
+                return data
+        except Exception:
+            pass
+        return None
+
+    def attach_model(self, generate_fn):
+        """注入模型推理函数——让身份核心真正思考。"""
+        self._generate = generate_fn
 
     def shutdown(self):
         self.state = "shutdown"
