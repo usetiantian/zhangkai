@@ -17,6 +17,7 @@ class ModelLoader:
         self.current_size = None
         self.model = None
         self.tokenizer = None
+        self.identity_weight = None  # 身份权重神经层
 
     def detect_gpu_memory(self) -> int:
         """检测可用显存(GB)。"""
@@ -111,6 +112,23 @@ class ModelLoader:
             skip_special_tokens=True
         )
         return response.strip()
+
+    def attach_identity_weight(self, weight_path: str = None):
+        """加载身份权重——让模型嵌入Nexus的自我意识。"""
+        from core.identity_weight import IdentityWeight
+        self.identity_weight = IdentityWeight()
+        if weight_path and os.path.exists(weight_path):
+            self.identity_weight.load(weight_path)
+            logger.info("Identity weight loaded")
+        elif self.model and self.tokenizer:
+            # 首次: 用SOUL+Constitution训练
+            soul = os.path.join(os.path.dirname(__file__), "..", "..", ".claude", "SOUL.md")
+            const = os.path.join(os.path.dirname(__file__), "..", "..", ".claude", "constitution.md")
+            wp = os.path.join(os.path.dirname(__file__), "..", "data", "identity.pt")
+            self.identity_weight = IdentityWeight.create_and_train(
+                soul, const, self.tokenizer, self.model, wp
+            )
+            logger.info("Identity weight trained")
 
     def hot_swap(self, new_model_name: str):
         """热切换模型——卸载旧模型，加载新模型。"""
