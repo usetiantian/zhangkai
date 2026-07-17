@@ -62,9 +62,9 @@ class ModelLoader:
 
         self.model = Qwen2VLForConditionalGeneration.from_pretrained(
             model_path,
-            torch_dtype=torch.float16,
+            dtype=torch.float16,
             device_map="auto",
-            load_in_4bit=True,  # 借鉴LlamaFactory的量化策略
+            low_cpu_mem_usage=True,
         )
         self.tokenizer = AutoTokenizer.from_pretrained(model_path)
         self.processor = AutoProcessor.from_pretrained(model_path)
