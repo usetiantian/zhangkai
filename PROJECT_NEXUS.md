@@ -841,3 +841,91 @@ research/
 待下载（网络问题）：
 - graph-rag-agent — GraphRAG+LightRAG+Neo4j融合
 - open-webui — 自托管AI聊天界面
+
+---
+
+## Claude Code 源码分析（2026-07-17）
+
+### 源码位置
+`D:\node\小AI\.openclaw\workspace\ClaudeCode_Leaked\`
+
+### 四大系统映射
+
+Claude Code 的四大系统和 Nexus 设计高度对齐：
+
+| Claude Code | Nexus 对应 | 可直接复用 |
+|------|------|:--:|
+| Agent系统（gen/vert/plan/expl 四代理） | 身份权重核心的多代理调度 | ✅ coordinator + workerAgent 模式 |
+| 记忆系统（Session/Auto/Agent三层） | 三层记忆（短期/中期/长期） | ✅ KAIROS append-only日志机制 |
+| 任务系统（LocalAgentTask + TodoV2 + Cron） | 任务调度 + 定时扫描 | ✅ 状态机 + 文件锁原子操作 |
+| 安全系统（五层权限 + Rust沙箱） | 技能沙箱 | ✅ 权限枚举 + AST检测23种注入 |
+
+### 可直接复用的设计模式
+
+1. **Coordinator 四阶段协作** (coordinator/coordinatorMode.ts)
+   - Research(并行)→Synthesis(综合分析)→Implementation(串行)→Verification(验证)
+   - 用于 Nexus 身份核心调度四件套
+
+2. **MCP 工具协议** (tools/MCPTool.ts + bridge/)
+   - 标准化的工具注册/发现/调用协议
+   - 用于 Nexus 技能商店的基础协议
+
+3. **KAIROS Append-only 日志** (记忆系统)
+   - 不重写MEMORY.md，新记忆追加到当日日志
+   - 夜间蒸馏更新主索引
+   - 避免读写冲突和索引膨胀
+
+4. **Verification Agent 对抗性探测**
+   - 不是"确认能用"，是"尝试破坏"
+   - 并发、边界值、幂等性、孤儿操作
+   - 用于 Nexus 技能上架前的安全审查
+
+5. **Cron Jitter控制**
+   - 随机偏移避免多实例同时启动
+   - 用于 Nexus 的凌晨3点自主学习调度
+
+### 源代码关键文件
+
+| 文件 | 对应Nexus | 价值 |
+|------|------|------|
+| coordinator/coordinatorMode.ts | 身份核心调度 | 四阶段协作流程 |
+| coordinator/workerAgent.ts | 四件套调度 | worker代理模式 |
+| tools/MCPTool.ts | 技能商店 | MCP协议实现 |
+| Task.ts | 任务系统 | 状态机+AbortController |
+| bridge/ | 通信层 | 跨进程消息桥 |
+
+### 可直接移植的5个核心设计模式
+
+#### 1. 工具注册/发现/调用协议 （对应 Nexus 技能商店）
+- 源文件：`tools/MCPTool/MCPTool.ts`, `services/mcp/`
+- 模式：每个工具 = 独立模块，含 inputSchema(Zod定义) + permissions(权限枚举) + execute(执行函数)
+- Nexus 复用：技能商店的接口规范，第三方技能包遵循同一协议注册
+
+#### 2. 命令注入防护 (对应 Nexus 技能沙箱)
+- 源文件：`tools/BashTool/bashSecurity.ts`
+- 模式：AST解析器检测23种注入模式（$()、反引号、Zsh扩展、PowerShell语法等）
+- Nexus 复用：技能商店上架前自动扫描恶意模式，复制这套检测规则
+
+#### 3. Coordinator 四阶段协作 (对应 Nexus 身份核心调度)
+- 源文件：`coordinator/coordinatorMode.ts`, `coordinator/workerAgent.ts`
+- 模式：Research(并行)→Synthesis(综合分析)→Implementation(串行)→Verification(验证)
+- Nexus 复用：身份核心调度四件套的流程模板
+
+#### 4. KAIROS Append-only 日志 (对应 Nexus 三层记忆)
+- 模式：不重写MEMORY.md，新记忆追加到当日日志。夜间蒸馏更新主索引。
+- 位置：`memory/logs/YYYY/MM/YYYY-MM-DD.md`
+- Nexus 复用：三层记忆的存储策略——对话日志追加，夜间汇总
+
+#### 5. Verification Agent 破坏性测试 (对应 Nexus 质量控制)
+- 源文件：Agent类型`verification`
+- 模式：不是确认能用，是尝试破坏——并发/边界值/幂等性/孤儿操作
+- Nexus 复用：技能上架前的验证流程 + 模型微调后的回归测试
+
+### Claude Code 源码给 Nexus 的最大启示
+
+**Tool = 统一抽象**。Claude Code 把所有能力抽象成 Tool：
+- 内置工具(Bash/Read/Write/Edit)和外部工具(MCP)用同一接口
+- 每个 Tool 声明权限需求
+- 权限系统根据 Tool 声明决定是否放行
+
+Nexus 的技能商店应遵循同一模型——飞书推送是 Tool，CAD画图是 Tool，股票分析是 Tool。统一注册，统一权限检查，统一调用。
