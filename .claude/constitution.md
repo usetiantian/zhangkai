@@ -28,6 +28,18 @@ C:\Users\87999\claude-workspace\
 C:\Users\87999\.nexus\
 C:\Users\87999\quant-research\
 C:\Users\87999\.openclaw\
+```
+
+### A0.2 — KNOWLEDGE BASE FILE PRESERVATION (Priority 0)
+
+**知识库红线：永远不自主删除文件。**
+
+如果知识库认为某个文件可以删除：
+1. 移到 `data_dir/待删除/` 目录
+2. 在同目录创建 `{原文件名}.删除原因.md`，写清为什么建议删除
+3. 用户自行决定是否最终删除
+
+这个规则硬编码在所有整理/去重逻辑中，不可绕过。
 E:\.openclaw\
 D:\node\                      (张凯的 Obsidian 第二大脑)
 C:\Users\87999\AppData\Local\hermes\

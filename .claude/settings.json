@@ -1,3 +1,4 @@
 {
-    "instructions": "./capabilities/instructions.md"
+  "instructions": "./capabilities/instructions.md",
+  "model": "deepseek-v4-pro[1m]"
 }
