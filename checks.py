@@ -8,6 +8,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+from audit.quality import scan
+
 REQUIRED_DIRECTORIES = frozenset({
     "identity", "values", "goals", "contracts", "perception", "provenance",
     "world_model", "attention", "cognition", "capabilities", "experiments",
@@ -47,6 +49,10 @@ def check_forbidden_imports(root: Path) -> list[str]:
 
 def run(root: Path) -> int:
     errors = check_topology(root) + check_forbidden_imports(root)
+    errors.extend(
+        f"{issue.path}:{issue.line}: {issue.kind} ({issue.detail})"
+        for issue in scan(root)
+    )
     if not compileall.compile_dir(root, quiet=1):
         errors.append("compile failed")
     if errors:

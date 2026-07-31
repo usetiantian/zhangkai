@@ -272,7 +272,11 @@ def record_from_dict(data: dict[str, Any]) -> Record:
     for name in ("created_at", "observed_at", "valid_at"):
         if name in values and isinstance(values[name], str):
             values[name] = datetime.fromisoformat(values[name])
-    for name in ("evidence_ids", "claim_ids", "success_criteria", "event_ids", "blocking_goal_ids", "record_ids"):
+    tuple_fields = (
+        "evidence_ids", "claim_ids", "success_criteria", "event_ids",
+        "blocking_goal_ids", "record_ids",
+    )
+    for name in tuple_fields:
         if name in values and isinstance(values[name], list):
             values[name] = tuple(values[name])
     if cls is Plan and isinstance(values.get("steps"), list):

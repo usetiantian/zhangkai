@@ -1,24 +1,12 @@
 # Python quality baseline
 
-Total issues: **51**
+Total issues: **0**
 
-| File | Kind | Count |
-|---|---|---:|
-| attention\engine.py | long_line | 3 |
-| attention\engine.py | multiple_statements | 7 |
-| audit\quality.py | long_line | 1 |
-| audit\quality.py | multiple_statements | 3 |
-| cognition\scheduler.py | long_line | 2 |
-| cognition\scheduler.py | multiple_statements | 1 |
-| contracts\__init__.py | long_line | 1 |
-| contracts\models.py | long_line | 1 |
-| execution\runtime.py | long_line | 2 |
-| execution\runtime.py | multiple_statements | 5 |
-| goals\engine.py | long_line | 2 |
-| identity\store.py | long_line | 5 |
-| identity\store.py | multiple_statements | 1 |
-| perception\github\git_adapter.py | long_line | 2 |
-| perception\github\git_adapter.py | multiple_statements | 7 |
-| perception\system_metrics\adapter.py | multiple_statements | 3 |
-| perception\web\monitor.py | multiple_statements | 3 |
-| values\model.py | long_line | 2 |
+Checks enforced by `python check.py`:
+
+- no semicolon-compressed production statements;
+- no production lines longer than 100 characters;
+- tests, Git metadata, and bytecode caches are excluded from readability scanning;
+- compilation, dependency, topology, quality, and full unit tests must all pass.
+
+Initial baseline: 131 issues. Verified final baseline: 0 issues.
