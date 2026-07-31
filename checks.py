@@ -26,6 +26,7 @@ def check_topology(root: Path) -> list[str]:
 
 def check_forbidden_imports(root: Path) -> list[str]:
     local_modules = {path.name for path in root.iterdir() if path.is_dir()}
+    local_modules.update(path.stem for path in root.glob("*.py"))
     allowed = set(sys.stdlib_module_names) | local_modules | {"checks"}
     errors: list[str] = []
     for path in root.rglob("*.py"):

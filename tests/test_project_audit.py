@@ -11,7 +11,7 @@ class ProjectAuditTests(unittest.TestCase):
    self.assertEqual(report["alpha"]["implementation_files"],1)
    self.assertEqual(report["alpha"]["test_references"],1)
    self.assertEqual(report["beta"]["implementation_files"],0)
- def test_current_project_audit_finds_no_unified_entry_yet(self):
+ def test_current_project_audit_finds_unified_entry(self):
   report=inspect_project(Path.cwd(),("identity",))
-  self.assertFalse(report["_project"]["unified_entry"])
+  self.assertTrue(report["_project"]["unified_entry"])
 if __name__=="__main__":unittest.main()

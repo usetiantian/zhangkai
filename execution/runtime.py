@@ -59,6 +59,13 @@ class TaskStore:
             )
             return cursor.rowcount == 1
 
+    def counts(self) -> dict[str, int]:
+        with closing(sqlite3.connect(self.database)) as connection:
+            rows = connection.execute(
+                "SELECT status, COUNT(*) FROM tasks GROUP BY status"
+            ).fetchall()
+        return {status: count for status, count in rows}
+
 
 @dataclass(frozen=True)
 class FileReceipt:

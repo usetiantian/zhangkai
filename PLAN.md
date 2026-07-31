@@ -178,8 +178,8 @@
   完成：2026-07-31。实现 `config/loader.py`：身份、价值及来源、快慢周期、启用能力、状态/行动/审计路径和运行参数全部必填；未知字段、缺失字段、非正周期、非法权重及任意深度 token/secret/password/api_key 字段均拒绝。相对路径按配置文件目录解析。专项 5/5、全量 60/60 通过，质量问题保持 0。
 - ✅ **10.4 追加式审计链**  
   完成：2026-07-31。实现 `audit/chain.py`：事件 ID、带时区时间、因果 ID、类型、结果和数据进入 JSONL；每条事件绑定前一哈希并 `fsync`。跨重启续链、重复 ID 拒绝、历史篡改检测通过；任意深度 token/secret/password/api_key/Authorization 字段拒绝。专项 5/5、全量 65/65 通过，质量问题保持 0。
-- ⬜ **10.5 统一启动与状态入口**  
-  验收：`python shui.py check|once|run|status` 可用；启动恢复身份、世界模型、未完成任务和稳定能力。
+- ✅ **10.5 统一启动与状态入口**  
+  完成：2026-07-31。实现根目录 `shui.py`：`check|once|run|status` 均可调用；配置错误返回结构化错误和非零退出码。启动恢复或初始化持续身份、世界模型、任务库、审计链及演化能力注册表；状态输出身份、审计完整性/事件数、世界记录数、任务状态、配置能力和演化能力。`run --cycles N` 使用调用者显式次数，无次数则持续运行。专项 4/4、全量 69/69 通过，质量问题 0。
 - ⬜ **10.6 网络感知接入自主循环**  
   验收：真实 HTTP 变化进入 Evidence、WorldModel、Goal、Plan、Prediction、ActionReceipt 和 Verification 连续链；304 不重复行动。
 - ⬜ **10.7 学习接入自主循环**  
@@ -195,4 +195,4 @@ Phase 10 出口：水可以由一个入口启动，在真实来源上持续运�
 
 ## 当前下一步
 
-**10.5：统一启动与状态入口。** 先以 CLI 黑盒测试定义 `check|once|run|status` 的退出码和输出，再从严格配置构建身份、状态目录、审计链和运行组件。
+**10.6：网络感知接入自主循环。** 先用本机 HTTP 服务证明 200 变化形成完整 Evidence→WorldModel→Goal→Plan→Prediction→ActionReceipt→Verification→Audit 链，并证明 304 不重复行动。

@@ -142,6 +142,9 @@ class CapabilityEvolution:
     def is_registered(self, capability_id: str) -> bool:
         return capability_id in self._load()
 
+    def registered(self) -> tuple[str, ...]:
+        return tuple(sorted(self._load()))
+
     def execute(self, capability_id: str, value: str) -> str:
         entry = self._load().get(capability_id)
         if not entry:
