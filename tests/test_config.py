@@ -6,6 +6,7 @@ VALID={
  "identity":{"name":"shui","version":"1","mission":["learn","verify"]},
  "values":[{"name":"truth","weight":1.0,"source":"owner-decision","calibrated_at":"2026-07-31T00:00:00+00:00"}],
  "sources":[{"id":"python-tags","url":"https://api.github.com/repos/python/cpython/tags?per_page=1"}],
+ "goals":[{"id":"learn","description":"Learn change","dependencies":[],"impacts":{"truth":1.0}}],
  "schedules":{"fast_seconds":60,"slow_seconds":3600},
  "capabilities":{"enabled":["observe.http","write.verified-report"]},
  "paths":{"state":"../state","actions":"../actions","audit":"../audit/events.jsonl"},

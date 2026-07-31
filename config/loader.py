@@ -22,6 +22,14 @@ class SourceConfig:
     url: str
 
 @dataclass(frozen=True)
+class GoalConfig:
+    id: str
+    description: str
+    dependencies: tuple[str, ...]
+    impacts: dict[str, float]
+
+
+@dataclass(frozen=True)
 class ScheduleConfig:
     fast_seconds: int
     slow_seconds: int
@@ -47,6 +55,7 @@ class ShuiConfig:
     identity: IdentityConfig
     values: tuple[ValueWeight, ...]
     sources: tuple[SourceConfig, ...]
+    goals: tuple[GoalConfig, ...]
     schedules: ScheduleConfig
     capabilities: CapabilityConfig
     paths: PathConfig
@@ -93,7 +102,7 @@ def load_config(path: Path) -> ShuiConfig:
         raise ConfigError(str(error)) from error
     _reject_secrets(raw)
     sections = {
-        "identity", "values", "sources", "schedules",
+        "identity", "values", "sources", "goals", "schedules",
         "capabilities", "paths", "runtime",
     }
     root = _exact(raw, sections, "root")
@@ -110,12 +119,13 @@ def load_config(path: Path) -> ShuiConfig:
     )
     values = _load_values(root["values"])
     sources = _load_sources(root["sources"])
+    goals = _load_goals(root["goals"])
     schedules = _load_schedules(root["schedules"])
     capabilities = _load_capabilities(root["capabilities"])
     paths = _load_paths(root["paths"], path.parent)
     runtime = _load_runtime(root["runtime"])
     return ShuiConfig(
-        identity, values, sources, schedules, capabilities, paths, runtime
+        identity, values, sources, goals, schedules, capabilities, paths, runtime
     )
 
 def _load_values(raw: Any) -> tuple[ValueWeight, ...]:
@@ -152,6 +162,38 @@ def _load_sources(raw: Any) -> tuple[SourceConfig, ...]:
             )
         )
     return tuple(result)
+
+def _load_goals(raw: Any) -> tuple[GoalConfig, ...]:
+    if not isinstance(raw, list) or not raw:
+        raise ConfigError("goals must be a non-empty list")
+    result = []
+    for index, item in enumerate(raw):
+        goal = _exact(
+            item,
+            {"id", "description", "dependencies", "impacts"},
+            f"goals[{index}]",
+        )
+        dependencies = goal["dependencies"]
+        impacts = goal["impacts"]
+        if not isinstance(dependencies, list):
+            raise ConfigError("goal.dependencies must be a list")
+        if not isinstance(impacts, dict) or not impacts:
+            raise ConfigError("goal.impacts must be a non-empty object")
+        if any(
+            not isinstance(value, (int, float)) or not -1 <= value <= 1
+            for value in impacts.values()
+        ):
+            raise ConfigError("goal impacts must be normalized numbers")
+        result.append(
+            GoalConfig(
+                _text(goal["id"], "goal.id"),
+                _text(goal["description"], "goal.description"),
+                tuple(_text(value, "goal.dependency") for value in dependencies),
+                dict(impacts),
+            )
+        )
+    return tuple(result)
+
 
 def _load_schedules(raw: Any) -> ScheduleConfig:
     value = _exact(raw, {"fast_seconds", "slow_seconds"}, "schedules")

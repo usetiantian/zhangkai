@@ -23,6 +23,7 @@ class CycleResult:
     prediction_id: str | None = None
     receipt_id: str | None = None
     verification_id: str | None = None
+    goal_id: str | None = None
 
 class ShuiLoop:
     def __init__(
@@ -33,11 +34,17 @@ class ShuiLoop:
         clock: Callable[[], datetime],
         values: ValueSet,
         candidates: tuple[GoalCandidate, ...],
+        before_action: Callable[[Prediction, str], None] | None = None,
+        after_action: Callable[[Prediction, str], None] | None = None,
+        preferred_strategy: Callable[[], str | None] | None = None,
     ) -> None:
         self.actions = actions
         self.clock = clock
         self.values = values
         self.candidates = candidates
+        self.before_action = before_action
+        self.after_action = after_action
+        self.preferred_strategy = preferred_strategy
         self.evidence = EvidenceStore(state / "evidence")
         self.world = WorldModel(state / "world.db")
         self.adapter = FileAdapter(clock=clock)
@@ -78,6 +85,8 @@ class ShuiLoop:
             expected_outcome="verified report exists",
             verification_condition="report hash matches receipt",
         )
+        if self.before_action:
+            self.before_action(prediction, selected.goal_id)
         payload = self._payload(ingested, selected, plan, prediction)
         target = self.actions / f"{observation_id}.json"
         file_receipt = FileExecutor(self.actions).write(target, payload)
@@ -101,6 +110,8 @@ class ShuiLoop:
         )
         self.world.put(receipt)
         self.world.put(verification)
+        if self.after_action:
+            self.after_action(prediction, "success" if verified else "failure")
         return CycleResult(
             "verified" if verified else "failed",
             observation_id,
@@ -110,6 +121,7 @@ class ShuiLoop:
             prediction.id,
             receipt.id,
             verification.id,
+            selected.goal_id,
         )
 
     def _select_goal(self):
@@ -118,7 +130,13 @@ class ShuiLoop:
         goals = GoalEngine()
         for candidate in self.candidates:
             goals.add(candidate)
-        return goals.rank(self.values)[0]
+        ranked = goals.rank(self.values)
+        preferred = self.preferred_strategy() if self.preferred_strategy else None
+        if preferred:
+            for score in ranked:
+                if score.goal_id == preferred:
+                    return score
+        return ranked[0]
 
     @staticmethod
     def _payload(ingested, selected, plan: Plan, prediction: Prediction) -> bytes:

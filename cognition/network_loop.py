@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Callable
 from audit.chain import AuditChain
 from cognition.loop import CycleResult, ShuiLoop
-from contracts import Observation
+from contracts import Observation, Prediction
 from goals import GoalCandidate
 from perception import Capture
 from perception.web import HttpAdapter
@@ -25,6 +25,9 @@ class NetworkLoop:
         values: ValueSet,
         candidates: tuple[GoalCandidate, ...],
         http_timeout_seconds: int,
+        before_action: Callable[[Prediction, str], None] | None = None,
+        after_action: Callable[[Prediction, str], None] | None = None,
+        preferred_strategy: Callable[[], str | None] | None = None,
     ) -> None:
         self.clock = clock
         self.http = HttpAdapter(
@@ -38,6 +41,9 @@ class NetworkLoop:
             clock=clock,
             values=values,
             candidates=candidates,
+            before_action=before_action,
+            after_action=after_action,
+            preferred_strategy=preferred_strategy,
         )
         self.world = self.cycle.world
         self.audit = AuditChain(audit)

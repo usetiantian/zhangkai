@@ -6,6 +6,7 @@ CONFIG={
  "identity":{"name":"shui","version":"1","mission":["learn","verify"]},
  "values":[{"name":"truth","weight":1.0,"source":"owner","calibrated_at":"2026-07-31T00:00:00+00:00"}],
  "sources":[{"id":"source","url":"https://example.com"}],
+ "goals":[{"id":"learn","description":"Learn change","dependencies":[],"impacts":{"truth":1.0}}],
  "schedules":{"fast_seconds":1,"slow_seconds":2},
  "capabilities":{"enabled":["observe.http"]},
  "paths":{"state":"../state","actions":"../actions","audit":"../audit/events.jsonl"},
