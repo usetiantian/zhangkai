@@ -28,10 +28,14 @@ class HttpAdapter:
         cache: Path,
         *,
         clock: Callable[[], datetime],
+        timeout_seconds: int,
     ) -> None:
         self.cache = cache
         self.cache.mkdir(parents=True, exist_ok=True)
         self.clock = clock
+        if timeout_seconds < 1:
+            raise ValueError("timeout_seconds must be positive")
+        self.timeout_seconds = timeout_seconds
 
     def observe(self, url: str) -> HttpObservation:
         key = hashlib.sha256(url.encode()).hexdigest()
@@ -46,7 +50,7 @@ class HttpAdapter:
 
         try:
             request = Request(url, headers=headers)
-            with urlopen(request, timeout=10) as response:
+            with urlopen(request, timeout=self.timeout_seconds) as response:
                 content = response.read()
                 etag = response.headers.get("ETag")
                 changed = True

@@ -30,14 +30,14 @@ class OpenWorldTests(unittest.TestCase):
   self.assertGreater(attention_score(.9,.4,.9,.8,weights),attention_score(.8,.9,.7,.6,weights))
  def test_http_cache_and_conditional_request(self):
   with tempfile.TemporaryDirectory() as d:
-   adapter=HttpAdapter(Path(d),clock=lambda:NOW)
+   adapter=HttpAdapter(Path(d),clock=lambda:NOW,timeout_seconds=1)
    first=adapter.observe(self.url);second=adapter.observe(self.url)
    self.assertTrue(first.changed);self.assertFalse(second.changed)
    self.assertEqual(second.content,b"version-one")
    self.assertEqual(Handler.requests[-1]["If-None-Match"],'"v1"')
  def test_changed_remote_content_creates_new_observation(self):
   with tempfile.TemporaryDirectory() as d:
-   adapter=HttpAdapter(Path(d),clock=lambda:NOW);first=adapter.observe(self.url)
+   adapter=HttpAdapter(Path(d),clock=lambda:NOW,timeout_seconds=1);first=adapter.observe(self.url)
    Handler.body=b"version-two";Handler.etag='"v2"'
    second=adapter.observe(self.url)
    self.assertTrue(second.changed);self.assertNotEqual(first.content_hash,second.content_hash)
@@ -46,7 +46,7 @@ class OpenWorldTests(unittest.TestCase):
   self.assertEqual(attention_score(.8,.4,.2,.6,weights),.5)
  def test_continuous_monitor_reports_real_counts(self):
   with tempfile.TemporaryDirectory() as d:
-   report=StabilityMonitor(HttpAdapter(Path(d),clock=lambda:NOW)).run(self.url,cycles=6)
+   report=StabilityMonitor(HttpAdapter(Path(d),clock=lambda:NOW,timeout_seconds=1)).run(self.url,cycles=6)
    self.assertEqual(report.attempts,6);self.assertEqual(report.failures,0)
    self.assertEqual(report.changed,1);self.assertEqual(report.unchanged,5)
  def test_fast_and_slow_schedules_are_caller_defined(self):

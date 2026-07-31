@@ -180,8 +180,8 @@
   完成：2026-07-31。实现 `audit/chain.py`：事件 ID、带时区时间、因果 ID、类型、结果和数据进入 JSONL；每条事件绑定前一哈希并 `fsync`。跨重启续链、重复 ID 拒绝、历史篡改检测通过；任意深度 token/secret/password/api_key/Authorization 字段拒绝。专项 5/5、全量 65/65 通过，质量问题保持 0。
 - ✅ **10.5 统一启动与状态入口**  
   完成：2026-07-31。实现根目录 `shui.py`：`check|once|run|status` 均可调用；配置错误返回结构化错误和非零退出码。启动恢复或初始化持续身份、世界模型、任务库、审计链及演化能力注册表；状态输出身份、审计完整性/事件数、世界记录数、任务状态、配置能力和演化能力。`run --cycles N` 使用调用者显式次数，无次数则持续运行。专项 4/4、全量 69/69 通过，质量问题 0。
-- ⬜ **10.6 网络感知接入自主循环**  
-  验收：真实 HTTP 变化进入 Evidence、WorldModel、Goal、Plan、Prediction、ActionReceipt 和 Verification 连续链；304 不重复行动。
+- ✅ **10.6 网络感知接入自主循环**  
+  完成：2026-07-31。实现 `cognition/network_loop.py`，HTTP Observation 转为标准 Capture 并进入统一认知处理。200 变化形成 Observation→Evidence→Goal→Plan→Prediction→ActionReceipt→Verification，并按因果顺序写入 6 条哈希审计事件；Evidence、ActionReceipt、VerificationRecord 持久化到世界模型。ETag 304 及跨重启相同内容均不重复行动或审计。HTTP 超时由配置参数传入，不再硬编码。专项 2/2，相关回归 11/11，全量 71/71 通过，质量问题 0。
 - ⬜ **10.7 学习接入自主循环**  
   验收：循环在行动前持久化预测、行动后持久化结果；后续策略选择读取真实历史经验。
 - ⬜ **10.8 心跳、检查点与恢复**  
@@ -195,4 +195,4 @@ Phase 10 出口：水可以由一个入口启动，在真实来源上持续运�
 
 ## 当前下一步
 
-**10.6：网络感知接入自主循环。** 先用本机 HTTP 服务证明 200 变化形成完整 Evidence→WorldModel→Goal→Plan→Prediction→ActionReceipt→Verification→Audit 链，并证明 304 不重复行动。
+**10.7：学习接入自主循环。** 扩展配置加入候选目标及影响权重；建立运行协调器，从配置构造 NetworkLoop 和 LearningStore，在行动前写预测、验证后写结果，并让后续目标选择读取已达样本门槛的经验。
