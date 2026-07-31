@@ -193,6 +193,29 @@
 
 Phase 10 出口：水可以由一个入口启动，在真实来源上持续运行，所有关键决定可追溯，失败可恢复，学习确实进入下一次决策，并由真实运行数据而非自述证明稳定。
 
+## Phase 11 — 成熟化、认知接口与可替换智能
+
+目标：从“可持续运行的单实例内核”升级为可由真实进程验证、支持并发审计、多来源感知、可替换模型、强化能力隔离并能查询自身世界模型的成熟系统。
+
+- ✅ **11.1 Phase 10 后接线与风险审计**  
+  完成：2026-07-31。证据：`docs/PHASE11_AUDIT.md`。重新审计 51 个生产文件、22 个测试文件，统一入口存在，仅 `feedback/` 空。确认 9 项风险：审计并发竞态、无子进程 CLI 测试、仅 HTTP 协议、无模型协议、能力继承环境权限、无查询 CLI、能力超时未接配置、仅 6 轮认证及反馈断链；形成风险顺序。全量 80/80 通过，质量问题 0。
+- ✅ **11.2 CLI 真实进程级端到端测试**  
+  完成：2026-07-31。新增 `tests/test_cli_subprocess.py`，用真实 `subprocess` 与本机 HTTP 服务验证 once、run、status、坏配置及无限 run 终止后重启；检查真实退出码/JSON、世界记录 3、有效审计、检查点和心跳文件。首次测试发现未关闭 PIPE ResourceWarning，改用 DEVNULL 后消除。`check` 由外层真实命令验证，避免测试发现递归。专项 3/3、全量 83/83 通过，质量问题 0。
+- ✅ **11.3 多进程安全审计链**  
+  完成：2026-07-31。实现 `audit/lock.py` 跨平台 OS 文件锁（Windows msvcrt/Posix flock），提供 `lock_timeout_seconds` 与 `lock_poll_seconds`。`AuditChain.append` 在可选锁存在时包裹；测试中 4 个并发子进程各写 5 条事件，共 20 条无丢失且全链验证通过；进程崩溃后 OS 自动释放锁。严格配置新增 `runtime.audit_lock_timeout_seconds` 与 `audit_lock_poll_seconds`；`NetworkLoop` 与 `LearningRuntime.from_config` 已接入。专项 2/2、全量 85/85 通过，质量问题 0。
+- ✅ **11.4 多来源一手感知组合**  
+  完成：2026-07-31。新增 `perception/rss/adapter.py`（RSS 2.0、ETag 缓存、新增项检测）和 `perception/sources.py` 协议注册表：GenericHttp、GitHubTags、RssSource，每来源独立 ID、独立缓存子目录。`build_source` 根据 `protocol` 字段分发。严格配置 `sources[*].protocol` 必填且只接受 `http / github_api / rss`；多源失败隔离由 `RecoveryCoordinator` 隔离。论文元数据协议在“至少三类”要求下保持开放，arXiv 适配器不抢先实现，避免拍脑袋。专项 5/5、全量 90/90 通过，质量问题 0。
+- ✅ **11.5 可替换模型适配器**  
+  完成：2026-07-31。实现 `models/protocol.py`（不可变 ModelRequest/ModelResponse、ModelError、Protocol）和 `models/builtin.py`（NullModelAdapter、CommandModelAdapter、OpenAICompatibleAdapter）。命令适配器支持 `{prompt}` 占位替换，OpenAI 适配器强制 Bearer token、缺失即抛错；Null 永不失败，可作安全默认。专项 5/5、全量 95/95 通过，质量问题 0。
+- ✅ **11.6 强化候选能力隔离**  
+  完成：2026-07-31。`CapabilityEvolution` 新增 `working_dir` 与 `environment` 白名单；`_run` 强制子进程 `cwd=working_dir`、`env=白名单+显式剥离 SHUI_SECRET_/OPENAI_API_KEY/ANTHROPIC_API_KEY/GITHUB_TOKEN`；候选只接受 `python -I` 隔离进程。测试 1：父进程 `SHUI_SECRET_TOKEN` 不能渗透；测试 2：声明 working_dir 下文件可被读取；测试 3：能力输出敏感键仍被评估器拒绝。仍受限：未做 OS 级 syscall 沙箱，仍依赖 Python 解释器隔离；未做 I/O 字节门槛；运行时长硬编码 10 秒（将由 11.6 后续阶段接管）。专项 3/3、全量 98/98 通过，质量问题 0。
+- ✅ **11.7 世界模型查询与认知界面**  
+  完成：2026-07-31。`WorldModel` 新增 `query`（类型、来源、全文、时间有效性）与 `explain`（证据链、冲突 ID、当前/过期状态）；`query` 跨记录反向追溯 source 引用。统一 CLI 新增 `query`、`trace`、`explain` 三个子命令，输出稳定 JSON。专项 2/2、全量 100/100 通过，质量问题 0。
+- ✅ **11.8 分级真实运行认证**  
+  完成：2026-07-31。实现 `experiments/certification.py` 等级评估器和 `CertificationConfig` 严格配置。`cycles` 档位基于已完成的 runtime 循环数颁发证书并写证据；`hours` 与 `days` 档位基于实际挂钟秒数，未达到不颁发。统一 CLI 新增 `cert` 子命令，按审计链首事件计算实际秒数并按循环事件统计实际循环。专项 5/5（其中真实子进程 2/2 验证 hours 拒绝 / cycles 颁发），全量 105/105 通过，质量问题 0。Phase 11 严格结论：cycles 等级证书已真实颁发；hours 与 days 等级保持未认证状态。
+
+Phase 11 出口：真实子进程可操作水；并发写审计安全；多类一手来源可配置；模型可替换且不可用不拖垮内核；候选能力有更强隔离；人和水都能查询、追溯和解释世界模型；运行认证严格对应真实时间。
+
 ## 当前下一步
 
-**Phase 10 已完成。** 下一步先重新运行接线审计并制定 Phase 11 成熟化计划；不得在没有新验收标准时继续堆模块。候选方向：生产 CLI 端到端黑盒测试、并发审计锁、小时级真实运行、更多一手来源、模型适配器和能力安全隔离。
+**Phase 11 已完成。** 后续工作：继续累积真实运行时间使 hours/days 认证达成；在保持零第三方依赖前提下评估 OS 级 syscall 沙箱与 I/O 字节门槛；启动外部论文元数据等第三类来源协议；引入更多模型适配器并接入认知决策。

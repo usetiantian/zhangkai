@@ -5,12 +5,13 @@ from shui import main
 CONFIG={
  "identity":{"name":"shui","version":"1","mission":["learn","verify"]},
  "values":[{"name":"truth","weight":1.0,"source":"owner","calibrated_at":"2026-07-31T00:00:00+00:00"}],
- "sources":[{"id":"source","url":"https://example.com"}],
+ "sources":[{"id":"source","url":"https://example.com","protocol":"http"}],
  "goals":[{"id":"learn","description":"Learn change","dependencies":[],"impacts":{"truth":1.0}}],
  "schedules":{"fast_seconds":1,"slow_seconds":2},
  "capabilities":{"enabled":["observe.http"]},
  "paths":{"state":"../state","actions":"../actions","audit":"../audit/events.jsonl"},
- "runtime":{"http_timeout_seconds":1,"capability_timeout_seconds":1,"learning_min_samples":1,"soak_cycles":2}
+ "runtime":{"http_timeout_seconds":1,"capability_timeout_seconds":1,"learning_min_samples":1,"soak_cycles":2,"audit_lock_timeout_seconds":2,"audit_lock_poll_seconds":0.01},
+ "certification":{"tiers":[{"tier":"cycles","threshold":6,"duration_seconds":0}]}
 }
 class CliTests(unittest.TestCase):
  def config(self,root):

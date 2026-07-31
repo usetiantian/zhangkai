@@ -8,7 +8,46 @@ from contextlib import closing
 from datetime import datetime
 from pathlib import Path
 
-from contracts import Claim, Fact, Hypothesis, Record, record_from_dict
+from contracts import Claim, Conflict, Fact, Hypothesis, Record, record_from_dict
+from datetime import timezone
+from typing import Any
+
+
+def _record_references_source(record, source: str) -> bool:
+    data = record.to_dict()
+    return any(source in str(value) for value in data.values())
+
+
+def _ids_referenced_anywhere(value: object) -> set[str]:
+    found: set[str] = set()
+    stack = [value]
+    while stack:
+        current = stack.pop()
+        if isinstance(current, str):
+            found.add(current)
+        elif isinstance(current, (list, tuple, set)):
+            stack.extend(current)
+        elif isinstance(current, dict):
+            stack.extend(current.values())
+    return found
+
+
+def _records_for_source(model: "WorldModel", source: str) -> set[str]:
+    matched: set[str] = set()
+    pending: list[str] = []
+    for record in model.all():
+        if _record_references_source(record, source):
+            matched.add(record.id)
+            pending.append(record.id)
+    while pending:
+        current = pending.pop()
+        for record in model.all():
+            if record.id in matched:
+                continue
+            if current in _ids_referenced_anywhere(record.to_dict()):
+                matched.add(record.id)
+                pending.append(record.id)
+    return matched
 
 
 class WorldModel:
@@ -62,6 +101,45 @@ class WorldModel:
         with closing(self._connect()) as connection:
             rows = connection.execute("SELECT payload FROM records ORDER BY rowid").fetchall()
         return [record_from_dict(json.loads(row[0])) for row in rows]
+
+    def query(
+        self,
+        *,
+        record_type: str | None = None,
+        source: str | None = None,
+        contains: str | None = None,
+        active_at: datetime | None = None,
+        include_expired: bool = False,
+    ) -> list[Record]:
+        results = []
+        for record in self.all():
+            if record_type and type(record).__name__ != record_type:
+                continue
+            if source and record.id not in _records_for_source(self, source):
+                continue
+            if contains and contains.lower() not in json.dumps(record.to_dict()).lower():
+                continue
+            if active_at is not None and not include_expired:
+                status = self.status_at(record.id, active_at)
+                if status != "current":
+                    continue
+            results.append(record)
+        return results
+
+    def explain(self, record_id: str) -> dict[str, Any]:
+        chain = self.trace(record_id)
+        all_records = self.all()
+        conflicts = [
+            conflict.id
+            for conflict in all_records
+            if isinstance(conflict, Conflict) and record_id in conflict.record_ids
+        ]
+        validity = self.status_at(record_id, datetime.now(timezone.utc))
+        return {
+            "chain": [record.to_dict() for record in chain],
+            "conflicts": conflicts,
+            "validity": validity,
+        }
 
     def trace(self, record_id: str) -> list[Record]:
         result: list[Record] = []

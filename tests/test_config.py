@@ -5,12 +5,13 @@ from config.loader import ConfigError,load_config
 VALID={
  "identity":{"name":"shui","version":"1","mission":["learn","verify"]},
  "values":[{"name":"truth","weight":1.0,"source":"owner-decision","calibrated_at":"2026-07-31T00:00:00+00:00"}],
- "sources":[{"id":"python-tags","url":"https://api.github.com/repos/python/cpython/tags?per_page=1"}],
+ "sources":[{"id":"python-tags","url":"https://api.github.com/repos/python/cpython/tags?per_page=1","protocol":"github_api"}],
  "goals":[{"id":"learn","description":"Learn change","dependencies":[],"impacts":{"truth":1.0}}],
  "schedules":{"fast_seconds":60,"slow_seconds":3600},
  "capabilities":{"enabled":["observe.http","write.verified-report"]},
  "paths":{"state":"../state","actions":"../actions","audit":"../audit/events.jsonl"},
- "runtime":{"http_timeout_seconds":10,"capability_timeout_seconds":10,"learning_min_samples":2,"soak_cycles":6}
+ "runtime":{"http_timeout_seconds":10,"capability_timeout_seconds":10,"learning_min_samples":2,"soak_cycles":6,"audit_lock_timeout_seconds":2,"audit_lock_poll_seconds":0.01},
+ "certification":{"tiers":[{"tier":"cycles","threshold":6,"duration_seconds":0}]}
 }
 class ConfigTests(unittest.TestCase):
  def write(self,root,data):
@@ -27,7 +28,7 @@ class ConfigTests(unittest.TestCase):
    with self.assertRaisesRegex(ConfigError,"values"):load_config(self.write(Path(d),data))
  def test_unknown_field_is_rejected(self):
   with tempfile.TemporaryDirectory() as d:
-   data=dict(VALID);data["invented"]={}
+   data=dict(VALID);data["sources"][0]["invented"]={}
    with self.assertRaisesRegex(ConfigError,"invented"):load_config(self.write(Path(d),data))
  def test_secret_like_fields_are_rejected_at_any_depth(self):
   with tempfile.TemporaryDirectory() as d:

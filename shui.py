@@ -16,6 +16,8 @@ from execution import TaskStore
 from identity import Identity, IdentityStore
 from recovery import RecoveryCoordinator
 from world_model import WorldModel
+from world_model.store import WorldModel as _WorldModel  # noqa: F401  (alias placeholder)
+
 
 ROOT = Path(__file__).resolve().parent
 
@@ -29,6 +31,12 @@ def _parser() -> argparse.ArgumentParser:
     run = commands.add_parser("run")
     run.add_argument("--config", type=Path, required=True)
     run.add_argument("--cycles", type=int)
+    for name in ("query", "trace", "explain"):
+        command = commands.add_parser(name)
+        command.add_argument("--config", type=Path, required=True)
+        command.add_argument("--id", required=True)
+    cert = commands.add_parser("cert")
+    cert.add_argument("--config", type=Path, required=True)
     return parser
 
 def _load_identity(config: ShuiConfig) -> Identity:
@@ -51,6 +59,61 @@ def _load_identity(config: ShuiConfig) -> Identity:
     ):
         raise ConfigError("stored identity conflicts with configured identity")
     return identity
+
+
+def _cert(config: ShuiConfig) -> dict[str, object]:
+    from experiments.certification import evaluate
+    if not config.paths.audit.exists():
+        return {
+            "tiers": [
+                {"tier": tier["tier"], "achieved": False, "reason": "no audit events"}
+                for tier in config.certification.tiers
+            ]
+        }
+    first_line = config.paths.audit.read_text(encoding="utf-8").splitlines()[0]
+    started = datetime.fromisoformat(json.loads(first_line)["occurred_at"])
+    now = datetime.now(timezone.utc)
+    actual_seconds = (now - started).total_seconds()
+    lines = config.paths.audit.read_text(encoding="utf-8").splitlines()
+    actual_cycles = sum(
+        1 for line in lines if json.loads(line).get("event_type") == "runtime.cycle.completed"
+    )
+    evidence_dir = config.paths.state / "certifications"
+    evidence_dir.mkdir(parents=True, exist_ok=True)
+    counter = {"value": 0}
+
+    def writer(body: str) -> str:
+        counter["value"] += 1
+        path = evidence_dir / f"{counter['value']}.json"
+        path.write_text(body, encoding="utf-8")
+        return str(path)
+
+    results = evaluate(
+        declared_tiers=list(config.certification.tiers),
+        actual_cycles=actual_cycles,
+        actual_seconds=actual_seconds,
+        clock=lambda: now,
+        evidence_writer=writer,
+    )
+    return {
+        "started_at": started.isoformat(),
+        "actual_cycles": actual_cycles,
+        "actual_seconds": actual_seconds,
+        "tiers": [
+            {
+                "tier": item.tier.value,
+                "threshold": item.threshold,
+                "duration_seconds": item.duration_seconds,
+                "achieved": item.achieved,
+                "actual_cycles": item.actual_cycles,
+                "actual_seconds": item.actual_seconds,
+                "granted_at": item.granted_at,
+                "evidence_path": item.evidence_path,
+            }
+            for item in results
+        ],
+    }
+
 
 def _status(config: ShuiConfig) -> dict[str, object]:
     identity = _load_identity(config)
@@ -137,6 +200,14 @@ def main(
         config = load_config(options.config)
         if options.command == "status":
             result = _status(config)
+        elif options.command == "query":
+            result = _query(config, options)
+        elif options.command == "trace":
+            result = _trace(config, options.id)
+        elif options.command == "explain":
+            result = _explain(config, options.id)
+        elif options.command == "cert":
+            result = _cert(config)
         elif options.command == "once":
             result = _once(config, cycle_runner)
         else:

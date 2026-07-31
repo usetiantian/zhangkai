@@ -7,6 +7,7 @@ from dataclasses import asdict, dataclass
 from datetime import datetime
 from pathlib import Path
 from typing import Any
+from audit.lock import InterProcessLock
 
 _GENESIS_HASH = "0" * 64
 _SENSITIVE_MARKERS = (
@@ -54,9 +55,26 @@ def _reject_sensitive(value: Any, path: str = "data") -> None:
             _reject_sensitive(nested, f"{path}[{index}]")
 
 class AuditChain:
-    def __init__(self, path: Path) -> None:
+    def __init__(
+        self,
+        path: Path,
+        *,
+        lock_timeout_seconds: float | None = None,
+        lock_poll_seconds: float | None = None,
+    ) -> None:
         self.path = path
         path.parent.mkdir(parents=True, exist_ok=True)
+        if (lock_timeout_seconds is None) != (lock_poll_seconds is None):
+            raise AuditError("both lock timing values are required")
+        self.lock = (
+            InterProcessLock(
+                path.with_suffix(path.suffix + ".lock"),
+                timeout_seconds=lock_timeout_seconds,
+                poll_seconds=lock_poll_seconds,
+            )
+            if lock_timeout_seconds is not None
+            else None
+        )
 
     def _raw_records(self) -> list[dict[str, Any]]:
         if not self.path.exists():
@@ -87,6 +105,24 @@ class AuditChain:
         return True
 
     def append(
+        self,
+        event_id: str,
+        occurred_at: datetime,
+        event_type: str,
+        cause_id: str | None,
+        result: str,
+        data: dict[str, Any],
+    ) -> AuditEvent:
+        if self.lock:
+            with self.lock.hold():
+                return self._append_unlocked(
+                    event_id, occurred_at, event_type, cause_id, result, data
+                )
+        return self._append_unlocked(
+            event_id, occurred_at, event_type, cause_id, result, data
+        )
+
+    def _append_unlocked(
         self,
         event_id: str,
         occurred_at: datetime,

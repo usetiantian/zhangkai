@@ -22,6 +22,8 @@ class LearningRuntime:
         candidates: tuple[GoalCandidate, ...],
         http_timeout_seconds: int,
         min_samples: int,
+        audit_lock_timeout_seconds: float | None = None,
+        audit_lock_poll_seconds: float | None = None,
     ) -> None:
         self.learning = LearningStore(state / "learning.db")
         self.learner = StrategyLearner(
@@ -40,6 +42,8 @@ class LearningRuntime:
             before_action=self._predict,
             after_action=self._observe,
             preferred_strategy=self._preferred,
+            audit_lock_timeout_seconds=audit_lock_timeout_seconds,
+            audit_lock_poll_seconds=audit_lock_poll_seconds,
         )
 
 
@@ -65,6 +69,8 @@ class LearningRuntime:
             candidates=candidates,
             http_timeout_seconds=config.runtime.http_timeout_seconds,
             min_samples=config.runtime.learning_min_samples,
+            audit_lock_timeout_seconds=config.runtime.audit_lock_timeout_seconds,
+            audit_lock_poll_seconds=config.runtime.audit_lock_poll_seconds,
         )
 
     def _predict(self, prediction: Prediction, strategy: str) -> None:

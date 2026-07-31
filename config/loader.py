@@ -20,6 +20,7 @@ class IdentityConfig:
 class SourceConfig:
     id: str
     url: str
+    protocol: str = "http"
 
 @dataclass(frozen=True)
 class GoalConfig:
@@ -50,6 +51,14 @@ class RuntimeSettings:
     capability_timeout_seconds: int
     learning_min_samples: int
     soak_cycles: int
+    audit_lock_timeout_seconds: float
+    audit_lock_poll_seconds: float
+
+
+@dataclass(frozen=True)
+class CertificationConfig:
+    tiers: tuple[dict, ...]
+
 
 @dataclass(frozen=True)
 class ShuiConfig:
@@ -61,6 +70,7 @@ class ShuiConfig:
     capabilities: CapabilityConfig
     paths: PathConfig
     runtime: RuntimeSettings
+    certification: CertificationConfig
 
 _SECRET_MARKERS = ("token", "secret", "password", "api_key", "apikey")
 
@@ -91,6 +101,12 @@ def _text(value: Any, path: str) -> str:
         raise ConfigError(f"{path} must be non-empty text")
     return value
 
+def _positive_number(value: Any, path: str) -> float:
+    if not isinstance(value, (int, float)) or isinstance(value, bool) or value <= 0:
+        raise ConfigError(f"{path} must be a positive number")
+    return value
+
+
 def _positive_integer(value: Any, path: str) -> int:
     if not isinstance(value, int) or isinstance(value, bool) or value < 1:
         raise ConfigError(f"{path} must be a positive integer")
@@ -104,7 +120,7 @@ def load_config(path: Path) -> ShuiConfig:
     _reject_secrets(raw)
     sections = {
         "identity", "values", "sources", "goals", "schedules",
-        "capabilities", "paths", "runtime",
+        "capabilities", "paths", "runtime", "certification",
     }
     root = _exact(raw, sections, "root")
     identity_raw = _exact(
@@ -125,9 +141,39 @@ def load_config(path: Path) -> ShuiConfig:
     capabilities = _load_capabilities(root["capabilities"])
     paths = _load_paths(root["paths"], path.parent)
     runtime = _load_runtime(root["runtime"])
+    certification = _load_certification(root["certification"])
     return ShuiConfig(
-        identity, values, sources, goals, schedules, capabilities, paths, runtime
+        identity, values, sources, goals, schedules, capabilities, paths, runtime, certification
     )
+
+
+def _load_certification(raw: Any) -> CertificationConfig:
+    spec = _exact(raw, {"tiers"}, "certification")
+    tiers = spec["tiers"]
+    if not isinstance(tiers, list) or not tiers:
+        raise ConfigError("certification.tiers must be a non-empty list")
+    result: list[dict] = []
+    for index, item in enumerate(tiers):
+        if not isinstance(item, dict):
+            raise ConfigError(f"tier[{index}] must be an object")
+        tier_name = _text(item.get("tier"), f"tier[{index}].tier")
+        if tier_name not in {"cycles", "hours", "days"}:
+            raise ConfigError(f"unknown tier: {tier_name}")
+        for required in ("tier", "threshold"):
+            if required not in item:
+                raise ConfigError(f"tier[{index}] missing: {required}")
+        if tier_name in {"hours", "days"} and "duration_seconds" not in item:
+            raise ConfigError(f"tier[{index}] missing: duration_seconds")
+        threshold = _positive_integer(item["threshold"], f"tier[{index}].threshold")
+        if tier_name == "cycles":
+            duration = 0
+        else:
+            duration = _positive_integer(
+                item["duration_seconds"],
+                f"tier[{index}].duration_seconds",
+            )
+        result.append({"tier": tier_name, "threshold": threshold, "duration_seconds": duration})
+    return CertificationConfig(tuple(result))
 
 def _load_values(raw: Any) -> tuple[ValueWeight, ...]:
     if not isinstance(raw, list) or not raw:
@@ -155,11 +201,15 @@ def _load_sources(raw: Any) -> tuple[SourceConfig, ...]:
         raise ConfigError("sources must be a non-empty list")
     result = []
     for index, item in enumerate(raw):
-        source = _exact(item, {"id", "url"}, f"sources[{index}]")
+        source = _exact(item, {"id", "url", "protocol"}, f"sources[{index}]")
+        protocol = _text(source["protocol"], "source.protocol")
+        if protocol not in {"http", "github_api", "rss"}:
+            raise ConfigError(f"source.protocol unsupported: {protocol}")
         result.append(
             SourceConfig(
                 _text(source["id"], "source.id"),
                 _text(source["url"], "source.url"),
+                protocol,
             )
         )
     return tuple(result)
@@ -221,6 +271,8 @@ def _load_runtime(raw: Any) -> RuntimeSettings:
         "capability_timeout_seconds",
         "learning_min_samples",
         "soak_cycles",
+        "audit_lock_timeout_seconds",
+        "audit_lock_poll_seconds",
     }
     value = _exact(raw, fields, "runtime")
     return RuntimeSettings(
@@ -237,4 +289,6 @@ def _load_runtime(raw: Any) -> RuntimeSettings:
             "runtime.learning_min_samples",
         ),
         _positive_integer(value["soak_cycles"], "runtime.soak_cycles"),
+        _positive_number(value["audit_lock_timeout_seconds"], "runtime.audit_lock_timeout_seconds"),
+        _positive_number(value["audit_lock_poll_seconds"], "runtime.audit_lock_poll_seconds"),
     )

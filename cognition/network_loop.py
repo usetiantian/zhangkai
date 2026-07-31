@@ -28,6 +28,8 @@ class NetworkLoop:
         before_action: Callable[[Prediction, str], None] | None = None,
         after_action: Callable[[Prediction, str], None] | None = None,
         preferred_strategy: Callable[[], str | None] | None = None,
+        audit_lock_timeout_seconds: float | None = None,
+        audit_lock_poll_seconds: float | None = None,
     ) -> None:
         self.clock = clock
         self.http = HttpAdapter(
@@ -46,7 +48,11 @@ class NetworkLoop:
             preferred_strategy=preferred_strategy,
         )
         self.world = self.cycle.world
-        self.audit = AuditChain(audit)
+        self.audit = AuditChain(
+            audit,
+            lock_timeout_seconds=audit_lock_timeout_seconds,
+            lock_poll_seconds=audit_lock_poll_seconds,
+        )
 
     def tick(self, url: str) -> CycleResult:
         remote = self.http.observe(url)

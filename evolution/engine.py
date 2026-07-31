@@ -41,13 +41,22 @@ class Evaluation:
 
 
 class CapabilityEvolution:
-    def __init__(self, root: Path) -> None:
+    def __init__(
+        self,
+        root: Path,
+        *,
+        working_dir: Path | None = None,
+        environment: tuple[str, ...] = ("PATH", "HOME", "LANG", "LC_ALL", "TMP", "TEMP"),
+    ) -> None:
         self.root = root
         self.candidates = root / "candidates"
         self.stable = root / "stable"
         self.registry = root / "registry.json"
+        self.working_dir = (working_dir or root).resolve()
+        self.environment = environment
         self.candidates.mkdir(parents=True, exist_ok=True)
         self.stable.mkdir(exist_ok=True)
+        self.working_dir.mkdir(parents=True, exist_ok=True)
         if not self.registry.exists():
             self.registry.write_text("{}", encoding="utf-8")
 
@@ -83,6 +92,15 @@ class CapabilityEvolution:
         path.write_text(source, encoding="utf-8")
         return Candidate(draft.spec, version, path)
 
+    @staticmethod
+    def _scrub_environment(allowed: tuple[str, ...]) -> dict[str, str]:
+        import os
+        baseline = {key: value for key, value in os.environ.items() if key in allowed and value}
+        for forbidden in ("SHUI_SECRET_", "OPENAI_API_KEY", "ANTHROPIC_API_KEY", "GITHUB_TOKEN"):
+            for key in list(baseline):
+                if key.startswith(forbidden):
+                    del baseline[key]
+        return baseline
     def _run(self, path: Path, value: str) -> Evaluation:
         script = (
             "import json,runpy,sys;"
@@ -96,6 +114,8 @@ class CapabilityEvolution:
             text=True,
             timeout=10,
             check=False,
+            cwd=self.working_dir,
+            env=self._scrub_environment(self.environment),
         )
         if result.returncode:
             return Evaluation(False, None, result.stderr.strip())
