@@ -184,8 +184,8 @@
   完成：2026-07-31。实现 `cognition/network_loop.py`，HTTP Observation 转为标准 Capture 并进入统一认知处理。200 变化形成 Observation→Evidence→Goal→Plan→Prediction→ActionReceipt→Verification，并按因果顺序写入 6 条哈希审计事件；Evidence、ActionReceipt、VerificationRecord 持久化到世界模型。ETag 304 及跨重启相同内容均不重复行动或审计。HTTP 超时由配置参数传入，不再硬编码。专项 2/2，相关回归 11/11，全量 71/71 通过，质量问题 0。
 - ✅ **10.7 学习接入自主循环**  
   完成：2026-07-31。实现 `cognition/runtime.py`：严格配置新增候选 goals（描述、依赖、价值影响），运行协调器从 ShuiConfig 构造 ValueSet、GoalCandidate、NetworkLoop 和 LearningStore。`before_action` 在文件执行前持久化预测及策略，`after_action` 仅在现实验证后写 success/failure。样本不足沿用价值排序；达到配置 `learning_min_samples` 后优先历史成功率最高策略，后续证据仍可改变选择。专项 2/2，配置/CLI 回归 9/9，全量 73/73 通过，质量问题 0。
-- ⬜ **10.8 心跳、检查点与恢复**  
-  验收：心跳可观测；中断后从检查点继续；单个来源或能力失败不终止整个循环；恢复行为有审计证据。
+- ✅ **10.8 心跳、检查点与恢复**  
+  完成：2026-07-31。实现 `recovery/coordinator.py`：每来源处理前更新心跳、完成后原子 `fsync+replace` 检查点；心跳记录时间、running/idle、循环数和最后来源。普通来源异常写 `source.failed` 与 `cycle.recovered` 审计并继续后续来源；进程级 KeyboardInterrupt 不吞掉，重启从最后确认索引恢复，完成整轮后索引归零并增加循环数。专项 3/3、全量 76/76 通过，质量问题 0。
 - ⬜ **10.9 故障注入矩阵**  
   验收：覆盖 HTTP 超时/错误、SQLite 锁、部分状态损坏、执行超时、磁盘写失败、Git 网络失败和能力失败；每种故障均有明确状态和恢复结果。
 - ⬜ **10.10 真实持续运行门禁**  
@@ -195,4 +195,4 @@ Phase 10 出口：水可以由一个入口启动，在真实来源上持续运�
 
 ## 当前下一步
 
-**10.8：心跳、检查点与恢复。** 先用可注入时钟和故障源定义心跳、每来源检查点、跨重启续跑及单源失败隔离；所有恢复动作必须写入审计链。
+**10.9：故障注入矩阵。** 建立统一故障场景与报告，逐项验证 HTTP 超时/错误、SQLite 锁、损坏状态、执行超时、磁盘写失败、Git 网络失败和能力失败的状态、审计及恢复结果。
