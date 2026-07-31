@@ -1,6 +1,6 @@
 # Python quality baseline
 
-Total issues: **118**
+Total issues: **72**
 
 | File | Kind | Count |
 |---|---|---:|
@@ -14,8 +14,6 @@ Total issues: **118**
 | cognition\scheduler.py | multiple_statements | 1 |
 | contracts\__init__.py | long_line | 1 |
 | contracts\models.py | long_line | 1 |
-| evolution\engine.py | long_line | 8 |
-| evolution\engine.py | multiple_statements | 20 |
 | execution\runtime.py | long_line | 2 |
 | execution\runtime.py | multiple_statements | 5 |
 | goals\engine.py | long_line | 2 |
@@ -26,7 +24,5 @@ Total issues: **118**
 | perception\github\git_adapter.py | long_line | 2 |
 | perception\github\git_adapter.py | multiple_statements | 7 |
 | perception\system_metrics\adapter.py | multiple_statements | 3 |
-| perception\web\adapter.py | long_line | 3 |
-| perception\web\adapter.py | multiple_statements | 15 |
 | perception\web\monitor.py | multiple_statements | 3 |
 | values\model.py | long_line | 2 |
