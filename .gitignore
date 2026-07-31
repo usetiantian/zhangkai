@@ -11,3 +11,5 @@ data/knowledge/*
 !data/knowledge/.gitkeep
 data/audit/*
 !data/audit/.gitkeep
+
+*.tmp
