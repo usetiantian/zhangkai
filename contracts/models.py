@@ -237,11 +237,25 @@ class Conflict(Record):
         _text("description", self.description)
 
 
+@dataclass(frozen=True, kw_only=True)
+class Prediction(Record):
+    record_type: ClassVar[str] = "Prediction"
+    action_id: str
+    expected_outcome: str
+    verification_condition: str
+
+    def __post_init__(self) -> None:
+        super().__post_init__()
+        _text("action_id", self.action_id)
+        _text("expected_outcome", self.expected_outcome)
+        _text("verification_condition", self.verification_condition)
+
+
 _TYPES: dict[str, type[Record]] = {
     cls.record_type: cls
     for cls in (
         Observation, Evidence, Claim, Fact, Goal, Step, Plan,
-        ActionReceipt, VerificationRecord, Experience, Hypothesis, Unknown, Conflict,
+        ActionReceipt, VerificationRecord, Experience, Hypothesis, Unknown, Conflict, Prediction,
     )
 }
 
