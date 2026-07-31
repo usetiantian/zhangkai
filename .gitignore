@@ -1,0 +1,13 @@
+__pycache__/
+*.py[cod]
+*.db-shm
+*.db-wal
+config/secrets.*
+data/raw/*
+!data/raw/.gitkeep
+data/state/*
+!data/state/.gitkeep
+data/knowledge/*
+!data/knowledge/.gitkeep
+data/audit/*
+!data/audit/.gitkeep
