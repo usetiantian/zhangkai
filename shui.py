@@ -10,9 +10,11 @@ from typing import Callable, Sequence
 from audit.chain import AuditChain
 from checks import run as run_checks
 from config import ConfigError, ShuiConfig, load_config
+from cognition.runtime import LearningRuntime
 from evolution import CapabilityEvolution
 from execution import TaskStore
 from identity import Identity, IdentityStore
+from recovery import RecoveryCoordinator
 from world_model import WorldModel
 
 ROOT = Path(__file__).resolve().parent
@@ -71,10 +73,38 @@ def _status(config: ShuiConfig) -> dict[str, object]:
         "evolved_capabilities": list(evolved),
     }
 
-def _once(config: ShuiConfig) -> dict[str, object]:
+def _real_cycle(config: ShuiConfig) -> dict[str, object]:
+    runtime = LearningRuntime.from_config(
+        config,
+        clock=lambda: datetime.now(timezone.utc),
+    )
+
+    def process(source: str) -> str:
+        status = runtime.tick(source).status
+        if status == "failed":
+            raise RuntimeError(f"source cycle failed: {source}")
+        return status
+
+    coordinator = RecoveryCoordinator(
+        config.paths.state / "checkpoint.json",
+        config.paths.state / "heartbeat.json",
+        AuditChain(config.paths.audit),
+        clock=lambda: datetime.now(timezone.utc),
+        id_factory=lambda: f"runtime-{uuid.uuid4().hex}",
+        processor=process,
+    )
+    report = coordinator.run_once(tuple(source.url for source in config.sources))
+    return {"completed": report.completed, "failed": report.failed}
+
+
+def _once(
+    config: ShuiConfig,
+    cycle_runner: Callable[[ShuiConfig], dict[str, object]],
+) -> dict[str, object]:
     identity = _load_identity(config)
     TaskStore(config.paths.state / "tasks.db")
     CapabilityEvolution(config.paths.state / "capabilities")
+    cycle = cycle_runner(config)
     event_id = f"runtime-{uuid.uuid4().hex}"
     AuditChain(config.paths.audit).append(
         event_id,
@@ -82,14 +112,20 @@ def _once(config: ShuiConfig) -> dict[str, object]:
         "runtime.cycle.completed",
         None,
         "success",
-        {"identity": identity.name, "version": identity.version},
+        {
+            "identity": identity.name,
+            "version": identity.version,
+            "completed": cycle["completed"],
+            "failed": cycle["failed"],
+        },
     )
-    return {"status": "completed", "event_id": event_id}
+    return {"status": "completed", "event_id": event_id, **cycle}
 
 def main(
     arguments: Sequence[str] | None = None,
     *,
     check_runner: Callable[[], int] | None = None,
+    cycle_runner: Callable[[ShuiConfig], dict[str, object]] = _real_cycle,
     sleeper: Callable[[float], None] = time.sleep,
 ) -> int:
     options = _parser().parse_args(arguments)
@@ -102,13 +138,13 @@ def main(
         if options.command == "status":
             result = _status(config)
         elif options.command == "once":
-            result = _once(config)
+            result = _once(config, cycle_runner)
         else:
             if options.cycles is not None and options.cycles < 1:
                 raise ConfigError("cycles must be positive")
             completed = 0
             while options.cycles is None or completed < options.cycles:
-                _once(config)
+                _once(config, cycle_runner)
                 completed += 1
                 if options.cycles is None or completed < options.cycles:
                     sleeper(config.schedules.fast_seconds)

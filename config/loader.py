@@ -49,6 +49,7 @@ class RuntimeSettings:
     http_timeout_seconds: int
     capability_timeout_seconds: int
     learning_min_samples: int
+    soak_cycles: int
 
 @dataclass(frozen=True)
 class ShuiConfig:
@@ -216,14 +217,24 @@ def _load_paths(raw: Any, base: Path) -> PathConfig:
 
 def _load_runtime(raw: Any) -> RuntimeSettings:
     fields = {
-        "http_timeout_seconds", "capability_timeout_seconds", "learning_min_samples"
+        "http_timeout_seconds",
+        "capability_timeout_seconds",
+        "learning_min_samples",
+        "soak_cycles",
     }
     value = _exact(raw, fields, "runtime")
     return RuntimeSettings(
-        _positive_integer(value["http_timeout_seconds"], "runtime.http_timeout_seconds"),
+        _positive_integer(
+            value["http_timeout_seconds"],
+            "runtime.http_timeout_seconds",
+        ),
         _positive_integer(
             value["capability_timeout_seconds"],
             "runtime.capability_timeout_seconds",
         ),
-        _positive_integer(value["learning_min_samples"], "runtime.learning_min_samples"),
+        _positive_integer(
+            value["learning_min_samples"],
+            "runtime.learning_min_samples",
+        ),
+        _positive_integer(value["soak_cycles"], "runtime.soak_cycles"),
     )

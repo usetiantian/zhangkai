@@ -10,7 +10,7 @@ VALID={
  "schedules":{"fast_seconds":60,"slow_seconds":3600},
  "capabilities":{"enabled":["observe.http","write.verified-report"]},
  "paths":{"state":"../state","actions":"../actions","audit":"../audit/events.jsonl"},
- "runtime":{"http_timeout_seconds":10,"capability_timeout_seconds":10,"learning_min_samples":2}
+ "runtime":{"http_timeout_seconds":10,"capability_timeout_seconds":10,"learning_min_samples":2,"soak_cycles":6}
 }
 class ConfigTests(unittest.TestCase):
  def write(self,root,data):

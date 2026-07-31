@@ -1,0 +1,44 @@
+{
+  "identity": {
+    "name": "shui",
+    "version": "1",
+    "mission": ["learn from reality", "verify before belief"]
+  },
+  "values": [
+    {
+      "name": "truth",
+      "weight": 1.0,
+      "source": "owner-approved architecture",
+      "calibrated_at": "2026-07-31T00:00:00+00:00"
+    }
+  ],
+  "sources": [
+    {
+      "id": "cpython-tags",
+      "url": "https://api.github.com/repos/python/cpython/tags?per_page=1"
+    }
+  ],
+  "goals": [
+    {
+      "id": "observe-runtime-change",
+      "description": "Observe changes to the Python runtime ecosystem",
+      "dependencies": [],
+      "impacts": {"truth": 1.0}
+    }
+  ],
+  "schedules": {"fast_seconds": 60, "slow_seconds": 3600},
+  "capabilities": {
+    "enabled": ["observe.http", "write.verified-report"]
+  },
+  "paths": {
+    "state": "../data/soak-state-2",
+    "actions": "../data/soak-actions-2",
+    "audit": "../data/soak-audit-2/events.jsonl"
+  },
+  "runtime": {
+    "http_timeout_seconds": 10,
+    "capability_timeout_seconds": 10,
+    "learning_min_samples": 2,
+    "soak_cycles": 6
+  }
+}

@@ -13,3 +13,7 @@ data/audit/*
 !data/audit/.gitkeep
 
 *.tmp
+data/actions/*
+data/soak-actions-*/*
+data/soak-audit-*/*
+data/soak-state-*/*

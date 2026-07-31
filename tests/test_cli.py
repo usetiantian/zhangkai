@@ -10,12 +10,13 @@ CONFIG={
  "schedules":{"fast_seconds":1,"slow_seconds":2},
  "capabilities":{"enabled":["observe.http"]},
  "paths":{"state":"../state","actions":"../actions","audit":"../audit/events.jsonl"},
- "runtime":{"http_timeout_seconds":1,"capability_timeout_seconds":1,"learning_min_samples":1}
+ "runtime":{"http_timeout_seconds":1,"capability_timeout_seconds":1,"learning_min_samples":1,"soak_cycles":2}
 }
 class CliTests(unittest.TestCase):
  def config(self,root):
   path=root/"config"/"shui.json";path.parent.mkdir();path.write_text(json.dumps(CONFIG));return path
  def invoke(self,args,**kwargs):
+  kwargs.setdefault("cycle_runner",lambda config:{"completed":1,"failed":0})
   output=io.StringIO()
   with contextlib.redirect_stdout(output):code=main(args,**kwargs)
   return code,json.loads(output.getvalue())
