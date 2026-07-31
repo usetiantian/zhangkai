@@ -173,7 +173,7 @@
 - ✅ **10.1 全量实现与接线审计**  
   完成：2026-07-31。命令：`python -m audit.project`。证据：`docs/IMPLEMENTATION_AUDIT.md`。审计 39 个生产文件、13 个测试文件；确认无统一入口，3 个空模块，以及身份/注意力/学习/演化/审计和 HTTP 闭环断链。审计专项 2/2、全量 53/53 通过。
 - 🔄 **10.2 代码质量基线整理**  
-  进行中：2026-07-31。新增 `audit/quality.py` 和 `docs/QUALITY_BASELINE.md`；初始确定性问题 131 项。已完成三批：`cognition/loop.py` 13→0、`evolution/engine.py` 28→0、`perception/web/adapter.py` 18→0；项目总问题 131→72，全量测试 55/55 通过。后续继续 `audit/project.py`、`learning/engine.py`、`execution/runtime.py` 和 `identity/store.py`，归零前不标完成。
+  进行中：2026-07-31。新增 `audit/quality.py` 和 `docs/QUALITY_BASELINE.md`；初始确定性问题 131 项。已完成五批：`cognition/loop.py` 13→0、`evolution/engine.py` 28→0、`perception/web/adapter.py` 18→0、`audit/project.py` 11→0、`learning/engine.py` 10→0；项目总问题 131→51，全量测试 55/55 通过。后续继续 `execution/runtime.py`、`identity/store.py` 及剩余文件，归零前不标完成。
 - ⬜ **10.3 严格配置系统**  
   验收：身份、价值、来源、周期、能力和运行目录均由外部配置提供；缺项明确失败；配置中禁止密钥；无经验性隐藏默认值。
 - ⬜ **10.4 追加式审计链**  

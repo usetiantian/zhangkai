@@ -1,13 +1,11 @@
 # Python quality baseline
 
-Total issues: **72**
+Total issues: **51**
 
 | File | Kind | Count |
 |---|---|---:|
 | attention\engine.py | long_line | 3 |
 | attention\engine.py | multiple_statements | 7 |
-| audit\project.py | long_line | 7 |
-| audit\project.py | multiple_statements | 4 |
 | audit\quality.py | long_line | 1 |
 | audit\quality.py | multiple_statements | 3 |
 | cognition\scheduler.py | long_line | 2 |
@@ -19,8 +17,6 @@ Total issues: **72**
 | goals\engine.py | long_line | 2 |
 | identity\store.py | long_line | 5 |
 | identity\store.py | multiple_statements | 1 |
-| learning\engine.py | long_line | 8 |
-| learning\engine.py | multiple_statements | 2 |
 | perception\github\git_adapter.py | long_line | 2 |
 | perception\github\git_adapter.py | multiple_statements | 7 |
 | perception\system_metrics\adapter.py | multiple_statements | 3 |
