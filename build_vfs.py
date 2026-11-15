@@ -87,7 +87,8 @@ wv, wn = W(("enabled", True), ("swap_model", "inswapper_128_fp16.onnx"),
            ("input_faces_index", "0"), ("source_faces_index", "0"),
            ("console_log_level", 1))
 n4 = mk(4, "ReActorFaceSwap", [960, 300], [340, 380], 4, "4. 换脸 (逐帧)",
-        [sock("input_image", "IMAGE"), sock("source_image", "IMAGE"), sock("face_model", "FACE_MODEL")],
+        [sock("input_image", "IMAGE"), sock("source_image", "IMAGE"), sock("face_model", "FACE_MODEL"),
+         sock("face_boost", "FACE_BOOST")],
         [out("SWAPPED_IMAGE", "IMAGE"), out("FACE_MODEL", "FACE_MODEL"), out("ORIGINAL_IMAGE", "IMAGE")],
         wv, wn)
 
@@ -147,9 +148,11 @@ BODY = (
     "3. 节点1 选源视频\n"
     "4. 节点4 执行换脸（逐帧处理，长片不吃显存）\n"
     "5. 节点5 自动取原片帧率和音轨 → 节点6 合成 → 节点7 保存\n"
-    "6. 节点10/11 给出与定妆脸的相似度分数，可用来卡质量\n\n"
+    "6. 节点10/11 给出与定妆脸的相似度分数，可用来卡质量\n"
+    "7. 节点13「面部增强」先修脸再贴脸，消除脸部方块闪烁（社区方案 PR#321）\n\n"
     "---\n\n"
     "注意：\n"
+    "· 节点13 的 restore_with_main_after 必须保持 False，否则贴完再修会露出方形裁剪边界\n"
     "· 侧脸 / 低头 / 手挡脸容易穿帮，先用短片验证\n"
     "· 源视频音轨会原样带到输出\n"
     "· 显存紧张用 inswapper_128_fp16.onnx\n"
@@ -181,6 +184,18 @@ n12 = mk(12, "AUSBOSS_NODES_WorkflowNote", [60, 1240], [440, 723], 11, "使用�
          {"cnr_id": "ausboss-nodes", "ver": "2.2.0",
           "Node name for S&R": "AUSBOSS_NODES_WorkflowNote"})
 
+# ===== 13. ReActorFaceBoost =====
+# 社区方案 (ReActor README 引 PR#321)：先修脸再贴脸。
+# 默认流程是 inswapper 贴完脸再对贴上去的区域做 GFPGAN 修脸，
+# 修脸的方形裁剪边界会露出来 —— 就是你看到的"脸部小块闪烁像马赛克"。
+# 接上 FaceBoost 后 nodes.py:515 的最终修脸整个跳过（restore_with_main_after=False），
+# 改由 boost_model 在贴脸之前完成修脸，没有裁剪边界。
+wv, wn = W(("enabled", True), ("boost_model", "GFPGANv1.4.pth"),
+           ("interpolation", "Bicubic"), ("visibility", 1.0),
+           ("codeformer_weight", 0.5), ("restore_with_main_after", False))
+n13 = mk(13, "ReActorFaceBoost", [560, 800], [340, 240], 12, "13. 面部增强 (先修后贴, 去方块)",
+         [], [out("FACE_BOOST", "FACE_BOOST")], wv, wn)
+
 # ---------- 连线 ----------
 L1  = add_link(1, 0, 5, 0, 'VIDEO')        # 源视频 -> 拆组件
 L2  = add_link(2, 0, 3, 0, 'IMAGE')        # 定妆脸 -> 锁脸
@@ -195,11 +210,14 @@ L10 = add_link(8, 0, 9, 0, 'IMAGE')        # -> 预览
 L11 = add_link(2, 0, 10, 0, 'IMAGE')       # 定妆脸 -> 相似度
 L12 = add_link(8, 0, 10, 1, 'IMAGE')       # 换脸帧 -> 相似度
 L13 = add_link(10, 1, 11, 0, 'STRING')     # 相似度文本 -> 显示
+L14 = add_link(13, 0, 4, 3, 'FACE_BOOST')  # 面部增强 -> 换脸
 
 set_out(n1, 0, [L1])
 set_out(n2, 0, [L2, L11])
 set_in(n3, 'images', L2); set_out(n3, 0, [L3])
-set_in(n4, 'input_image', L4); set_in(n4, 'face_model', L3); set_out(n4, 0, [L5, L9])
+set_in(n4, 'input_image', L4); set_in(n4, 'face_model', L3); set_in(n4, 'face_boost', L14)
+set_out(n4, 0, [L5, L9])
+set_out(n13, 0, [L14])
 set_in(n5, 'video', L1); set_out(n5, 0, [L4]); set_out(n5, 1, [L7]); set_out(n5, 2, [L6])
 set_in(n6, 'images', L5); set_in(n6, 'fps', L6); set_in(n6, 'audio', L7); set_out(n6, 0, [L8])
 set_in(n7, 'video', L8)
@@ -211,7 +229,7 @@ set_in(n11, 'text', L13)
 wf = {
     "id": "uuid-vfs-0001",
     "revision": 0,
-    "last_node_id": 12,
+    "last_node_id": 13,
     "last_link_id": len(links),
     "nodes": nodes,
     "links": links,
