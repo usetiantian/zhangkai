@@ -44,6 +44,40 @@ recall_suggestions: off  # off | low (set to "low" to enable nudges)
 可逆的本地操作（读写文件、跑脚本测试、装依赖、git add/commit/push）**直接做**；
 不可逆或影响他人的（删分支、删文件、force push、改 CI/CD、对外发消息）才先说一声。
 
+### 权限模式：用 bypassPermissions，不要用 auto（2026-11-24 实测）
+
+- `~/.claude/settings.json` 的 `permissions.defaultMode` = `"bypassPermissions"`，
+  已删掉冲突的 `dangerouslySkipPermissions: true` 键；`skipDangerousModePermissionPrompt: true`
+  保留（启动不弹危险模式二次确认）。备份 `~/.claude/backups/settings.json.bak-20261124-permmode`。
+- 张凯原话：bypass 模式下「你没找我来确认点 yes 非常好」——零打断手感就是要这个。
+- **auto 不可用的实测原因**：auto 下 allow 列表内的操作（Bash(*)/Read/Write/Edit）确实不弹确认，
+  但 allow 列表**外**的工具（`Agent` 子 agent、`TodoWrite`）会触发 auto 的 safety check，
+  而 safety check 在 MiniMax 第三方端点下跑不起来 → 报
+  `Auto mode is unavailable: its safety check does not run for this session` 并拒绝调用。
+  张凯重度依赖派子 agent，auto 会直接废掉这个能力。
+- `permissions.deny` 11 条红线在 auto 和 bypass 下**都生效**（实测）。deny 不会因 bypass 失效。
+- 结论：Bash/Read/Write/Edit 层面两模式体感一样，差别全在 allow 外的工具能否用 → 选 bypass 无损失。
+
+### ECC hook 刷屏的根因与修法（2026-11-24）
+
+- **现象**：每次工具调用刷一长段 `Cannot find module 'C:\Users\87999\.claude\scripts\hooks\plugin-hook-bootstrap.js'`。
+- **根因**：ECC 的 hook 命令用内联 resolver 定位 ECC root，候选只有
+  `~/.claude/`、`~/.claude/plugins/{ecc,everything-claude-code}`、插件缓存 —— **唯独没有项目级 `.claude/`**。
+  找不到就兜底返回 `~/.claude`，于是 require 一个不存在的东西。
+- **ECC 本体没丢**：`~/.claude/plugins/` 里确实没有 ECC，但 scripts 层完整存在于**项目级**
+  `claude-workspace/.claude/scripts/`（`hooks/` 49 个 + `lib/`，含 `resolve-ecc-root.js`），
+  另有一份 `claude-workspace/ECC/scripts/`。**别再删 hook 配置**——那是把保护层删了。
+- **修法（官方原生机制，一行）**：全局 `~/.claude/settings.json` 的 `env` 加
+  `"CLAUDE_PLUGIN_ROOT": "C:/Users/87999/claude-workspace/.claude"` —— resolver 第一优先级就读它。
+- **另外**：`"ECC_GATEGUARD": "off"` 关掉 gateguard-fact-force（唯一会主动打断的 hook，
+  每次会话首次 Bash 前要求「陈述事实」）。张凯要零打断；证据要求已由 verification.md 覆盖。
+- 实测：`claude -p` 跑命令输出正常且**零 hook 报错**，ECC 29 条 hook 全部复活。
+- 备份：`~/.claude/backups/settings.json.bak-20261124-permmode`、
+  `~/.claude/backups/project-settings.json.bak-20261124-hooks`。
+- **CLAUDE.md 的 ECC 描述是准确的**（此前误判为过时）：项目级 `.claude/` 下
+  agents 67 个、commands 94 个、skills 递归 119 个 SKILL.md（`skills/ecc` 在）、rules/ecc 21 个语言目录。
+
+
 ### 漫剧制作（重启后直接接着干，全部状态都在磁盘上）
 
 
