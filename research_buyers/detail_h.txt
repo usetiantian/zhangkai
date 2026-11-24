@@ -1,0 +1,88 @@
+lingodev	200	https://lingo.dev/en
+   FORM NONE
+   EMAIL []
+   WA [] TG [] TEL []
+smartcat	404	https://www.smartcat.com/contact
+   FORM NONE
+   EMAIL []
+   WA [] TG [] TEL []
+phrase	200	https://phrase.com/contact
+   FORM GET 'https://phrase.com/' vis=1 ['s']
+   EMAIL ['pr@phrase.com']
+   WA [] TG [] TEL []
+tolingo	200	https://www.tolingo.com/en/services-post-editing
+   FORM NONE
+   EMAIL ['service@tolingo.com']
+   WA [] TG [] TEL []
+transperfect	200	https://www.transperfect.com/technology/translation-management
+   FORM NONE
+   EMAIL []
+   WA [] TG [] TEL []
+localise	200	https://www.localise.com/contact
+   FORM NONE
+   EMAIL []
+   WA [] TG [] TEL []
+mitsuko	404	https://www.mitsuko.app/contact
+   FORM NONE
+   EMAIL []
+   WA [] TG [] TEL []
+addavox	403	https://www.addavox.com/en/contact.html
+   FORM NONE
+   EMAIL []
+   WA [] TG [] TEL []
+lipdub	200	https://www.lipdub.ai/
+   FORM NONE
+   EMAIL []
+   WA [] TG [] TEL []
+ollang	200	https://ollang.com/contact
+   FORM GET 'https://ollang.com/contact' vis=5 ['name', 'email', 'phone', 'company', 'message']
+   EMAIL ['info@ollang.com', 'partnerships@ollang.com', 'sales@ollang.com']
+   WA [] TG [] TEL []
+onpurpose	200	https://onpurpose.studio/contact
+   FORM DIALOG 'https://onpurpose.studio/contact' vis=0 []
+   EMAIL []
+   WA [] TG [] TEL []
+speechlab	200	https://www.speechlab.ai/
+   FORM NONE
+   EMAIL []
+   WA [] TG [] TEL []
+hollylist	200	https://www.hollylist.com/
+   FORM GET 'https://www.hollylist.com/' vis=2 ['searchTerm', 'locationSearch']
+   EMAIL []
+   WA [] TG [] TEL []
+videodubbing	200	https://videodubbing.com/contact
+   FORM GET 'https://videodubbing.com/contact/' vis=7 ['website', 'formStartTime', 'challenge', 'name', 'email', 'subject', 'message']
+   EMAIL ['hello@videodubbing.com', 'help@videodubbing.com']
+   WA [] TG [] TEL []
+deepdub	404	https://www.deepdub.ai/contact
+   FORM NONE
+   EMAIL []
+   WA [] TG [] TEL []
+sofast	0	https://www.sofast.tv/contact
+   FORM NONE
+   EMAIL []
+   WA [] TG [] TEL []
+mautic	200	https://www.mautic.org/contact/
+   FORM GET 'https://mautic.org' vis=2 ['s', 'e_search_props']
+   EMAIL []
+   WA [] TG [] TEL []
+ninjatranslations	403	https://www.ninjatranslations.com/contact-us
+   FORM NONE
+   EMAIL []
+   WA [] TG [] TEL []
+translatehive	200	https://translatehive.com/
+   FORM NONE
+   EMAIL ['customer.services@translatehive.com', 'customer.services@translatehive.com\\']
+   WA [] TG [] TEL []
+e2translations	0	https://www.e2translations.com/contact-us
+   FORM NONE
+   EMAIL []
+   WA [] TG [] TEL []
+go1d	0	https://go1d.com/contact
+   FORM NONE
+   EMAIL []
+   WA [] TG [] TEL []
+languageline	200	https://www.languageline.com/
+   FORM GET 'https://www.languageline.com/search-results' vis=10 ['term', 'pathPrefix', 'pathPrefix', 'pathPrefix', 'pathPrefix', 'pathPrefix', 'pathPrefix', 'matchPrefix', 'limit', 'language']
+   EMAIL []
+   WA [] TG [] TEL []

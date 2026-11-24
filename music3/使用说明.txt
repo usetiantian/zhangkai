@@ -1,0 +1,37 @@
+music3 音乐工作室 v1.0.0
+==========================
+
+一句话生成音乐（本地 MiniMax Music3）
+
+【快速开始】
+1. 确认已安装 ComfyUI 且已启动（默认 http://127.0.0.1:8188）
+   ComfyUI 官方下载：https://github.com/comfyanonymous/ComfyUI
+2. 双击 music3.exe，控制面板会显示环境体检结果
+3. 点「打开工作室」，在浏览器里写一句话，点「生成」
+
+【模型准备】共约 14.3 GB，需放到 ComfyUI 的 models 目录下：
+  diffusion_models/minimax_music3_dit_fp16.safetensors                    4.9 G
+  diffusion_models/minimax_music3_dit_int8_convrot.safetensors           2.5 G（可选，低显存版）
+  text_encoders/minimax_music3_text_encoder_pruned_int8_convrot.safetensors  9.2 G
+  vae/minimax_music3_dav.safetensors                                       217 M
+
+  下载（国内推荐镜像，直连 huggingface.co 通常不通）：
+    https://hf-mirror.com/Comfy-Org/MiniMax-Music3
+    https://huggingface.co/Comfy-Org/MiniMax-Music3
+
+【可选功能：AI 写词 / AI 写编曲说明】
+需要 MiniMax API Key，在界面底部填入。
+  国际站 https://platform.minimax.io  → api.minimax.io
+  国内站 https://platform.minimaxi.com → api.minimaxi.com
+填完点「测试 Key 连通性」确认可用。
+不填也能用，只是不能自动写词/编曲说明。
+
+【隐私】
+- 全部音乐在本机生成，提示词与音频不会上传
+- 仅「AI 写词 / 编曲说明」会把请求发给 MiniMax 文本接口
+- API Key 只存在浏览器 localStorage，不写入本机文件
+
+【许可】
+音乐模型 MiniMax-Music3 采用 MiniMax-Music3 Community License，
+完整条款见 LICENSE-MINIMAX-MUSIC3.txt。
+本软件生成音频由 MiniMax-Music3 产生。

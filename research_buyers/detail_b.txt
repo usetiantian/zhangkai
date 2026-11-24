@@ -1,0 +1,136 @@
+====================================================================================================
+ivemind | https://ivemind.com/en/white-label | HTTP 200
+  EMAIL ['ivemindscs@pec.it', 'sales@ivemind.com']
+====================================================================================================
+kwiqwork | https://kwiqwork.com/contact | HTTP 200
+  FORM action='https://kwiqwork.com/contact' method='GET' nfields=6 :: name,email,company,project-type,budget,message
+  EMAIL ['info@kwiqwork.com', 'info@kwiqwork.com\\']
+  $ ~ cated Team Staff Augmentation Fractional CTO Other Budget Range Select budget range Under $5,000/month $5,000–$10,000/month $10,000–$25,000/month $25,000+/month Project-based budget Tell
+  $ ~ aff Augmentation Fractional CTO Other Budget Range Select budget range Under $5,000/month $5,000–$10,000/month $10,000–$25,000/month $25,000+/month Project-based budget Tell Us About You
+  $ ~ mentation Fractional CTO Other Budget Range Select budget range Under $5,000/month $5,000–$10,000/month $10,000–$25,000/month $25,000+/month Project-based budget Tell Us About Your Projec
+  $ ~ tional CTO Other Budget Range Select budget range Under $5,000/month $5,000–$10,000/month $10,000–$25,000/month $25,000+/month Project-based budget Tell Us About Your Project * Send Messa
+  $ ~ TO Other Budget Range Select budget range Under $5,000/month $5,000–$10,000/month $10,000–$25,000/month $25,000+/month Project-based budget Tell Us About Your Project * Send Message We&#x
+  $ ~ t Range Select budget range Under $5,000/month $5,000–$10,000/month $10,000–$25,000/month $25,000+/month Project-based budget Tell Us About Your Project * Send Message We&#x27;ll respond 
+====================================================================================================
+nextenvision | https://nextenvision.com/agency-partner-program | HTTP 200
+  FORM action='https://nextenvision.com/agency-partner-program/' method='POST' nfields=13 :: post_id,form_id,referer_title,queried_id,form_fields[fullname],form_fields[field_6a67142],form_fields[email],form_fields[field_fdd9037],form_fields[field_9e6e99e],form_fields[field_e5c0926],form_fields[field_8b499d7],form_fields[message],form_fields[field_07c5334]
+  FORM action='https://nextenvision.com/agency-partner-program/' method='POST' nfields=14 :: post_id,form_id,referer_title,queried_id,form_fields[fullname],form_fields[field_6a67142],form_fields[email],form_fields[field_fdd9037],form_fields[message],form_fields[field_72c561b],form_fields[field_db9ab3a],form_fields[field_be3f7a7],form_fields[field_b94f2e9],form_fields[field_ae97ff3]
+  FORM action='https://nextenvision.com/agency-partner-program/' method='POST' nfields=2 :: user_name,user_email
+  EMAIL ['connect@nextenvision.com']
+  WHATSAPP ['web.whatsapp.com/send?phone=918758255999']
+  $ ~ bel agency partnership project budget project budget lower than $1,000 $1,000 - $10,000 $10,000 - $50,000 $50,000 - $100,000 $100,000+ proje
+  $ ~ ncy partnership project budget project budget lower than $1,000 $1,000 - $10,000 $10,000 - $50,000 $50,000 - $100,000 $100,000+ project timeli
+  $ ~ ership project budget project budget lower than $1,000 $1,000 - $10,000 $10,000 - $50,000 $50,000 - $100,000 $100,000+ project timeline 
+  $ ~  project budget project budget lower than $1,000 $1,000 - $10,000 $10,000 - $50,000 $50,000 - $100,000 $100,000+ project timeline project
+  $ ~ roject budget project budget lower than $1,000 $1,000 - $10,000 $10,000 - $50,000 $50,000 - $100,000 $100,000+ project timeline project timeline 
+  $ ~ get project budget lower than $1,000 $1,000 - $10,000 $10,000 - $50,000 $50,000 - $100,000 $100,000+ project timeline project timeline lower th
+  $ ~  project budget lower than $1,000 $1,000 - $10,000 $10,000 - $50,000 $50,000 - $100,000 $100,000+ project timeline project timeline lower than 7 days 
+  $ ~  budget lower than $1,000 $1,000 - $10,000 $10,000 - $50,000 $50,000 - $100,000 $100,000+ project timeline project timeline lower than 7 days 7 - 14 day
+====================================================================================================
+itechnosol | https://itechnosol.com/contact-us/ | HTTP 200
+  FORM action='https://itechnosol.com/contact/' method='POST' nfields=11 :: $ACTION_REF_1,$ACTION_1:0,$ACTION_1:1,$ACTION_KEY,name,email,phone,message,website,startedAt,page
+  EMAIL ['info@itechnosol.com', 'info@itechnosol.com\\']
+  WHATSAPP ['wa.me/919722014000', 'wa.me/919722014000\\']
+====================================================================================================
+canopussoft | https://www.canopussoft.com/white-label-partnership | HTTP 200
+  FORM action='https://www.canopussoft.com/enquiry' method='POST' nfields=10 :: _token,form,source_path,form_started_at,website,name,email,company,answers[type],message
+  EMAIL ['contact@canopussoft.com']
+  WHATSAPP ['wa.me/918179797732']
+====================================================================================================
+ukad | https://ukad-group.com/industries/digital-agencies | HTTP 200
+  EMAIL ['hi@ukad-group.com']
+====================================================================================================
+way2outsource | https://way2outsource.com/contact | HTTP 200
+  FORM action='https://way2outsource.com/contact/' method='POST' nfields=6 :: __fluent_form_embded_post_id,_fluentform_3_fluentformnonce,_wp_http_referer,input_text,email,message
+====================================================================================================
+devsstation | https://devsstation.com/white-label-web-development-partner-program-for-agencies | HTTP 200
+  FORM action='https://devsstation.com/white-label-web-development-partner-program-for-agencies#wpcf7-f10-p41711-o1' method='POST' nfields=12 :: _wpcf7,_wpcf7_version,_wpcf7_locale,_wpcf7_unit_tag,_wpcf7_container_post,_wpcf7_posted_data_hash,_wpcf7_recaptcha_response,your-name,your-email,contact-number,subject,your-message
+  FORM action='https://devsstation.com/white-label-web-development-partner-program-for-agencies' method='GET' nfields=5 :: comment,email,author,url,submit
+  WHATSAPP ['wa.me/8801511927992', 'wa.me\\/8801511927992']
+====================================================================================================
+decipherzone | https://www.decipherzone.com/become-a-partner | HTTP 200
+  FORM action='https://www.decipherzone.com/become-a-partner' method='GET' nfields=5 :: name,emailId,mobile,message,consent
+  EMAIL ['info@decipherzone.com', 'info@decipherzone.com\\']
+  WHATSAPP ['api.whatsapp.com/send?phone=+919602714737&amp;text=Hi', 'api.whatsapp.com/send?phone=+919602714737\\u0026text=Hi\\']
+====================================================================================================
+mindrind | https://mindrind.net/project-overflow-support | HTTP 200
+  FORM action='https://mindrind.net/project-overflow-support/' method='GET' nfields=2 :: website,need
+  FORM action='https://mindrind.net/project-overflow-support/' method='GET' nfields=2 :: website,need
+  FORM action='https://mindrind.net/project-overflow-support/' method='GET' nfields=2 :: website,need
+  FORM action='https://mindrind.net/project-overflow-support/' method='GET' nfields=4 :: website,email,phone,need
+  EMAIL ['support@mindrind.net', 'support@mindrind.net\\']
+====================================================================================================
+codalyst | https://codalyst-tech.com/for-agencies/overflow-capacity | HTTP 200
+  FORM action='https://codalyst-tech.com/for-agencies/overflow-capacity' method='GET' nfields=0 :: 
+  EMAIL ['contact@codalyst-tech.com', 'contact@codalyst-tech.com\\']
+  $ ~ ituation The pitch won. The team is full. The deadline is real. Your agency just landed a $200K build. Excellent. Except your team is already at capacity, recruitment takes three months
+  $ ~  rolling. No long-term lock-in. Turn up or down as the project demands. Single specialist from $1,500 /mo 1 developer, designer, or content specialist assigned to your project within 7 busine
+  $ ~ roject within 7 business days. 30-day rolling, all-inclusive rate Get started Sprint team from $4,000 /mo 3 to 5 specialists across complementary roles, coordinated by a delivery lead from da
+====================================================================================================
+aptluma | https://www.aptluma.com/services/agencies | HTTP 200
+  EMAIL ['info@aptluma.com', 'info@aptluma.com\\']
+  $ ~  to your client, no scramble on your side. Pricing. White-label partnerships start around £2,000/month, with fixed-scope overflow projects from £1,500. Every project is scoped and fixed 
+  $ ~ ite-label partnerships start around £2,000/month, with fixed-scope overflow projects from £1,500. Every project is scoped and fixed up front, so you know the cost before we start. Freque
+====================================================================================================
+prosabbir | https://prosabbir.com/for-agencies | HTTP 200
+  FORM action='https://prosabbir.com/for-agencies' method='GET' nfields=0 :: 
+  EMAIL ['ahmedsabbir2013@gmail.com']
+  WHATSAPP ['wa.me/15125840254']
+  $ ~ d in Austin , TX . I reply within one business day. Your name Email address Budget range $5k+ $20k+ $50k+ $100k+ Timeline ASAP 1-3 months 3-6 months Still exploring What do you want 
+  $ ~ Austin , TX . I reply within one business day. Your name Email address Budget range $5k+ $20k+ $50k+ $100k+ Timeline ASAP 1-3 months 3-6 months Still exploring What do you want to fix
+  $ ~  , TX . I reply within one business day. Your name Email address Budget range $5k+ $20k+ $50k+ $100k+ Timeline ASAP 1-3 months 3-6 months Still exploring What do you want to fix or bu
+  $ ~  . I reply within one business day. Your name Email address Budget range $5k+ $20k+ $50k+ $100k+ Timeline ASAP 1-3 months 3-6 months Still exploring What do you want to fix or build? Bo
+  $ ~ . What is the minimum engagement? + Small automation or integration projects start around $3,000. Dedicated developer arrangements typically run monthly. More answers live on the FAQ pag
+====================================================================================================
+jordanaldton | https://jordandalton.com/contact | HTTP 200
+  FORM action='https://jordandalton.com/contact' method='GET' nfields=0 :: 
+  FORM action='https://jordandalton.com/contact' method='GET' nfields=0 :: 
+  EMAIL ['jordan@daltonsolutions.com']
+  $ ~ emailing Jordan, directly. No assistant. No funnel. No &quot;team will reach out.&quot; → $2,500 / day + tokens · prepaid (Stripe or bank transfer) → 1–2 build days available per week → 
+  $ ~  need built? Request a build day → Not ready to commit? Start with a Build Day Fit Check. $250. 45 minutes to map the problem and define the scope. Applied to the build day if you book
+====================================================================================================
+whitelabelpartner | https://whitelabelpartner.com/contact-us | HTTP 200
+  FORM action='https://whitelabelpartner.com/contact-us/#wpcf7-f506-o1' method='POST' nfields=22 :: _wpcf7,_wpcf7_version,_wpcf7_locale,_wpcf7_unit_tag,_wpcf7_container_post,_wpcf7_posted_data_hash,_cf7a__timestamp,_cf7a_version,_cf7a_address,_cf7a_referer,_cf7a_protocol,wl_landing_page,wl_referrer,wl_utm
+  FORM action='https://whitelabelpartner.com/contact-us/#wpcf7-f128-o2' method='POST' nfields=22 :: _wpcf7,_wpcf7_version,_wpcf7_locale,_wpcf7_unit_tag,_wpcf7_container_post,_wpcf7_posted_data_hash,_cf7a__timestamp,_cf7a_version,_cf7a_address,_cf7a_referer,_cf7a_protocol,wl_landing_page,wl_referrer,wl_utm
+  EMAIL ['contactus@whitelabelpartner.com']
+====================================================================================================
+murmusoft | https://murmusoftwareinfotech.com/white-label-software-development-partner | HTTP 200
+  FORM action='https://murmusoftwareinfotech.com/white-label-software-development-partner' method='GET' nfields=1 :: website
+  FORM action='https://murmusoftwareinfotech.com/white-label-software-development-partner' method='GET' nfields=1 :: email
+  EMAIL ['contactus@murmusoftwareinfotech.com', 'contactus@murmusoftwareinfotech.com\\']
+  WHATSAPP ['wa.me/919110176498', 'wa.me/919110176498\\']
+====================================================================================================
+bantechsolutions | https://www.bantechsolutions.com/contact-us/ | HTTP 200
+  FORM action='https://www.bantechsolutions.com/contact-us/#wpcf7-f2441-p48-o1' method='POST' nfields=15 :: _wpcf7,_wpcf7_version,_wpcf7_locale,_wpcf7_unit_tag,_wpcf7_container_post,_wpcf7_posted_data_hash,_uacf7_hidden_conditional_fields,_wpcf7_recaptcha_response,first-name,last-name,your-email,your-phone,project-type,your-message
+  FORM action='https://www.bantechsolutions.com/contact-us/#wpcf7-f99-o2' method='POST' nfields=17 :: _wpcf7,_wpcf7_version,_wpcf7_locale,_wpcf7_unit_tag,_wpcf7_container_post,_wpcf7_posted_data_hash,_uacf7_hidden_conditional_fields,_wpcf7_recaptcha_response,first-name,last-name,your-phone,your-email,project-type,project-budget
+  EMAIL ['info@bantechsolutions.com']
+  WHATSAPP ['wa.me/919830010105']
+  $ ~ market Scale or revamp an existing platform Something else entirely Project Budget &lt; $500 $500 - $5,000 $5,000 - $10,000 $10,000 - $25,000 $25,000 - $50,000 &gt; $50,000 
+  $ ~ t Scale or revamp an existing platform Something else entirely Project Budget &lt; $500 $500 - $5,000 $5,000 - $10,000 $10,000 - $25,000 $25,000 - $50,000 &gt; $50,000 Abou
+  $ ~  or revamp an existing platform Something else entirely Project Budget &lt; $500 $500 - $5,000 $5,000 - $10,000 $10,000 - $25,000 $25,000 - $50,000 &gt; $50,000 About Why BAN
+  $ ~ amp an existing platform Something else entirely Project Budget &lt; $500 $500 - $5,000 $5,000 - $10,000 $10,000 - $25,000 $25,000 - $50,000 &gt; $50,000 About Why BANTECH Co
+  $ ~ isting platform Something else entirely Project Budget &lt; $500 $500 - $5,000 $5,000 - $10,000 $10,000 - $25,000 $25,000 - $50,000 &gt; $50,000 About Why BANTECH Company Why 
+  $ ~ latform Something else entirely Project Budget &lt; $500 $500 - $5,000 $5,000 - $10,000 $10,000 - $25,000 $25,000 - $50,000 &gt; $50,000 About Why BANTECH Company Why outsourc
+  $ ~ mething else entirely Project Budget &lt; $500 $500 - $5,000 $5,000 - $10,000 $10,000 - $25,000 $25,000 - $50,000 &gt; $50,000 About Why BANTECH Company Why outsource? Who we 
+  $ ~ else entirely Project Budget &lt; $500 $500 - $5,000 $5,000 - $10,000 $10,000 - $25,000 $25,000 - $50,000 &gt; $50,000 About Why BANTECH Company Why outsource? Who we serve Te
+  $ ~ ely Project Budget &lt; $500 $500 - $5,000 $5,000 - $10,000 $10,000 - $25,000 $25,000 - $50,000 &gt; $50,000 About Why BANTECH Company Why outsource? Who we serve Terms & Cond
+  $ ~  Budget &lt; $500 $500 - $5,000 $5,000 - $10,000 $10,000 - $25,000 $25,000 - $50,000 &gt; $50,000 About Why BANTECH Company Why outsource? Who we serve Terms & Conditions Privac
+====================================================================================================
+stacksmesh | https://stacksmesh.com/contact | HTTP 200
+  FORM action='https://stacksmesh.com/start' method='GET' nfields=0 :: 
+  EMAIL ['hello@stacksmesh.com']
+====================================================================================================
+brilio | https://brilio.ai/agency | HTTP 200
+  FORM action='https://brilio.ai/agency/post' method='GET' nfields=8 :: _wp_http_referer,name,email,compay,phone,subject,message,privacy
+  FORM action='https://brilio.ai/api/subscribe' method='POST' nfields=3 :: nlang,ne,ny
+  $ ~ der who builds your first client s agent with you. Book a founding-partner call $199 / month cancel anytime Your brand, not ours The chat widget carries no Bri
+  $ ~ You sell it on You price and bill your clients however you like. Your flat cost stays $199 a month whether you run one agent or thirty. $199 / per month 2,500 AI Credit
+  $ ~ ou like. Your flat cost stays $199 a month whether you run one agent or thirty. $199 / per month 2,500 AI Credits up to 30 agents Monthly. Cancel anytime. Deliberately 
+====================================================================================================
+e2msolutions | https://www.e2msolutions.com/contact | HTTP 200
+  EMAIL ['&#97;ge&#110;&#99;&#105;&#101;s&#64;&#101;&#50;&#109;sol&#117;tio&#110;&#115;.c&#111;&#109;', 'a&#103;&#101;n&#99;ie&#115;&#64;&#101;&#50;ms&#111;lut&#105;on&#115;.com', 'age&#110;ci&#101;s&#64;&#101;2ms&#111;&#108;ut&#105;ons.&#99;om', 'agencies@e2msolutions.com', 'ca&#114;eer&#64;e&#50;ms&#111;lu&#116;&#105;&#111;&#110;&#115;.co&#109;', 'career@e2msolutions.com']
+====================================================================================================
+whitelabelaiagency | https://whitelabelai.agency/about | HTTP 200
+  FORM action='https://whitelabelai.agency/about/' method='POST' nfields=6 :: __fluent_form_embded_post_id,_fluentform_5_fluentformnonce,_wp_http_referer,names[first_name],names[last_name],email
+  EMAIL ['darshan@whitelabelai.agency']
+  $ ~ e 14 production builds — hours recovered, revenue lifted, costs avoided. Estimate $500K + 05 English-speaking markets served US · UK · EU · Australia. Most work r

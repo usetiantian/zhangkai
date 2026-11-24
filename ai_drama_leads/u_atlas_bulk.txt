@@ -1,0 +1,24 @@
+# title: AI-Generated Vertical Micro-Dramas for New Streaming App (Bulk)
+description: "I am launching AtlasDrama, a new vertical micro-drama streaming app, and I am looking for AI-generated micro-drama series to license or buy for our launch catalog. What I need: AI-generated (not live-action) vertical series, 9:16, 1 to 3 minute episodes; Genres: romance, thriller, LGBTQ+; Primarily European and American casts, mainly English audio; Photorealistic style with consistent characters across episodes. To apply, p > Explore similar jobs on Upwork
+[Teach Me Video Generation! Ideally with ElevenLabs](https://www.upwork.com/freelance-jobs/apply/Teach-Video-Generation-Ideally-with-ElevenLabs_~022112962105511449398/)Hourly‐ Posted 3 weeks ago
+Generative AI Prompt Engineering
+AI Image and Video Generation
+
+...
+
+description: "I am launching AtlasDrama, a new vertical micro-drama streaming app, and I am looking for AI-generated micro-drama series to license or buy for our launch catalog. What I need: AI-generated (not live-action) vertical series, 9:16, 1 to 3 minute episodes; Genres: romance, thriller, LGBTQ+; Primarily European and American casts, mainly English audio; Photorealistic style with consistent characters across episodes. To apply, p > About Upwork
+- Rating is 4.9 out of 5.**4.9/5** (Average rating of clients by professionals)
+- **G2 2021** #1 freelance platform
+- **49,000+** Signed contract every week
+- **$2.3B** Freelancers earned on Upwork in 2020
+
+...
+
+description: "I am launching AtlasDrama, a new vertical micro-drama streaming app, and I am looking for AI-generated micro-drama series to license or buy for our launch catalog. What I need: AI-generated (not live-action) vertical series, 9:16, 1 to 3 minute episodes; Genres: romance, thriller, LGBTQ+; Primarily European and American casts, mainly English audio; Photorealistic style with consistent characters across episodes. To apply, p > Find the best freelance jobs > Explore Upwork opportunities for free
+```json
+{"@context":"http://schema.org","@type":"JobPosting","url":"https://www.upwork.com/freelance-jobs/apply/Generated-Vertical-Micro-Dramas-for-New-Streaming-App-Bulk_~022120326284382978518/","datePosted":"2026-11-11T01:22:34.957Z","employmentType":["CONTRACTOR","TEMPORARY"],"directApply":true,"hiringOrganization":{"@type":"Organization","name":"Upwork","sameAs":"https://www.upwork.com/","logo":"https://www.upwork.com/images/upwork-logo-120.png"},"description":"\u003Cp>I am launching AtlasDrama, a new vertical micro-drama streaming app, and I am looking for AI-generated micro-drama series to license or buy for our launch catalog. What I need: AI-generated (not live-action) vertical series, 9:16, 1 to 3 minute episodes; Genres: romance, thriller, LGBTQ+; Primarily European and American casts, mainly English audio; Photorealistic style with consistent characters across episodes. To apply, please send 2 to 3 sample episodes or links t
+```
+description: "I am launching AtlasDrama, a new vertical micro-drama streaming app, and I am looking for AI-generated micro-drama series to license or buy for our launch catalog. What I need: AI-generated (not live-action) vertical series, 9:16, 1 to 3 minute episodes; Genres: romance, thriller, LGBTQ+; Primarily European and American casts, mainly English audio; Photorealistic style with consistent characters across episodes. To apply, p > Find the best freelance jobs > Explore Upwork opportunities for free
+```json
+o your past AI drama work, plus your per-title pricing and license terms. I am looking to acquire 25+ titles with a starting budget of around $5,000 CAD. If I like your samples, I will contact you directly to discuss.\u003C/p>\u003Cp>Ongoing series are welcome too — not all titles need to be complete. We will publish ongoing titles as well if time is a constraint.\u003C/p>","jobLocation":{"@type":"Place","address":{"@type":"PostalAddress","addressCountry":"US"}},"jobLocationType":"TELECOMMUTE","skills":"","title":"AI-Generated Vertical Micro-Dramas for New Streaming App (Bulk)","applicantLocationRequirements":{"@type":"Country","name":["Albania","Algeria","American Samoa","Andorra","Angola","Anguilla","Antarctica","Antigua and Barbuda","Argentina","Armenia","Aruba","Australia","Austria","Azerbaijan","Bahamas","Bahrain","Bangladesh","Barbados","Belgium","Belize","Benin","Bermuda","Bhutan","Bolivia","Bonaire, Sint Eustatius and S
+```

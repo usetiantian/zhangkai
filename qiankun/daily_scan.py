@@ -3,6 +3,9 @@
 # 每日扫描 → Qwen3-VL-4B分析 → 模拟交易 → 持仓跟踪
 #
 import json, os, sys, io, base64, urllib.request
+import sys as _sys
+_sys.path.insert(0, str(__import__("pathlib").Path(__file__).parent))
+from minimax_client import chat as _mm_chat, vision_describe as _mm_vision, build_vision_messages as _mm_build_vm
 from datetime import datetime, timedelta
 from pathlib import Path
 
@@ -18,7 +21,7 @@ sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
 # ── 配置 ──
 PORTFOLIO_FILE = Path(__file__).parent / "portfolio.json"
-LMSTUDIO_URL = "http://127.0.0.1:1234/v1/chat/completions"
+# 2026-07-30: 改用 mmx (MiniMax M3), 不要 LMSTUDIO_URL
 INITIAL_CAPITAL = 1_000_000
 MAX_POSITIONS = 5
 SCAN_BATCH = 300  # 每批扫描数量，全市场5201只约需15批
@@ -94,24 +97,15 @@ def make_chart(code, name, df, save_path):
 
 
 # ── Qwen3-VL-4B 分析 ──
-def ask_qwen(image_path, prompt):
-    with open(image_path, 'rb') as f:
-        img_b64 = base64.b64encode(f.read()).decode()
-    payload = {
-        'model': 'qwen/qwen3-vl-4b',
-        'messages': [{'role': 'user', 'content': [
-            {'type': 'image_url', 'image_url': {'url': f'data:image/png;base64,{img_b64}'}},
-            {'type': 'text', 'text': prompt}
-        ]}],
-        'max_tokens': 300, 'temperature': 0.3
-    }
-    req = urllib.request.Request(LMSTUDIO_URL, data=json.dumps(payload).encode(),
-                                  headers={'Content-Type': 'application/json'})
-    resp = urllib.request.urlopen(req, timeout=90)
-    return json.loads(resp.read())['choices'][0]['message']['content']
+def ask_minimax(image_path, prompt):
+    """2026-07-30: 改用 MiniMax M3 (mmx CLI) 替代 qwen3-vl-4b."""
+    return _mm_vision(image_path, prompt, timeout=120)
 
 
-# ── 持仓管理 ──
+# 老的 qwen3-vl-4b 调用的 helper
+
+# 老的 qwen3-vl-4b 调用的 helper
+
 def load_portfolio():
     if PORTFOLIO_FILE.exists():
         with open(PORTFOLIO_FILE, encoding='utf-8') as f:
@@ -261,7 +255,7 @@ def main():
         # Qwen 分析
         try:
             prompt = f'{short_code} {name}，近30日涨{c["pct_30"]}%。看图：能买吗？趋势、支撑压力、目标价。中文60字。'
-            analysis = ask_qwen(str(chart_path), prompt)
+            analysis = ask_minimax(str(chart_path), prompt)
             print(f'  {short_code} {name} +{c["pct_30"]}%')
             print(f'  {analysis[:200]}')
 

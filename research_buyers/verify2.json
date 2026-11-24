@@ -1,0 +1,323 @@
+[
+ {
+  "name": "agentproai",
+  "url": "https://agentpro.ai/contact",
+  "ok": true,
+  "err": null,
+  "len": 3586,
+  "exp_found": true,
+  "emails": [
+   "info@agentpro.ai"
+  ],
+  "money": [
+   "$1",
+   "$1",
+   "$5",
+   "$5",
+   "$10"
+  ]
+ },
+ {
+  "name": "companyautomation",
+  "url": "https://companyautomation.co.uk/contact",
+  "ok": true,
+  "err": null,
+  "len": 2437,
+  "exp_found": true,
+  "emails": [
+   "hello@companyautomation.co.uk"
+  ],
+  "money": []
+ },
+ {
+  "name": "thinkaiworks",
+  "url": "https://thinkaiworks.com/contact/",
+  "ok": true,
+  "err": null,
+  "len": 3551,
+  "exp_found": true,
+  "emails": [
+   "%20info@thinkaiworks.com",
+   "info@thinkaiworks.com"
+  ],
+  "money": []
+ },
+ {
+  "name": "evrenai",
+  "url": "https://www.evrenai.com/connect",
+  "ok": true,
+  "err": null,
+  "len": 826,
+  "exp_found": true,
+  "emails": [
+   "contact@evrenai.com"
+  ],
+  "money": []
+ },
+ {
+  "name": "guacagents",
+  "url": "https://guacagents.com/contact/",
+  "ok": true,
+  "err": null,
+  "len": 2587,
+  "exp_found": true,
+  "emails": [
+   "info@guacdigital.com"
+  ],
+  "money": [
+   "$1,000/mo",
+   "$1,000",
+   "$3,000/mo",
+   "$3,000",
+   "$5,000/mo"
+  ]
+ },
+ {
+  "name": "qodeonlabs",
+  "url": "https://www.qodeonlabs.com/contact",
+  "ok": true,
+  "err": null,
+  "len": 1564,
+  "exp_found": true,
+  "emails": [
+   "contact@qodeonlabs.com"
+  ],
+  "money": []
+ },
+ {
+  "name": "itzea",
+  "url": "https://itzea.com/contact",
+  "ok": true,
+  "err": null,
+  "len": 749,
+  "exp_found": null,
+  "emails": [
+   "hi@itzea.com"
+  ],
+  "money": []
+ },
+ {
+  "name": "myriah",
+  "url": "https://myriahagency.com/services/internal-tools",
+  "ok": true,
+  "err": null,
+  "len": 4336,
+  "exp_found": false,
+  "emails": [],
+  "money": [
+   "from $2,500,",
+   "from $2,500",
+   "from $2,500,"
+  ]
+ },
+ {
+  "name": "roidigital",
+  "url": "https://roidigital.ca/services/ai-agent-workflow-automation",
+  "ok": true,
+  "err": null,
+  "len": 4382,
+  "exp_found": false,
+  "emails": [],
+  "money": [
+   "starting from $1,500",
+   "starting from $3,000",
+   "starting from $900"
+  ]
+ },
+ {
+  "name": "helpwithautomation",
+  "url": "https://www.helpwithautomation.com/",
+  "ok": true,
+  "err": null,
+  "len": 4131,
+  "exp_found": false,
+  "emails": [],
+  "money": [
+   "$0",
+   "From $800"
+  ]
+ },
+ {
+  "name": "smbstudio",
+  "url": "https://smb-studio.com/",
+  "ok": true,
+  "err": null,
+  "len": 3155,
+  "exp_found": false,
+  "emails": [],
+  "money": [
+   "$0"
+  ]
+ },
+ {
+  "name": "fuselio",
+  "url": "https://www.fuselio.com/services/internal-tools-development",
+  "ok": true,
+  "err": null,
+  "len": 4349,
+  "exp_found": false,
+  "emails": [],
+  "money": []
+ },
+ {
+  "name": "rot8studio",
+  "url": "https://www.rot8studio.com/services/internal-tools",
+  "ok": true,
+  "err": null,
+  "len": 4345,
+  "exp_found": true,
+  "emails": [
+   "contact@rot8studio.com"
+  ],
+  "money": []
+ },
+ {
+  "name": "ariusautomation",
+  "url": "https://www.ariusautomation.com/services/internal-tools-dashboards",
+  "ok": true,
+  "err": null,
+  "len": 4467,
+  "exp_found": true,
+  "emails": [
+   "info@ariusautomation.com"
+  ],
+  "money": [
+   "$10",
+   "$50"
+  ]
+ },
+ {
+  "name": "trinitycloud",
+  "url": "https://www.trinitycloudconsulting.com/",
+  "ok": true,
+  "err": null,
+  "len": 4313,
+  "exp_found": true,
+  "emails": [
+   "hello@trinitycloudconsulting.com"
+  ],
+  "money": [
+   "$200/hour",
+   "$200",
+   "$200/hour"
+  ]
+ },
+ {
+  "name": "zapsstudio",
+  "url": "https://zapsstudio.com/contact/",
+  "ok": true,
+  "err": null,
+  "len": 307,
+  "exp_found": null,
+  "emails": [],
+  "money": []
+ },
+ {
+  "name": "jakealberio",
+  "url": "https://jakealberio.com/ai-automation",
+  "ok": true,
+  "err": null,
+  "len": 1641,
+  "exp_found": false,
+  "emails": [],
+  "money": []
+ },
+ {
+  "name": "tezeract",
+  "url": "https://tezeract.ai/ai-services-and-solutions/ai-agent-development",
+  "ok": true,
+  "err": null,
+  "len": 2227,
+  "exp_found": null,
+  "emails": [],
+  "money": []
+ },
+ {
+  "name": "smbaiteam",
+  "url": "https://smbaiteam.com/contact",
+  "ok": true,
+  "err": null,
+  "len": 810,
+  "exp_found": false,
+  "emails": [
+   "mariokezi1@gmail.com"
+  ],
+  "money": []
+ },
+ {
+  "name": "growthnexus",
+  "url": "https://getgrowthnexus.com/contact",
+  "ok": true,
+  "err": null,
+  "len": 3090,
+  "exp_found": true,
+  "emails": [
+   "info@getgrowthnexus.com"
+  ],
+  "money": []
+ },
+ {
+  "name": "itechnosol",
+  "url": "https://itechnosol.com/engineering-partnerships/",
+  "ok": true,
+  "err": null,
+  "len": 4248,
+  "exp_found": false,
+  "emails": [],
+  "money": []
+ },
+ {
+  "name": "nextenvision",
+  "url": "https://nextenvision.com/agency-partner-program/",
+  "ok": true,
+  "err": null,
+  "len": 4453,
+  "exp_found": false,
+  "emails": [],
+  "money": []
+ },
+ {
+  "name": "decipherzone",
+  "url": "https://www.decipherzone.com/become-a-partner",
+  "ok": true,
+  "err": null,
+  "len": 4484,
+  "exp_found": false,
+  "emails": [],
+  "money": []
+ },
+ {
+  "name": "bantechsolutions",
+  "url": "https://www.bantechsolutions.com/white-label-partnership/",
+  "ok": true,
+  "err": null,
+  "len": 2988,
+  "exp_found": false,
+  "emails": [],
+  "money": []
+ },
+ {
+  "name": "codalyst",
+  "url": "https://codalyst-tech.com/for-agencies/overflow-capacity",
+  "ok": true,
+  "err": null,
+  "len": 4433,
+  "exp_found": false,
+  "emails": [],
+  "money": [
+   "from $4,000"
+  ]
+ },
+ {
+  "name": "mindrind",
+  "url": "https://mindrind.net/project-overflow-support/",
+  "ok": true,
+  "err": null,
+  "len": 4427,
+  "exp_found": true,
+  "emails": [
+   "support@mindrind.net"
+  ],
+  "money": []
+ }
+]

@@ -1,0 +1,6 @@
+inswapper_128.onnx  providers=['CUDAExecutionProvider', 'CPUExecutionProvider']
+   inputs: [('target', [1, 3, 128, 128], 'tensor(float)'), ('source', [1, 512], 'tensor(float)')]
+   output (1, 3, 128, 128) 范围 0.000~1.000 非零95.0%
+inswapper_128_fp16.onnx  providers=['CUDAExecutionProvider', 'CPUExecutionProvider']
+   inputs: [('target', [1, 3, 128, 128], 'tensor(float)'), ('source', [1, 512], 'tensor(float)')]
+   output (1, 3, 128, 128) 范围 nan~nan 非零0.0%

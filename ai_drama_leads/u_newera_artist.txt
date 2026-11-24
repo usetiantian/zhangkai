@@ -1,0 +1,31 @@
+# HOW TO APPLY
+Please share your CV or existing portfolio and previous AI-generated work.
+image: https://www.upwork.com/images/upwork-logo-1200.png
+**Summary**
+Please share your CV or existing portfolio and previous AI-generated work.
+image: https://www.upwork.com/images/upwork-logo-1200.png
+New Era AI Studios is a production company that produces AI generated vertical drama series. We are seeking an experienced AI video generation artist to be lead AI prompter on AI vertical drama productions. This is a paid freelance project with the potential to develop into a long-term collaboration.
+
+...
+
+Please share your CV or existing portfolio and previous AI-generated work.
+image: https://www.upwork.com/images/upwork-logo-1200.png > Explore similar jobs on Upwork
+[AI Video Editor & Translator](https://www.upwork.com/freelance-jobs/apply/Video-Editor-Translator%5F~022091061131741531943/)Fixed-price‐ Posted 3 weeks ago
+AI Video Generator
+DeepL Translator
+
+...
+
+Please share your CV or existing portfolio and previous AI-generated work.
+image: https://www.upwork.com/images/upwork-logo-1200.png > Find the best freelance jobs > Explore Upwork opportunities for free
+```json
+{"@context":"http://schema.org","@type":"JobPosting","url":"https://www.upwork.com/freelance-jobs/apply/Video-Generation-Artist-for-Vertical-Drama-Paid-Freelance_~022099634069177377503/","datePosted":"2026-09-14T22:59:06.414Z","employmentType":["CONTRACTOR","TEMPORARY"],"directApply":true,"hiringOrganization":{"@type":"Organization","name":"Upwork","sameAs":"https://www.upwork.com/","logo":"https://www.upwork.com/images/upwork-logo-120.png"},"description":"\u003Cp>New Era AI Studios is a production company that produces AI generated vertical drama series. We are seeking an experienced AI video generation artist to be lead AI prompter on AI vertical drama productions. This is a paid freelance project with the potential to develop into a long-term collaboration.\u003C/p>\u003Cp>PROJECT\u003C/p>\u003Cp>Create cinematic AI generated vertical drama episodes based on a script supplied by the producer.\u003C/p>\u003Cp>The project emph
+```
+
+...
+
+Please share your CV or existing portfolio and previous AI-generated work.
+image: https://www.upwork.com/images/upwork-logo-1200.png > Find the best freelance jobs > Explore Upwork opportunities for free
+```json
+yen","Swaziland","Sweden","Switzerland","Taiwan","Tajikistan","Tanzania","Thailand","Timor-Leste","Togo","Tokelau","Tonga","Trinidad and Tobago","Tunisia","Turkey","Turkmenistan","Turks and Caicos Islands","Tuvalu","Uganda","Ukraine","United Arab Emirates","United Kingdom","United States","United States Minor Outlying Islands","United States Virgin Islands","Uruguay","Uzbekistan","Vanuatu","Venezuela","Vietnam","Wallis and Futuna","Western Sahara","Yemen","Zambia"]}}
+```

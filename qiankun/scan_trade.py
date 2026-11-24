@@ -94,7 +94,7 @@ for c in candidates[:6]:
     
     try:
         with open(chart_path,'rb') as f: img_b64=base64.b64encode(f.read()).decode()
-        payload={'model':'qwen/qwen3-vl-4b','messages':[{'role':'user','content':[
+        payload={'model':"MiniMax-M3",'messages':[{'role':'user','content':[
             {'type':'image_url','image_url':{'url':f'data:image/png;base64,{img_b64}'}},
             {'type':'text','text':f'{sc} {name} 30日涨{c["pct_30"]}%。看图：能买吗？中文50字。'}
         ]}],'max_tokens':200,'temperature':0.3}

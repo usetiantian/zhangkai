@@ -1,12 +1,14 @@
-# 乾坤 (QianKun) — A 股 AI 研究助手
+"""QianKun A-stock AI trading — config (2026-07-30: switch to MiniMax M3)."""
 import os
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 DATA_DIR = PROJECT_ROOT / "data"
 
-LMSTUDIO_URL = "http://127.0.0.1:1234/v1/chat/completions"
-LMSTUDIO_MODEL = "qwen/qwen3-vl-4b"
+# 2026-07-30: switched from LMStudio (qwen3-vl-4b) to MiniMax M3 (via mmx CLI).
+# mmx auto-manages the API key, no need to store it here.
+MINIMAX_MODEL = "MiniMax-M3"
+MINIMAX_VISION_MODEL = None  # None = use mmx default
 
 INITIAL_CAPITAL = 1_000_000
 MAX_POSITIONS = 5

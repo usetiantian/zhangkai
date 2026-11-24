@@ -1,0 +1,329 @@
+[
+ {
+  "name": "aptluma",
+  "url": "https://www.aptluma.com/services/agencies",
+  "ok": true,
+  "err": null,
+  "len": 1894,
+  "exp_found": true,
+  "emails": [
+   "info@aptluma.com"
+  ],
+  "money": []
+ },
+ {
+  "name": "prosabbir",
+  "url": "https://prosabbir.com/for-agencies",
+  "ok": true,
+  "err": null,
+  "len": 3828,
+  "exp_found": false,
+  "emails": [],
+  "money": [
+   "$3,000"
+  ]
+ },
+ {
+  "name": "whitelabelpartner",
+  "url": "https://whitelabelpartner.com/contact-us/",
+  "ok": true,
+  "err": null,
+  "len": 1221,
+  "exp_found": false,
+  "emails": [],
+  "money": []
+ },
+ {
+  "name": "kwiqwork",
+  "url": "https://kwiqwork.com/contact",
+  "ok": true,
+  "err": null,
+  "len": 1027,
+  "exp_found": false,
+  "emails": [],
+  "money": [
+   "$5,000/mo",
+   "$5,000",
+   "$10,000/mo",
+   "$10,000",
+   "$25,000/mo"
+  ]
+ },
+ {
+  "name": "way2outsource",
+  "url": "https://way2outsource.com/contact/",
+  "ok": true,
+  "err": null,
+  "len": 1970,
+  "exp_found": null,
+  "emails": [],
+  "money": []
+ },
+ {
+  "name": "canopussoft",
+  "url": "https://www.canopussoft.com/enquiry",
+  "ok": false,
+  "err": "http_error",
+  "len": 0,
+  "exp_found": false,
+  "emails": [],
+  "money": []
+ },
+ {
+  "name": "murmusoft",
+  "url": "https://murmusoftwareinfotech.com/white-label-software-development-partner",
+  "ok": true,
+  "err": null,
+  "len": 3966,
+  "exp_found": true,
+  "emails": [
+   "contactus@murmusoftwareinfotech.com"
+  ],
+  "money": []
+ },
+ {
+  "name": "devsstation",
+  "url": "https://devsstation.com/white-label-web-development-partner-program-for-agencies",
+  "ok": true,
+  "err": null,
+  "len": 3757,
+  "exp_found": null,
+  "emails": [],
+  "money": []
+ },
+ {
+  "name": "e2msolutions",
+  "url": "https://www.e2msolutions.com/white-label-ai-solutions-for-agencies",
+  "ok": true,
+  "err": null,
+  "len": 3854,
+  "exp_found": false,
+  "emails": [],
+  "money": []
+ },
+ {
+  "name": "ukad",
+  "url": "https://ukad-group.com/industries/digital-agencies",
+  "ok": true,
+  "err": null,
+  "len": 3852,
+  "exp_found": false,
+  "emails": [],
+  "money": []
+ },
+ {
+  "name": "ivemind",
+  "url": "https://ivemind.com/en/white-label",
+  "ok": true,
+  "err": null,
+  "len": 2681,
+  "exp_found": true,
+  "emails": [
+   "ivemindscs@pec.it",
+   "sales@ivemind.com"
+  ],
+  "money": []
+ },
+ {
+  "name": "brilio",
+  "url": "https://brilio.ai/agency",
+  "ok": true,
+  "err": null,
+  "len": 1261,
+  "exp_found": null,
+  "emails": [],
+  "money": [
+   "$199 / mo",
+   "$199"
+  ]
+ },
+ {
+  "name": "stacksmesh",
+  "url": "https://stacksmesh.com/partners",
+  "ok": true,
+  "err": null,
+  "len": 1781,
+  "exp_found": false,
+  "emails": [],
+  "money": []
+ },
+ {
+  "name": "whitelabelaiagency",
+  "url": "https://whitelabelai.agency/about/",
+  "ok": true,
+  "err": null,
+  "len": 2176,
+  "exp_found": true,
+  "emails": [
+   "darshan@whitelabelai.agency"
+  ],
+  "money": [
+   "$500"
+  ]
+ },
+ {
+  "name": "jordanaldton",
+  "url": "https://jordandalton.com/agency-overflow-developer",
+  "ok": true,
+  "err": null,
+  "len": 1424,
+  "exp_found": false,
+  "emails": [],
+  "money": [
+   "$2,500"
+  ]
+ },
+ {
+  "name": "sevencollab",
+  "url": "https://sevencollab.com/software-web-development-partnership",
+  "ok": true,
+  "err": null,
+  "len": 2051,
+  "exp_found": null,
+  "emails": [],
+  "money": []
+ },
+ {
+  "name": "bytestechnolab",
+  "url": "https://www.bytestechnolab.com/services/white-label",
+  "ok": true,
+  "err": null,
+  "len": 3850,
+  "exp_found": true,
+  "emails": [
+   "hello@bytestechnolab.com"
+  ],
+  "money": []
+ },
+ {
+  "name": "quickway",
+  "url": "https://www.quickwayinfosystems.com/white-label-development",
+  "ok": true,
+  "err": null,
+  "len": 3845,
+  "exp_found": true,
+  "emails": [
+   "info@quickwayinfosystems.com"
+  ],
+  "money": []
+ },
+ {
+  "name": "keyntech",
+  "url": "https://keyntech.com/contact",
+  "ok": true,
+  "err": null,
+  "len": 3878,
+  "exp_found": true,
+  "emails": [
+   "hello@keyntech.com",
+   "you@yourcompany.com"
+  ],
+  "money": [
+   "$10",
+   "$10",
+   "$50",
+   "$50",
+   "$150"
+  ]
+ },
+ {
+  "name": "getautomated",
+  "url": "https://www.getautomated.agency/",
+  "ok": true,
+  "err": null,
+  "len": 3977,
+  "exp_found": null,
+  "emails": [],
+  "money": [
+   "$6",
+   "$10",
+   "$5",
+   "$10",
+   "$6"
+  ]
+ },
+ {
+  "name": "algora",
+  "url": "https://algora.io/algora/bounties/new",
+  "ok": true,
+  "err": null,
+  "len": 3823,
+  "exp_found": null,
+  "emails": [],
+  "money": [
+   "$3,300",
+   "$100",
+   "$50",
+   "$25",
+   "$150"
+  ]
+ },
+ {
+  "name": "opire",
+  "url": "https://opire.dev/home",
+  "ok": true,
+  "err": null,
+  "len": 813,
+  "exp_found": true,
+  "emails": [
+   "team@opire.dev"
+  ],
+  "money": []
+ },
+ {
+  "name": "bountyhub",
+  "url": "https://www.bountyhub.dev/about-us",
+  "ok": true,
+  "err": null,
+  "len": 2551,
+  "exp_found": true,
+  "emails": [
+   "support@bountyhub.dev"
+  ],
+  "money": []
+ },
+ {
+  "name": "fixpool",
+  "url": "https://fixpool.dev/about",
+  "ok": true,
+  "err": null,
+  "len": 3438,
+  "exp_found": null,
+  "emails": [],
+  "money": [
+   "$50"
+  ]
+ },
+ {
+  "name": "custommt",
+  "url": "https://custom.mt/xtm-cloud-extension",
+  "ok": true,
+  "err": null,
+  "len": 3729,
+  "exp_found": false,
+  "emails": [],
+  "money": []
+ },
+ {
+  "name": "modelfront",
+  "url": "https://modelfront.com/contact",
+  "ok": true,
+  "err": null,
+  "len": 535,
+  "exp_found": true,
+  "emails": [
+   "contact@modelfront.com"
+  ],
+  "money": []
+ },
+ {
+  "name": "jobdatafeeds",
+  "url": "https://jobdatafeeds.com/",
+  "ok": true,
+  "err": null,
+  "len": 3108,
+  "exp_found": false,
+  "emails": [],
+  "money": []
+ }
+]

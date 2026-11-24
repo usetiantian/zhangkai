@@ -1,0 +1,12 @@
+{"kind":"run","at":"2026-11-11T02:07:23.746Z","doc":"sb.json","gates":18,"failed":4}
+{"kind":"fail","at":"2026-11-11T02:07:23.746Z","doc":"sb.json","gate":"coverage","label":"剧本节拍被恰好一次、按顺序、连续认领（分镜级）","detail":"E01-01#1 的节拍区间 [1, 1] 不合法（该场共 0 拍）；E01-01#2 的节拍区间 [2, 2] 不合法（该场共 0 拍）；E01-01#3 的节拍区间 [3, 3] 不合法（该场共 0 拍）；E01-01#4 的节拍区间 [4, 4] 不合法（该场共 0 拍）"}
+{"kind":"fail","at":"2026-11-11T02:07:23.746Z","doc":"sb.json","gate":"size-phrase","label":"景别中文词写进分镜图提示词","detail":"E01-01#2 景别「close-up」不在枚举里；E01-01#4 景别「close-up」不在枚举里"}
+{"kind":"fail","at":"2026-11-11T02:07:23.746Z","doc":"sb.json","gate":"camera-phrase","label":"运镜用 H3 官方词表，且出现在自己的 [Shot k] 段落里","detail":"E01-01#2 的 [Shot 2] 段落缺运镜词「push in」；E01-01#3 的 [Shot 3] 段落缺运镜词「static shot」"}
+{"kind":"fail","at":"2026-11-11T02:07:23.746Z","doc":"sb.json","gate":"refs","label":"场次／人物／道具对账剧本","detail":"E01-01#1 的 C01 不在剧本该场人物里；E01-01#1 的 C02 不在剧本该场人物里；E01-01#1 的 P01 不在剧本该场道具里；E01-01#2 的 C01 不在剧本该场人物里；E01-01#2 的 P01 不在剧本该场道具里；E01-01#3 的 C02 不在剧本该场人物里；E01-01#3 的 P01 不在剧本该场道具里；E01-01#4 的 C01 不在剧本该场人物里；E01-01#4 的 P02 不在剧本该场道具里"}
+{"kind":"run","at":"2026-11-11T02:07:36.727Z","doc":"sb.json","gates":18,"failed":5}
+{"kind":"fail","at":"2026-11-11T02:07:36.727Z","doc":"sb.json","gate":"dialogue-fit","label":"认领节拍的台词装得进分镜秒数","detail":"E01-01#3 台词 3.8 秒装不进 3 秒"}
+{"kind":"fail","at":"2026-11-11T02:07:36.727Z","doc":"sb.json","gate":"ep-duration","label":"每集总时长在剧本目标 ±15% 内","detail":"E01 欠 1.2 秒（9s / 目标 12s）"}
+{"kind":"fail","at":"2026-11-11T02:07:36.727Z","doc":"sb.json","gate":"size-phrase","label":"景别中文词写进分镜图提示词","detail":"E01-01#2 分镜图提示词缺景别词「特写」"}
+{"kind":"fail","at":"2026-11-11T02:07:36.727Z","doc":"sb.json","gate":"camera-phrase","label":"运镜用 H3 官方词表，且出现在自己的 [Shot k] 段落里","detail":"E01-01#3 的 [Shot 3] 段落缺运镜词「static shot」"}
+{"kind":"fail","at":"2026-11-11T02:07:36.727Z","doc":"sb.json","gate":"h3-structure","label":"H3 首行对齐指令由分镜结构推导逐字对账，切点时刻逐个对","detail":"E01-01 首行对齐指令和分镜结构对不上（promptLang=en）"}
+{"kind":"run","at":"2026-11-11T02:07:41.543Z","doc":"sb.json","gates":18,"failed":0}

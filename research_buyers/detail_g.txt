@@ -1,0 +1,192 @@
+roidigital2	200	https://roidigital.ca/contact/
+   FORM NONE
+   EMAIL []
+   WA [] TG [] TEL []
+helpwithautomation2	200	https://www.helpwithautomation.com/contact
+   FORM NONE
+   EMAIL ['info@helpwithautomation.com']
+   WA [] TG [] TEL []
+fuselio2	404	https://www.fuselio.com/contact
+   FORM NONE
+   EMAIL []
+   WA [] TG [] TEL []
+rot8studio2	404	https://www.rot8studio.com/contact
+   FORM NONE
+   EMAIL []
+   WA [] TG [] TEL []
+ariusautomation2	404	https://www.ariusautomation.com/contact
+   FORM NONE
+   EMAIL []
+   WA [] TG [] TEL []
+trinitycloud2	404	https://www.trinitycloudconsulting.com/contact
+   FORM NONE
+   EMAIL []
+   WA [] TG [] TEL []
+aptluma2	200	https://www.aptluma.com/contact
+   FORM NONE
+   EMAIL ['info@aptluma.com', 'info@aptluma.com\\']
+   WA [] TG [] TEL []
+e2msolutions2	200	https://www.e2msolutions.com/contact-us
+   FORM NONE
+   EMAIL ['agencies@e2msolutions.com', 'career@e2msolutions.com']
+   WA [] TG [] TEL []
+ukad2	404	https://ukad-group.com/contact
+   FORM NONE
+   EMAIL []
+   WA [] TG [] TEL []
+ivemind2	200	https://ivemind.com/en/contact
+   FORM GET 'https://ivemind.com/en/contact/' vis=5 ['website', 'email', 'phone', 'message', 'privacyAccepted']
+   EMAIL ['ivemindscs@pec.it', 'sales@ivemind.com']
+   WA [] TG [] TEL []
+datadiveedge3	404	https://www.datadiveedge.com/contact-us
+   FORM NONE
+   EMAIL []
+   WA [] TG [] TEL []
+scrapecrew3	404	https://www.scrapecrew.com/contact-us
+   FORM NONE
+   EMAIL []
+   WA [] TG [] TEL []
+modelfront2	404	https://modelfront.com/contact-us
+   FORM NONE
+   EMAIL []
+   WA [] TG [] TEL []
+xtmai2	200	https://xtm.ai/contact-us
+   FORM GET 'https://xtm.ai/hs-search-results' vis=3 ['term', 'type', 'type']
+   EMAIL []
+   WA [] TG [] TEL []
+jobspipe3	200	https://jobspipe.dev/pricing
+   FORM GET 'https://jobspipe.dev/pricing' vis=4 ['volume', 'volume', 'volume', 'volume']
+   EMAIL []
+   WA [] TG [] TEL []
+algora3	404	https://algora.io/contact
+   FORM NONE
+   EMAIL []
+   WA [] TG [] TEL []
+opire3	404	https://opire.dev/contact
+   FORM NONE
+   EMAIL []
+   WA [] TG [] TEL []
+bountyhub3	200	https://www.bountyhub.dev/contact-us
+   FORM NONE
+   EMAIL []
+   WA [] TG [] TEL []
+fixpool2	200	https://fixpool.dev/
+   FORM NONE
+   EMAIL []
+   WA [] TG [] TEL []
+taskbounty2	404	https://www.task-bounty.com/contact-us
+   FORM NONE
+   EMAIL []
+   WA [] TG [] TEL []
+keyntech2	404	https://keyntech.com/contact-us
+   FORM NONE
+   EMAIL []
+   WA [] TG [] TEL []
+jordanaldton2	404	https://jordandalton.com/contact-us
+   FORM NONE
+   EMAIL []
+   WA [] TG [] TEL []
+murmusoft2	404	https://murmusoftwareinfotech.com/contact-us
+   FORM NONE
+   EMAIL []
+   WA [] TG [] TEL []
+way2outsource2	404	https://way2outsource.com/contact-us
+   FORM NONE
+   EMAIL []
+   WA [] TG [] TEL []
+itzea2	404	https://itzea.com/contact-us
+   FORM NONE
+   EMAIL []
+   WA [] TG [] TEL []
+smbstudio2	200	https://smb-studio.com/contacts
+   FORM GET 'https://smb-studio.com/contacts' vis=5 ['name', 'email', 'message', 'automate', 'company']
+   EMAIL []
+   WA [] TG [] TEL []
+growthnexus2	404	https://getgrowthnexus.com/contact-us
+   FORM NONE
+   EMAIL []
+   WA [] TG [] TEL []
+getautomated2	404	https://www.getautomated.agency/contact
+   FORM NONE
+   EMAIL []
+   WA [] TG [] TEL []
+btobconnection2	200	https://btobconnection.com/contact-us
+   FORM NONE
+   EMAIL ['info@btobconnection.com', 'info@btobconnection.com\\']
+   WA ['wa.me/919898903630?text=Hi%20B2B%20Connection%20%F0%9F%91%8B%0A%0AI&#x27;m%20browsing%20this%20page%20and%20would%20like%20more%20info%3A%0Ahttps%3A%2F%2Fbtobconnection.com%2F'] TG [] TEL []
+sammdata2	200	https://www.sammdataservices.com/contact.html
+   FORM NONE
+   EMAIL ['info@sammdataservices.com']
+   WA [] TG [] TEL []
+pinobyte2	404	https://www.pinobyte.io/contact
+   FORM NONE
+   EMAIL []
+   WA [] TG [] TEL []
+datagators2	200	https://www.datagators.com/contact.php
+   FORM GET 'https://www.datagators.com/contact.php' vis=7 ['name', 'email', 'company', 'phone', 'services', 'description', 'website']
+   EMAIL []
+   WA ['wa.me/YOUR_NUMBER_HERE'] TG [] TEL []
+hirinfotech2	200	https://hirinfotech.com/contact/
+   FORM NONE
+   EMAIL ['info@hirinfotech.com', 'inquiry@hirinfotech.com']
+   WA ['wa.me/919909990610?text=Hello,%20I’m%20interested%20in%20getting%20more%20details,%20please'] TG [] TEL []
+mindrind2	404	https://mindrind.net/contact/
+   FORM NONE
+   EMAIL []
+   WA [] TG [] TEL []
+codalyst2	200	https://codalyst-tech.com/contact
+   FORM GET 'https://codalyst-tech.com/contact' vis=0 []
+   EMAIL ['contact@codalyst-tech.com', 'contact@codalyst-tech.com\\']
+   WA [] TG [] TEL []
+kwiqwork2	500	https://kwiqwork.com/contact-us
+   FORM NONE
+   EMAIL []
+   WA [] TG [] TEL []
+stacksmesh2	404	https://stacksmesh.com/contact-us
+   FORM NONE
+   EMAIL []
+   WA [] TG [] TEL []
+smbaiteam2	200	https://smbaiteam.com/
+   FORM NONE
+   EMAIL ['mario@smbaiteam.com', 'mario@smbaiteam.com\\']
+   WA [] TG [] TEL []
+guacagents2	200	https://guacagents.com/
+   FORM POST 'https://gmail.us11.list-manage.com/subscribe/post?u=d870b06d86c16269e4b1f9b39&#38;amp;id=12cf0c6ac2&#38;amp;f_id=007e61e1f0' vis=3 ['EMAIL', 'b_436cb8647d746fe81825f1efc_18a007239a', 'EMAILTYPE']
+   EMAIL []
+   WA [] TG [] TEL []
+evrenai2	200	https://www.evrenai.com/
+   FORM NONE
+   EMAIL ['contact@evrenai.com']
+   WA [] TG [] TEL []
+qodeonlabs2	200	https://www.qodeonlabs.com/
+   FORM NONE
+   EMAIL ['contact@qodeonlabs.com']
+   WA ['wa.me/447348495852'] TG [] TEL []
+itechnosol2	200	https://itechnosol.com/contact/
+   FORM POST 'https://itechnosol.com/contact/' vis=7 ['$ACTION_REF_1', '$ACTION_1:0', '$ACTION_1:1', '$ACTION_KEY', 'name', 'email', 'phone', 'message', 'website', 'startedAt']
+   EMAIL ['info@itechnosol.com', 'info@itechnosol.com\\']
+   WA ['wa.me/919722014000'] TG [] TEL []
+zapsstudio2	200	https://zapsstudio.com/
+   FORM NONE
+   EMAIL []
+   WA [] TG [] TEL []
+jakealberio2	404	https://jakealberio.com/contact-us
+   FORM NONE
+   EMAIL []
+   WA [] TG [] TEL []
+fyclabs2	404	https://fyclabs.com/contact-us
+   FORM NONE
+   EMAIL []
+   WA [] TG [] TEL []
+companyautomation2	404	https://companyautomation.co.uk/contact-us
+   FORM NONE
+   EMAIL []
+   WA [] TG [] TEL []
+taskbounty3	200	https://www.task-bounty.com/
+   FORM NONE
+   EMAIL []
+   WA [] TG [] TEL []
+mauticbounty2	404	https://www.mautic.org/mautic-bounty-programme/
+   FORM NONE
+   EMAIL []
+   WA [] TG [] TEL []

@@ -1,0 +1,711 @@
+==============================================================================================================
+CO	worthwebscraping
+URL	https://www.worthwebscraping.com/contact-us	HTTP 200
+FORM	method=POST action='https://www.worthwebscraping.com/contact-us/#wpcf7-f342-p265-o1' visible_fields(4)=['your-name', 'your-email', 'your-phone', 'your-message']
+EMAIL	['info@worthwebscraping.com']
+WA	[]
+TG	[]
+TEL	[]
+==============================================================================================================
+CO	webscrapingagency
+URL	https://webscrapingagency.com/contact	HTTP 200
+FORM	method=GET action='https://webscrapingagency.com/contact' visible_fields(9)=['name', 'email', 'phone', 'company', 'target_url', 'service_type', 'data_frequency', 'volume', 'details']
+EMAIL	['contact@webscrapingagency.com']
+WA	[]
+TG	[]
+TEL	[]
+==============================================================================================================
+CO	websbyspider
+URL	https://websbyspider.com/	HTTP 200
+FORM	method=POST action='https://websbyspider.com/' visible_fields(10)=['form-name', 'subject', 'source', 'bot-field', 'name', 'email', 'company', 'phone', 'message', 'wants_call']
+EMAIL	['hello@websbyspider.com']
+WA	[]
+TG	[]
+TEL	[]
+SCALE	 What it costs A focused custom build starts at $900 with three pages included. A richer one starts at $1,750 with six, and a full 3D or CM
+SCALE	 A focused custom build from $900, three pages included, live in under a week. 
+==============================================================================================================
+CO	leadscampaign
+URL	https://leadscampaign.com/contact-us	HTTP 200
+FORM	method=POST action='https://leadscampaign.com/contact-us' visible_fields(4)=['post_id', 'form_id', 'referer_title', 'queried_id']
+EMAIL	['info@leadscampaign.com']
+WA	[]
+TG	[]
+TEL	[]
+==============================================================================================================
+CO	scrapingpros
+URL	https://scrapingpros.com/contact	HTTP 200
+FORM	method=POST action='https://scrapingpros.com/contact/' visible_fields(5)=['et_pb_contact_name_0', 'et_pb_contact_email_0', 'et_pb_contact_company_website_0', 'et_pb_contact_what_data_do_you_need?_0', 'et_pb_contactform_submit_0']
+EMAIL	['contact@scrapingpros.com']
+WA	['api.whatsapp.com/send/?phone=5491124676657&#038;text=Hi%2C+I+would+like+more+information%2C+please.&#038;type=phone_number&#038;app_absent=0']
+TG	[]
+TEL	[]
+==============================================================================================================
+CO	extracthelp
+URL	https://extracthelp.com/contact	HTTP 200
+FORM	method=POST action='https://extracthelp.com/contact-research-verification/#wpcf7-f1916-o1' visible_fields(7)=['your-name', 'your-email', 'your-phone', 'your-budget', 'your-service', 'your-records', 'your-message']
+EMAIL	['g.santos@ashfordgp.com', 'info@extracthelp.com']
+WA	['wa.me/923294697703']
+TG	[]
+TEL	[]
+SCALE	rocessing NEW Monthly Unlimited Data Service: a dedicated team, up to 10 hours a day, for $300/month All services Pricing Free sample Pricing Samples 
+==============================================================================================================
+CO	datascraperin
+URL	https://www.datascraper.in/contact	HTTP 200
+FORM	method=GET action='https://www.datascraper.in/contact' visible_fields(0)=[]
+EMAIL	['admin@datascraper.in']
+WA	['wa.me/918530858583']
+TG	[]
+TEL	[]
+SCALE	 businesses across 30+ countries since 2014 · Free estimate in 2 hours ⬇️ Data Extraction From $20 🤖 Web Automation From $50 📊 Data Analysis From $100 🗂️ Data Collection From $30 MOST PO
+SCALE	 format. Anti-bot bypass included CSV, JSON, API, SQL delivery Free sample before payment From $20 / project Learn more → Web Automation Custom bots for form filling, login workflows, sc
+SCALE	sed automation. Playwright and Selenium Scheduled or on-demand Screenshot and PDF capture From $50 / project Learn more → Data Analysis Turn raw scraped data into insights — trend detect
+==============================================================================================================
+CO	webdatainsights
+URL	https://webdatainsights.com/	HTTP 200
+FORM	method=GET action='https://webdatainsights.com/' visible_fields(7)=['security', 'fullname', 'email', 'phone', 'industry', 'message', 'terms']
+EMAIL	['sales@webdatainsights.com']
+WA	['api.whatsapp.com/send?phone=7016263231']
+TG	[]
+TEL	[]
+==============================================================================================================
+CO	productdatascrape
+URL	https://www.productdatascrape.com/competitor-price-monitoring.php	HTTP 200
+FORM	method=POST action='https://www.productdatascrape.com/competitor-price-monitoring.php' visible_fields(22)=['contactName', 'contactEmail', 'contactPhone', 'whatsapp_updates', 'website_url', 'company_name', 'serviceproduct', 'industries', 'project_timeline', 'approx_budget', 'contactMessage', 'attachment']
+EMAIL	['sales@productdatascrape.com']
+WA	['wa.me/8866656657']
+TG	[]
+TEL	[]
+==============================================================================================================
+CO	webdatascraping
+URL	https://www.webdatascraping.com/	HTTP 200
+FORM	method=GET action='https://webdatascraping.com/' visible_fields(2)=['s', 'post_type']
+EMAIL	['info@webdatascraping.com']
+WA	['api.whatsapp.com/send?phone=380935239537']
+TG	['t.me/webdatascraping']
+TEL	[]
+==============================================================================================================
+CO	datagrass
+URL	https://datagrass.io/contact-us	HTTP 200
+FORM	method=POST action='https://datagrass.io/contact-us/#wpcf7-f4005-p29-o1' visible_fields(4)=['your-name', 'your-email', 'number-645', 'select-101']
+EMAIL	['hello@datagrass.io']
+WA	[]
+TG	[]
+TEL	[]
+==============================================================================================================
+CO	justmetrically
+URL	https://www.justmetrically.com/contact	HTTP 200
+FORM	method=GET action='https://www.justmetrically.com/contact' visible_fields(5)=['name', 'email', 'subject', 'phone', 'message']
+EMAIL	['info@justmetrically.com']
+WA	[]
+TG	[]
+TEL	[]
+SCALE	ect View pricing Portals supported 30+ Geo coverage Global Refresh cadence Daily Starting from $100 Use cases Who buys real estate data, and why. Investment screening Identify undervalue
+==============================================================================================================
+CO	nannostomus
+URL	https://www.nannostomus.com/web-scraping-products	HTTP 200
+FORM	method=GET action='https://www.nannostomus.com/web-scraping-products/' visible_fields(4)=['name', 'email', 'phone', 'message']
+EMAIL	['billing@intsurfing.com', 'dev@nannostomus.com', 'support@intsurfing.com']
+WA	[]
+TG	[]
+TEL	[]
+==============================================================================================================
+CO	3idatascraping
+URL	https://www.3idatascraping.com/contact-us	HTTP 200
+FORM	method=POST action='https://www.3idatascraping.com/contact-us/#wpcf7-f100996-p13986-o1' visible_fields(8)=['first-name', 'last-name', 'your-email', 'Phonenumber', 'Phonenumber-country-code', 'your-message', 'your-file', 'form_tag']
+EMAIL	['sales@3idatascraping.com']
+WA	[]
+TG	[]
+TEL	[]
+==============================================================================================================
+CO	datagators
+URL	https://www.datagators.com/partner.php	HTTP 200
+FORM	method=POST action='https://www.datagators.com/subscribe.php' visible_fields(1)=['email']
+EMAIL	[]
+WA	[]
+TG	[]
+TEL	[]
+==============================================================================================================
+CO	potentpages
+URL	https://potentpages.com/contact	HTTP 200
+FORM	method=POST action='https://potentpages.com/contact#wpcf7-f305-p9-o1' visible_fields(7)=['fname', 'lname', 'email', 'company', 'browser', 'request_uid', 'message']
+EMAIL	['david@potentpages.com']
+WA	[]
+TG	[]
+TEL	[]
+SCALE	 Obtaining Data Quickly and Easily, Starting at $1500 
+==============================================================================================================
+CO	hirinfotech
+URL	https://hirinfotech.com/data-extraction-services	HTTP 200
+FORM	method=GET action='https://hirinfotech.com/data-extraction-services/' visible_fields(0)=[]
+EMAIL	['info@hirinfotech.com', 'inquiry@hirinfotech.com']
+WA	['wa.me/919909990610?text=Hello,%20I’m%20interested%20in%20getting%20more%20details,%20please']
+TG	[]
+TEL	[]
+==============================================================================================================
+CO	btobconnection
+URL	https://btobconnection.com/contact	HTTP 200
+FORM	NONE
+EMAIL	['info@btobconnection.com', 'info@btobconnection.com\\']
+WA	['wa.me/919898903630?text=Hi%20B2B%20Connection%20%F0%9F%91%8B%0A%0AI&#x27;m%20browsing%20this%20page%20and%20would%20like%20more%20info%3A%0Ahttps%3A%2F%2Fbtobconnection.com%2F']
+TG	[]
+TEL	[]
+==============================================================================================================
+CO	crawlnow
+URL	https://www.crawlnow.com/contact	HTTP 200
+FORM	method=POST action='https://www.crawlnow.com/contact' visible_fields(10)=['Date_', 'First-Name', 'Last-Name', 'Email', 'Company', 'Phone', 'Message', 'Checkbox', 'IP', 'Location']
+EMAIL	[]
+WA	[]
+TG	[]
+TEL	[]
+==============================================================================================================
+CO	rookresearch
+URL	https://www.rookresearch.com/	HTTP 200
+FORM	method=POST action='https://www.rookresearch.com/contact_process.php' visible_fields(7)=['name', 'email', 'company', 'message', 'captcha_answer', 'captcha_num1', 'captcha_num2']
+EMAIL	[]
+WA	[]
+TG	[]
+TEL	[]
+==============================================================================================================
+CO	pinobyte
+URL	https://www.pinobyte.io/services/data-scraping	HTTP 200
+FORM	method=GET action='https://www.pinobyte.io/' visible_fields(7)=['Name', 'Company-Name', 'Email', 'Project-Overview', 'file', 'privacy-policy-2', 'Send-me-NDA-2']
+EMAIL	['alexander.konon@pinobyte.io', 'alexander.konon@pinobyte.io\\', 'contact@pinobyte.io']
+WA	[]
+TG	[]
+TEL	[]
+==============================================================================================================
+CO	sammdata
+URL	https://www.sammdataservices.com/ecommerce-data-scraping-services.html	HTTP 200
+FORM	NONE
+EMAIL	['info@sammdataservices.com']
+WA	[]
+TG	[]
+TEL	[]
+==============================================================================================================
+CO	scrapemasters2
+URL	https://webscrapinghq.com/contact	HTTP 200
+FORM	method=POST action='https://formspree.io/f/xjgjalen' visible_fields(20)=['name', 'email', 'company', 'website', 'urls', 'data_types[]', 'data_types[]', 'data_types[]', 'data_types[]', 'data_types[]', 'data_types[]', 'data_types[]']
+EMAIL	['info@webscrapinghq.com']
+WA	[]
+TG	[]
+TEL	[]
+SCALE	standard ✓ Ongoing monitoring and maintenance available after handoff Fixed-Cost Projects starting at $250 Lead lists from $250 · scrapers & pipelines from $500 · scope-dependent Post-handoff s
+SCALE	mail Lists Fixed-quote B2B contact lists with SMTP verification included before delivery. from $250 $250-$1,000 · scope-dependent ✓ One-time builds from $250; recurring refreshes scoped 
+SCALE	ction One-time catalog, listing, review, or pricing extracts quoted by source complexity. from $500 $500-$1,500 · scope-dependent ✓ Most builds land in the $500-$1,500 range by fields an
+==============================================================================================================
+CO	webdataextractionservices
+URL	https://webdataextractionservices.com/contact-us	HTTP 200
+FORM	method=POST action='https://www.logimu.com/contact-submit.php' visible_fields(10)=['plan_interest', 'captcha_token', 'name', 'email', 'company', 'website', 'phone', 'message', 'captcha_answer', 'company_url']
+EMAIL	[]
+WA	[]
+TG	[]
+TEL	[]
+SCALE	 Start for $19/month 
+==============================================================================================================
+CO	datadiveedge
+URL	https://www.datadiveedge.com/industry-realestate	HTTP 200
+FORM	NONE
+EMAIL	[]
+WA	[]
+TG	[]
+TEL	[]
+==============================================================================================================
+CO	scrapecrew
+URL	https://www.scrapecrew.com/contact	HTTP 200
+FORM	NONE
+EMAIL	[]
+WA	[]
+TG	[]
+TEL	[]
+SCALE	standard ✓ Ongoing monitoring and maintenance available after handoff Fixed-Cost Projects starting at $250 Lead lists from $250 · scrapers & pipelines from $500 · scope-dependent Post-handoff s
+SCALE	mail Lists Fixed-quote B2B contact lists with SMTP verification included before delivery. from $250 $250-$1,000 · scope-dependent ✓ One-time builds from $250; recurring refreshes scoped 
+SCALE	ction One-time catalog, listing, review, or pricing extracts quoted by source complexity. from $500 $500-$1,500 · scope-dependent ✓ Most builds land in the $500-$1,500 range by fields an
+==============================================================================================================
+CO	agentproai
+URL	https://agentpro.ai/contact	HTTP 200
+FORM	method=POST action='https://agentpro.ai/contact' visible_fields(18)=['hp_time', 'hp_website', 'name', 'email', 'organization', 'phone', 'location', 'industry', 'message', 'area_of_interest[]', 'area_of_interest[]', 'area_of_interest[]']
+EMAIL	['info@agentpro.ai']
+WA	[]
+TG	[]
+TEL	[]
+==============================================================================================================
+CO	companyautomation
+URL	https://companyautomation.co.uk/workflow-automation	HTTP 200
+FORM	method=GET action='https://companyautomation.co.uk/workflow-automation' visible_fields(5)=['name', 'email', 'phone', 'company', 'message']
+EMAIL	['hello@companyautomation.co.uk']
+WA	[]
+TG	[]
+TEL	[]
+==============================================================================================================
+CO	thinkaiworks
+URL	https://thinkaiworks.com/contact	HTTP 200
+FORM	method=POST action='https://thinkaiworks.com/contact/' visible_fields(4)=['post_id', 'form_id', 'referer_title', 'queried_id']
+EMAIL	['%20info@thinkaiworks.com', 'info@thinkaiworks.com']
+WA	['wa.me/13154945101']
+TG	[]
+TEL	[]
+==============================================================================================================
+CO	evrenai
+URL	https://www.evrenai.com/contact	HTTP 200
+FORM	method=GET action='https://www.evrenai.com/connect' visible_fields(14)=['from_name', 'from_email', 'company', 'message', 'budget', 'budget', 'budget', 'budget', 'budget', 'timeline', 'timeline', 'timeline']
+EMAIL	['contact@evrenai.com']
+WA	[]
+TG	[]
+TEL	[]
+==============================================================================================================
+CO	guacagents
+URL	https://guacagents.com/contact	HTTP 200
+FORM	method=POST action='https://guacagents.com/contact/' visible_fields(12)=['Full Name', 'Email Address', 'Phone Number', 'Company', 'Service', 'Monthly Budget', 'Message', 'User Source', 'User Source', 'User Source', 'User Source', 'Agreed Privacy']
+EMAIL	['info@guacdigital.com)']
+WA	[]
+TG	[]
+TEL	[]
+SCALE	 }" class="hidden"> Choose Under $1,000/mo $1,000 - $3,000/mo $3,000 - $5,000/mo $5,000+/mo Not sure yet 
+SCALE	tures 87% of after-hours calls that previously went to voicemail and recovers roughly $4K per month per property in lost bookings. Same model now runs the phone line for a 12-location resta
+SCALE	engine for a home services company that writes, optimizes, and publishes 30+ SEO articles per month. Client ranked #1 for target keywords within 3 months.
+==============================================================================================================
+CO	qodeonlabs
+URL	https://www.qodeonlabs.com/contact	HTTP 200
+FORM	method=GET action='https://www.qodeonlabs.com/contact' visible_fields(9)=['name', 'email', 'company', 'phone', 'projectType', 'budget', 'timeline', 'message', 'source']
+EMAIL	['contact@qodeonlabs.com']
+WA	['wa.me/447348495852']
+TG	[]
+TEL	[]
+==============================================================================================================
+CO	itzea
+URL	https://itzea.com/contact	HTTP 200
+FORM	method=POST action='https://itzea.com/contact' visible_fields(14)=['message', 'project_type', 'budget', 'company', 'attachment', 'name', 'email', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_region', 'referrer']
+EMAIL	[]
+WA	[]
+TG	[]
+TEL	[]
+==============================================================================================================
+CO	myriah
+URL	https://myriahagency.com/contact	HTTP 200
+FORM	method=GET action='https://myriahagency.com/contact' visible_fields(8)=['botcheck', 'name', 'email', 'company', 'service', 'budget', 'message', 'privacy_consent']
+EMAIL	['contact@myriahagency.com']
+WA	[]
+TG	[]
+TEL	[]
+SCALE	Custom Internal Tool Development From $5,000 | Myriah Agency 
+SCALE	ore juggling spreadsheets and copying the same information into three places. Fixed price from $5,000, and you own the code. Get a free quote Assess your idea free Price Starter apps fro
+SCALE	a year Same day for most approvals 100% of requests on record 3 to 6 weeks · Starter app, from $5,000 · Read the full case study 01 · The problem What usually goes wrong. Internal work u
+==============================================================================================================
+CO	roidigital
+URL	https://roidigital.ca/services/ai-agent-workflow-automation	HTTP 200
+FORM	NONE
+EMAIL	[]
+WA	[]
+TG	[]
+TEL	[]
+SCALE	al rules, AI assistant requirements, and ongoing support needs. Automation Audit starting from $1,500 Workflow review and practical automation roadmap. Workflow Setup starting from $3,00
+SCALE	ion for booking, chat, CRM, follow-up, or onboarding. Ongoing Automation Support starting from $900/month Monitoring, improvements, and new workflow support. FAQ Automation questions. Wh
+==============================================================================================================
+CO	helpwithautomation
+URL	https://www.helpwithautomation.com/contact	HTTP 200
+FORM	NONE
+EMAIL	['info@helpwithautomation.com']
+WA	[]
+TG	[]
+TEL	[]
+SCALE	mpact automation identified Honest go/no-go recommendation Book a call Feasibility Sprint From $800 One-time · 1–2 weeks We build and test a working prototype using your actual data, bef
+SCALE	and test a working prototype using your actual data, before you commit to the full build. From $800 One-time · 1–2 weeks Working prototype on your data Feasibility report & risk audit Sc
+==============================================================================================================
+CO	smbstudio
+URL	https://smb-studio.com/contacts	HTTP 200
+FORM	method=GET action='https://smb-studio.com/contacts' visible_fields(5)=['name', 'email', 'message', 'automate', 'company']
+EMAIL	[]
+WA	[]
+TG	[]
+TEL	[]
+==============================================================================================================
+CO	fuselio
+URL	https://www.fuselio.com/services/internal-tools-development	HTTP 200
+FORM	NONE
+EMAIL	['hello@fuselio.com']
+WA	[]
+TG	[]
+TEL	[]
+==============================================================================================================
+CO	rot8studio
+URL	https://www.rot8studio.com/services/internal-tools	HTTP 200
+FORM	NONE
+EMAIL	['contact@rot8studio.com', 'contact@rot8studio.com\\']
+WA	[]
+TG	[]
+TEL	[]
+==============================================================================================================
+CO	ariusautomation
+URL	https://www.ariusautomation.com/services/internal-tools-dashboards	HTTP 200
+FORM	NONE
+EMAIL	['info@ariusautomation.com', 'info@ariusautomation.com\\']
+WA	[]
+TG	[]
+TEL	[]
+SCALE	r internal apps. TIME TO FIRST APP Hours to a few days RECURRING COST $10 to $50 per user per month CEILING Hits walls on complex UI, large scale, custom auth BEST FOR Quick admin panels, s
+==============================================================================================================
+CO	trinitycloud
+URL	https://www.trinitycloudconsulting.com/	HTTP 200
+FORM	NONE
+EMAIL	['hello@trinitycloudconsulting.com']
+WA	[]
+TG	[]
+TEL	[]
+==============================================================================================================
+CO	zapsstudio
+URL	https://zapsstudio.com/contact	HTTP 200
+FORM	method=GET action='https://zapsstudio.com/contact/' visible_fields(4)=['name', 'email', 'projectDescription', 'howDidYouHear']
+EMAIL	[]
+WA	['wa.me/447418354834']
+TG	[]
+TEL	[]
+==============================================================================================================
+CO	jakealberio
+URL	https://jakealberio.com/contact	HTTP 200
+FORM	method=GET action='https://jakealberio.com/contact' visible_fields(3)=['name', 'email', 'message']
+EMAIL	['business@jakealberio.com']
+WA	[]
+TG	[]
+TEL	[]
+==============================================================================================================
+CO	tezeract
+URL	https://tezeract.ai/contact	HTTP 200
+FORM	method=POST action='https://tezeract.ai/contact-tezeract/' visible_fields(0)=[]
+EMAIL	[]
+WA	[]
+TG	[]
+TEL	[]
+==============================================================================================================
+CO	smbaiteam
+URL	https://smbaiteam.com/contact	HTTP 200
+FORM	method=POST action='https://formsubmit.co/mariokezi1@gmail.com' visible_fields(7)=['source_first_visit', 'source_latest_visit', 'name', 'email', 'phone', 'heard_about_us', 'message']
+EMAIL	['mario@smbaiteam.com', 'mario@smbaiteam.com\\']
+WA	[]
+TG	[]
+TEL	[]
+==============================================================================================================
+CO	growthnexus
+URL	https://getgrowthnexus.com/contact	HTTP 200
+FORM	method=GET action='https://getgrowthnexus.com/contact' visible_fields(0)=[]
+EMAIL	['info@getgrowthnexus.com']
+WA	['api.whatsapp.com/send?phone=923271129295&amp;text=Thank%20you%20for%20contacting%20Growth%20Nexus!%20Please%20let%20us%20know%20how%20we%20can%20help%20you.']
+TG	[]
+TEL	[]
+==============================================================================================================
+CO	getautomated
+URL	https://www.getautomated.agency/	HTTP 200
+FORM	method=GET action='https://www.getautomated.agency/' visible_fields(0)=[]
+EMAIL	[]
+WA	[]
+TG	[]
+TEL	[]
+SCALE	ouse Traditional Agency GetAutomated Monthly cost $6k to $10k+, plus benefits $5k to $10k per month One flat monthly rate Upfront cost Recruiting, onboarding, equipment Setup and scoping fe
+SCALE	es None Time to first result Months: hire, then ramp 4 to 8 weeks Within one week Output per month One person&#x27;s capacity Whatever you can afford in hours Unlimited automations Special
+SCALE	ybe, at a premium Standard, included Locked into a contract A full salary commitment Yes, minimum terms Never, cancel anytime Monthly cost Hiring in-house $6k to $10k+, plus benefits Trad
+==============================================================================================================
+CO	fyclabs
+URL	https://fyclabs.com/contact	HTTP 200
+FORM	method=GET action='https://fyclabs.com/contact/post' visible_fields(8)=['name', 'phone', 'email', 'organization', 'budget', 'hearaboutus', 'referrer', 'message']
+EMAIL	[]
+WA	[]
+TG	[]
+TEL	[]
+==============================================================================================================
+CO	itechnosol
+URL	https://itechnosol.com/contact-us/	HTTP 200
+FORM	method=POST action='https://itechnosol.com/contact/' visible_fields(11)=['$ACTION_REF_1', '$ACTION_1:0', '$ACTION_1:1', '$ACTION_KEY', 'name', 'email', 'phone', 'message', 'website', 'startedAt', 'page']
+EMAIL	['info@itechnosol.com', 'info@itechnosol.com\\']
+WA	['wa.me/919722014000']
+TG	[]
+TEL	[]
+==============================================================================================================
+CO	nextenvision
+URL	https://nextenvision.com/agency-partner-program	HTTP 200
+FORM	method=POST action='https://nextenvision.com/agency-partner-program/' visible_fields(4)=['post_id', 'form_id', 'referer_title', 'queried_id']
+EMAIL	['connect@nextenvision.com']
+WA	['web.whatsapp.com/send?phone=918758255999']
+TG	[]
+TEL	[]
+==============================================================================================================
+CO	decipherzone
+URL	https://www.decipherzone.com/become-a-partner	HTTP 200
+FORM	method=GET action='https://www.decipherzone.com/become-a-partner' visible_fields(5)=['name', 'emailId', 'mobile', 'message', 'consent']
+EMAIL	['info@decipherzone.com', 'info@decipherzone.com\\']
+WA	['api.whatsapp.com/send?phone=+919602714737&amp;text=Hi']
+TG	[]
+TEL	[]
+==============================================================================================================
+CO	bantechsolutions
+URL	https://www.bantechsolutions.com/contact-us/	HTTP 200
+FORM	method=POST action='https://www.bantechsolutions.com/contact-us/#wpcf7-f99-o2' visible_fields(9)=['first-name', 'last-name', 'your-phone', 'your-email', 'project-type', 'project-budget', 'your-message', 'current-page-url', 'visitor_country']
+EMAIL	['info@bantechsolutions.com']
+WA	['wa.me/919830010105']
+TG	[]
+TEL	[]
+==============================================================================================================
+CO	codalyst
+URL	https://codalyst-tech.com/for-agencies/overflow-capacity	HTTP 200
+FORM	method=GET action='https://codalyst-tech.com/for-agencies/overflow-capacity' visible_fields(0)=[]
+EMAIL	['contact@codalyst-tech.com', 'contact@codalyst-tech.com\\']
+WA	[]
+TG	[]
+TEL	[]
+SCALE	 rolling. No long-term lock-in. Turn up or down as the project demands. Single specialist from $1,500 /mo 1 developer, designer, or content specialist assigned to your project within 7 b
+SCALE	usiness days. 30-day rolling, all-inclusive rate Get started Sprint team from $4,000 /mo 3 to 5 specialists across complementary roles, coordinated by a delivery lead fr
+SCALE	 Who overflow capacity is not right for ✗ Agencies needing a resource in under 7 days Our minimum onboarding window is 7 business days from brief approval to first working session. If you
+==============================================================================================================
+CO	mindrind
+URL	https://mindrind.net/project-overflow-support	HTTP 200
+FORM	method=GET action='https://mindrind.net/project-overflow-support/' visible_fields(4)=['website', 'email', 'phone', 'need']
+EMAIL	['support@mindrind.net', 'support@mindrind.net\\']
+WA	[]
+TG	[]
+TEL	[]
+==============================================================================================================
+CO	aptluma
+URL	https://www.aptluma.com/services/agencies	HTTP 200
+FORM	NONE
+EMAIL	['info@aptluma.com', 'info@aptluma.com\\']
+WA	[]
+TG	[]
+TEL	[]
+SCALE	 to your client, no scramble on your side. Pricing. White-label partnerships start around £2,000/month, with fixed-scope overflow projects from £1,500. Every project is scoped and fixed 
+==============================================================================================================
+CO	prosabbir
+URL	https://prosabbir.com/for-agencies	HTTP 200
+FORM	method=GET action='https://prosabbir.com/for-agencies' visible_fields(0)=[]
+EMAIL	['ahmedsabbir2013@gmail.com']
+WA	['wa.me/15125840254']
+TG	[]
+TEL	[]
+SCALE	es for proposals are provided ahead of the build so you can quote accurately. What is the minimum engagement? + Small automation or integration projects start around $3,000. Dedicated dev
+==============================================================================================================
+CO	whitelabelpartner
+URL	https://whitelabelpartner.com/contact-us	HTTP 200
+FORM	method=POST action='https://whitelabelpartner.com/contact-us/#wpcf7-f506-o1' visible_fields(10)=['wl_landing_page', 'wl_referrer', 'wl_utm', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'gclid', 'fbclid']
+EMAIL	['contactus@whitelabelpartner.com']
+WA	[]
+TG	[]
+TEL	[]
+==============================================================================================================
+CO	kwiqwork
+URL	https://kwiqwork.com/contact	HTTP 200
+FORM	method=GET action='https://kwiqwork.com/contact' visible_fields(6)=['name', 'email', 'company', 'project-type', 'budget', 'message']
+EMAIL	['info@kwiqwork.com', 'info@kwiqwork.com\\']
+WA	[]
+TG	[]
+TEL	[]
+SCALE	-time collaboration. Senior Engineers Only No juniors on agency work. 5+ years experience minimum, vetted for communication. Founder-Led Oversight Every engagement has direct access to ou
+SCALE	cated Team Staff Augmentation Fractional CTO Other Budget Range Select budget range Under $5,000/month $5,000–$10,000/month $10,000–$25,000/month $25,000+/month Project-based budget Tell Us
+==============================================================================================================
+CO	way2outsource
+URL	https://way2outsource.com/contact	HTTP 200
+FORM	method=POST action='https://way2outsource.com/contact/' visible_fields(3)=['input_text', 'email', 'message']
+EMAIL	[]
+WA	[]
+TG	[]
+TEL	[]
+==============================================================================================================
+CO	canopussoft
+URL	https://www.canopussoft.com/white-label-partnership	HTTP 200
+FORM	method=POST action='https://www.canopussoft.com/enquiry' visible_fields(9)=['form', 'source_path', 'form_started_at', 'website', 'name', 'email', 'company', 'answers[type]', 'message']
+EMAIL	['contact@canopussoft.com']
+WA	['wa.me/918179797732']
+TG	[]
+TEL	[]
+==============================================================================================================
+CO	murmusoft
+URL	https://murmusoftwareinfotech.com/white-label-software-development-partner	HTTP 200
+FORM	method=GET action='https://murmusoftwareinfotech.com/white-label-software-development-partner' visible_fields(1)=['website']
+EMAIL	['contactus@murmusoftwareinfotech.com', 'contactus@murmusoftwareinfotech.com\\']
+WA	['wa.me/919110176498']
+TG	[]
+TEL	[]
+==============================================================================================================
+CO	devsstation
+URL	https://devsstation.com/white-label-web-development-partner-program-for-agencies	HTTP 200
+FORM	method=POST action='https://devsstation.com/white-label-web-development-partner-program-for-agencies#wpcf7-f10-p41711-o1' visible_fields(5)=['your-name', 'your-email', 'contact-number', 'subject', 'your-message']
+EMAIL	[]
+WA	['wa.me/8801511927992']
+TG	[]
+TEL	[]
+==============================================================================================================
+CO	e2msolutions
+URL	https://www.e2msolutions.com/contact	HTTP 200
+FORM	NONE
+EMAIL	['agencies@e2msolutions.com', 'career@e2msolutions.com']
+WA	[]
+TG	[]
+TEL	[]
+==============================================================================================================
+CO	ukad
+URL	https://ukad-group.com/industries/digital-agencies	HTTP 200
+FORM	NONE
+EMAIL	['hi@ukad-group.com']
+WA	[]
+TG	[]
+TEL	[]
+==============================================================================================================
+CO	ivemind
+URL	https://ivemind.com/en/white-label	HTTP 200
+FORM	NONE
+EMAIL	['ivemindscs@pec.it', 'sales@ivemind.com']
+WA	[]
+TG	[]
+TEL	[]
+==============================================================================================================
+CO	brilio
+URL	https://brilio.ai/agency	HTTP 200
+FORM	method=GET action='https://brilio.ai/agency/post' visible_fields(7)=['name', 'email', 'compay', 'phone', 'subject', 'message', 'privacy']
+EMAIL	[]
+WA	[]
+TG	[]
+TEL	[]
+SCALE	 $199 / per month 
+==============================================================================================================
+CO	stacksmesh
+URL	https://stacksmesh.com/contact	HTTP 200
+FORM	method=GET action='https://stacksmesh.com/start' visible_fields(0)=[]
+EMAIL	['hello@stacksmesh.com']
+WA	[]
+TG	[]
+TEL	[]
+SCALE	onists Voice AI that answers calls, books appointments and hands over to staff. Wholesale from $197 a month per client. Explore AI receptionists White-label offer Web scraping & data Scr
+==============================================================================================================
+CO	whitelabelaiagency
+URL	https://whitelabelai.agency/about	HTTP 200
+FORM	method=POST action='https://whitelabelai.agency/about/' visible_fields(3)=['names[first_name]', 'names[last_name]', 'email']
+EMAIL	['darshan@whitelabelai.agency']
+WA	[]
+TG	[]
+TEL	[]
+==============================================================================================================
+CO	jordanaldton
+URL	https://jordandalton.com/contact	HTTP 200
+FORM	method=GET action='https://jordandalton.com/contact' visible_fields(0)=[]
+EMAIL	['jordan@daltonsolutions.com']
+WA	[]
+TG	[]
+TEL	[]
+==============================================================================================================
+CO	sevencollab
+URL	https://sevencollab.com/software-web-development-partnership	HTTP 200
+FORM	method=POST action='https://sevencollab.com/software-web-development-partnership#wpcf7-f1241-p12658-o2' visible_fields(10)=['page-title', 'page-slug', 'page-url', 'first-name', 'your-email', 'tel-583', 'text-346', 'your-message', 'captcha-1', 'acceptance-952']
+EMAIL	[]
+WA	[]
+TG	[]
+TEL	[]
+==============================================================================================================
+CO	bytestechnolab
+URL	https://www.bytestechnolab.com/services/white-label	HTTP 200
+FORM	method=POST action='https://www.bytestechnolab.com/services/white-label/' visible_fields(19)=['zf_referrer_name', 'zf_redirect_url', 'zc_gad', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'initialReferrer', 'First_visited_page', 'Last_Visited_URL', 'hidden_cf7']
+EMAIL	['hello@bytestechnolab.com']
+WA	[]
+TG	[]
+TEL	[]
+==============================================================================================================
+CO	quickway
+URL	https://www.quickwayinfosystems.com/white-label-development	HTTP 200
+FORM	method=GET action='https://www.quickwayinfosystems.com/white-label-development/' visible_fields(7)=['name', 'email', 'country', 'country', 'contact_number', 'requirements', 'file']
+EMAIL	[]
+WA	[]
+TG	[]
+TEL	[]
+==============================================================================================================
+CO	keyntech
+URL	https://keyntech.com/contact	HTTP 200
+FORM	method=GET action='https://keyntech.com/contact' visible_fields(0)=[]
+EMAIL	['hello@keyntech.com\\']
+WA	[]
+TG	[]
+TEL	[]
+==============================================================================================================
+CO	algora
+URL	https://algora.io/algora/bounties/new	HTTP 200
+FORM	NONE
+EMAIL	[]
+WA	[]
+TG	[]
+TEL	[]
+==============================================================================================================
+CO	opire
+URL	https://opire.dev/home	HTTP 200
+FORM	NONE
+EMAIL	['team@opire.dev\\']
+WA	[]
+TG	[]
+TEL	[]
+==============================================================================================================
+CO	bountyhub
+URL	https://www.bountyhub.dev/about-us	HTTP 200
+FORM	NONE
+EMAIL	['support@bountyhub.dev\\']
+WA	[]
+TG	[]
+TEL	[]
+==============================================================================================================
+CO	fixpool
+URL	https://fixpool.dev/about	HTTP 200
+FORM	NONE
+EMAIL	[]
+WA	[]
+TG	[]
+TEL	[]
+==============================================================================================================
+CO	taskbounty
+URL	https://www.task-bounty.com/for-oss-maintainers	HTTP 200
+FORM	NONE
+EMAIL	[]
+WA	[]
+TG	[]
+TEL	[]
+==============================================================================================================
+CO	custommt
+URL	https://custom.mt/xtm-cloud-extension	HTTP 200
+FORM	method=GET action='https://custom.mt/' visible_fields(1)=['s']
+EMAIL	['hello@custom.mt', 'kd@custom.mt']
+WA	[]
+TG	[]
+TEL	[]
+==============================================================================================================
+CO	modelfront
+URL	https://modelfront.com/contact	HTTP 200
+FORM	NONE
+EMAIL	['contact@modelfront.com']
+WA	[]
+TG	[]
+TEL	[]
+==============================================================================================================
+CO	jobdatafeeds
+URL	https://jobdatafeeds.com/contact-us	HTTP 200
+FORM	method=GET action='https://jobdatafeeds.com/contact-us' visible_fields(9)=['interests', 'interests', 'interests', 'interests', 'interests', 'name', 'email', 'message', 'website']
+EMAIL	[]
+WA	[]
+TG	[]
+TEL	[]
+SCALE	job postings in JSON, RSS, CSV, or other formats! 451M+ Jobs Found since 2020 8M New Jobs per Month 12M Active Jobs per Month 250 Countries & Territories Covered per Month Job Posting Data 
+==============================================================================================================
+CO	jobspipe
+URL	https://jobspipe.dev/contact	HTTP 200
+FORM	NONE
+EMAIL	['security@jobspipe.dev', 'security@jobspipe.dev\\', 'support@jobspipe.dev']
+WA	[]
+TG	[]
+TEL	[]
+==============================================================================================================
+CO	xtmai
+URL	https://xtm.ai/contact	HTTP 200
+FORM	method=GET action='https://xtm.ai/hs-search-results' visible_fields(3)=['term', 'type', 'type']
+EMAIL	[]
+WA	[]
+TG	[]
+TEL	[]
+==============================================================================================================
+CO	onestopasia
+URL	https://www.1stopasia.com/contact-us	HTTP 200
+FORM	method=GET action='https://www.1stopasia.com/contact-us' visible_fields(6)=['company', 'name', 'phone', 'email', 'subject', 'message']
+EMAIL	['info@1stopasia.com']
+WA	[]
+TG	[]
+TEL	[]

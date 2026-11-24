@@ -1,0 +1,967 @@
+{
+ "mitsuko": [
+  {
+   "label": "mitsuko",
+   "url": "https://www.mitsuko.app/contact",
+   "final_url": "https://www.mitsuko.app/contact",
+   "status": 404,
+   "err": "HTTP 404",
+   "title": "Mitsuko - AI Subtitle Translator for SRT, VTT &amp; ASS Files",
+   "len": 26010,
+   "dead": true
+  },
+  {
+   "label": "mitsuko",
+   "url": "https://www.mitsuko.app/pricing",
+   "final_url": "https://www.mitsuko.app/pricing",
+   "status": 200,
+   "err": null,
+   "title": "Pricing - Mitsuko",
+   "len": 95639,
+   "forms": [],
+   "emails": [],
+   "mailtos": [],
+   "tel": [],
+   "whatsapp": [],
+   "telegram": [],
+   "text": "Pricing - Mitsuko mitsuko Features Solutions Pricing FAQ Blog Sign In Simple, Transparent Pricing Get exactly what you need with one-time credits. Zero subscriptions, zero hassle. Show currency in USD IDR Need more credits? Purchase additional credit packs starting at just $ 5 . These credit packs provide flexibility for your usage needs. Credits valid for a whole year from purchase! Try for Free! Free $ 0 Get Started Credit Pack 5,000,000 credits $ 5 Purchase Credit Pack Save $ 1 20,000,000 credits $ 20 $ 19 Purchase Credit Pack Save $ 6 65,000,000 credits $ 65 $ 59 Purchase Key Platform Features Flexible Credit System Utilize credits for various features, available through plans or purchased separately. Subtitle Translation Translate subtitles (SRT, VTT, ASS) using all available AI models for over 100+ languages. Extract Context Feature Analyze content to extract characters, settings, plot, and relationships. Audio Transcription Convert audio into subtitle text. Supports large files and background processing. Batch Translation Translate multiple files simultaneously to improve workflow efficiency and save time. Project Management & Backup Efficiently manage, organize, backup and transfer your translation projects, subtitles, and related assets. Access to All Models Select from a wide range of AI models available on the platform. Support Options Access Discord community and email support resources. How Credits Work Discover how credits work and how they provide flexible access to our powerful AI tools. What are Credits? Credits used for features like Translation, Transcription, and Context Extraction. Using these features will deduct credits from your balance. See &quot;Credit Usage&quot; below for details. You can receive credits by purchasing credit packs as needed. Where Can I See My Credits? You can see your remaining credit balance and usage history in User Information page. Which Models Should I Use? Different LLMs (Large Language Models) have varying performance when it comes to different languages and tasks. For example, DeepSeek models excel at English and Chinese (surprisingly good at Indonesian too) but may struggle with other languages, while some models like Gemini and GPT are multilingual and perform well across many languages. It&#x27;s important to experiment with different models to find the best fit for your specific language and use case. Tips: Start with cost-effective models (like Gemini 3 Flash / GPT-5 mini ). If the results meet your needs, you can continue using them. If you need higher quality results, you can gradually switch to larger models. Generally, Gemini Pro and GPT-5 provide excellent results for most use cases and languages, as they understand nuance and intent much better. Credit Usage Show Legacy Models Credit costs vary based on the specific AI model used. Costs are typically calculated based on the number of input and output tokens processed. More models will be added in the future. Prices are aligned to original API prices with a 0.2 multiplier as a service fee. See the original costs below. Model Credit per Input Token Credit per Output Token Credit Usage Context Length Max Completion Gemini 4 Argon 2 From Nov 30, 2026 : 4 10 From Nov 30, 2026 : 20 extremely high 1M tokens 66k tokens Gemini 3.1 Pro ⭐ 💙 2 12 high 1M tokens 66k tokens Gemini 3.8 Flash 0.75 From Dec 31, 2026 : 1.5 3.75 From Dec 31, 2026 : 7.5 high 1M tokens 66k tokens Gemini 3.5 Flash Lite 0.3 2.5 low 1M tokens 66k tokens Claude Opus 5.5 4 20 extremely high 1M tokens 128k tokens Claude Sonnet 5.5 2 10 very high 1M tokens 128k tokens Grok 4.7 1.6 4.8 high 500k tokens 500k tokens Grok 4.3 1.25 2.5 medium 1M tokens 1M tokens GPT-6.1 Sol ⭐ 💙 2 10 high 1.1M tokens 128k tokens GPT-6.1 Terra 1 5 medium 1.1M tokens 128k tokens GPT-6 Luna 0.1 0.5 low 1.1M tokens 128k tokens DeepSeek V4 Pro 1.32 3.96 medium 1M tokens 384k tokens DeepSeek V4.1 Flash 0.3 1.2 low 1M tokens 384k tokens GLM 5.3 1.4 4.4 medium 1M tokens 131k tokens GLM 5.3 Flash 0.15 0.5 very low 1M tokens 131k tokens Free Models 0 0 N/A Varies Varies * These are estimated costs and limits, and are subject to change. Input/Output token costs may vary. Prices followed",
+   "endpoints": []
+  },
+  {
+   "label": "mitsuko",
+   "url": "https://www.mitsuko.app/",
+   "final_url": "https://www.mitsuko.app/",
+   "status": 200,
+   "err": null,
+   "title": "Mitsuko - AI Subtitle Translator for SRT, VTT &amp; ASS Files",
+   "len": 105886,
+   "forms": [],
+   "emails": [],
+   "mailtos": [],
+   "tel": [],
+   "whatsapp": [],
+   "telegram": [],
+   "text": "Mitsuko - AI Subtitle Translator for SRT, VTT & ASS Files mitsuko Features Solutions Pricing FAQ Blog Sign In Translate an entire season without losing names, tone, or context. Mitsuko is an AI Subtitle Translator for SRT, VTT, and ASS files. Translate multiple subtitle in single click with context-awareness. Try for Free! Sign In Key Features Everything you need for high-quality translation and transcription. Subtitle Translator Translate subtitles with frontier AI models like Gemini, Claude, Grok, and OpenAI. Audio Transcriber Generate perfectly timed subtitles from audio files with custom instructions for precise results. Context Extractor Maintain context across episodes and scenes for consistent, accurate, and high-quality translations. Subtitle Translation Context-aware Prioritize the meaning over literal translation Tonal alignment with character speech patterns Adapt the cultural nuance and idiomatic usage Guide the translation with custom instructions Audio Transcription Subtitle Timing Accurate audio to text transcription Precise spotting and subtitle timing Additional custom instructions before transcribing Intelligent clause-based segmentation Context Extractor Context Generation Get context from subtitles, audio, or text sources Inform the AI based on the context provided Maintain consistency across episodes Improve translation quality Why Choose Mitsuko See how Mitsuko outperforms machine translator and is comparable to human translation Comparison Mitsuko vs. Generic Translation Mitsuko MTL Context Awareness Advanced Limited Idiomatic Expressions Preserved Literal Cultural Adaptation Excellent Poor Nuance & Tone Aligned Ignored Timestamp Accuracy Perfect Not Available Context Awareness See the Difference Original Subtitle (Scene Context: Character is frustrated) もう我慢できない！ Mitsuko Translation (Context-Aware) I&#x27;ve had enough of this! Generic Translation (Literal) I cannot endure anymore! Context Awareness Understands the situation and character&#x27;s emotion for accurate intent. Prioritizes meaning over rigid literal translation based on context. Maintains consistency with character voice across scenes. 1 of 1 example Next Simple, Transparent Pricing Get exactly what you need with one-time credits. Zero subscriptions, zero hassle. Show currency in USD IDR Need more credits? Purchase additional credit packs starting at just $ 5 . These credit packs provide flexibility for your usage needs. Credits valid for a whole year from purchase! Try for Free! Free $ 0 See Details Credit Pack 5,000,000 credits $ 5 See Details Credit Pack Save $ 1 20,000,000 credits $ 20 $ 19 See Details Credit Pack Save $ 6 65,000,000 credits $ 65 $ 59 See Details Key Platform Features Flexible Credit System Utilize credits for various features, available through plans or purchased separately. Subtitle Translation Translate subtitles (SRT, VTT, ASS) using all available AI models for over 100+ languages. Extract Context Feature Analyze content to extract characters, settings, plot, and relationships. Audio Transcription Convert audio into subtitle text. Supports large files and background processing. Batch Translation Translate multiple files simultaneously to improve workflow efficiency and save time. Project Management & Backup Efficiently manage, organize, backup and transfer your translation projects, subtitles, and related assets. Access to All Models Select from a wide range of AI models available on the platform. Support Options Access Discord community and email support resources. Click here to learn more about credits and pricing. Frequently Asked Questions Find answers to common questions about Mitsuko and its features. What is Mitsuko? What file formats does Mitsuko support? How accurate is the AI translation? How does the context extraction feature work? How many languages does Mitsuko support? Is there a limit to how much content I can process? What is the refund policy? Will Mitsuko add more features in the future? Let Mitsuko translates your subtitles All you need is editing and QA. Mitsuko handles the heavy lifting of the translation step with context-aware AI. Contact Us Join Discord Get started for free About Mitsuko",
+   "endpoints": []
+  }
+ ],
+ "addavox": [
+  {
+   "label": "addavox",
+   "url": "https://www.addavox.com/en/contact.html",
+   "final_url": "https://www.addavox.com/en/contact.html",
+   "status": 403,
+   "err": "HTTP 403",
+   "title": "",
+   "len": 111,
+   "dead": true
+  },
+  {
+   "label": "addavox",
+   "url": "https://www.addavox.com/en/ai-dubbing-for-lsps.html",
+   "final_url": "https://www.addavox.com/en/ai-dubbing-for-lsps.html",
+   "status": 200,
+   "err": null,
+   "title": "AI Dubbing for LSPs: Platform Comparison 2026 | Addavox",
+   "len": 108628,
+   "forms": [],
+   "emails": [],
+   "mailtos": [],
+   "tel": [],
+   "whatsapp": [],
+   "telegram": [],
+   "text": "AI Dubbing for LSPs: Platform Comparison 2026 | Addavox \n \n \n \n \n \n \n \n\n \n \n \n \n \n \n \n\n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n\n\n \n\n \n\n \n\n \n\n \n\n \n \n \n\n \n \n \n \n \n \n \n \n\n \n\n \n this.lastY && y > 120 && !this.open;\n this.lastY = y;\n }\n }\"\n x-init=\"lastY = window.scrollY; measure(); $nextTick(() => measure())\"\n @scroll.window.passive=\"onScroll()\"\n @resize.window.passive=\"measure()\"\n @keydown.escape.window=\"open = false\"\n :class=\"$store.siteHeader.hidden ? '-translate-y-full' : 'translate-y-0'\"\n class=\"sticky top-0 z-50 transform transition-transform duration-300 ease-in-out bg-white border-b border-trueGray-100\">\n \n \n \n \n\n \n \n \n\n \n\n \n\n \n \n Product\n \n \n \n \n How It Works\n \n \n Capabilities\n \n \n \n\n \n \n Solutions\n \n \n \n \n \n For LSPs \n Resell and integrate AI dubbing \n \n \n \n \n For Translation Technology Partners \n Add AI dubbing to your platform by API \n \n \n \n \n\n \n Pricing\n \n\n \n Compare\n \n\n \n \n Resources\n \n \n \n \n API\n \n \n User Manual\n \n \n FAQ\n \n \n \n \n\n \n\n \n \n \n Language: \n \n \n \n \n\n \n \n Search for a language \n \n \n \n No languages found \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n\n \n \n \n \n \n \n \n\n \n Start localizing\n \n \n \n \n \n\n \n \n \n For LSPs \n \n AI dubbing platforms, seen from the LSP side of the deal\n \n If you resell or integrate AI dubbing, the deciding questions aren&#x27;t about the voices. They&#x27;re whether you keep the client, whether your linguists stay in control, and whether your margin holds. This page compares ten platforms on those terms. \n \n \n Get a sandbox API key\n \n \n Talk about partner pricing (opens in a new tab) \n \n \n \n \n\n \n \n What an LSP should look for \n \n \n Who owns the client? \n A platform that never asks who your clients are or markets to them, plus partner or white-label terms when you want them. \n \n \n Can your linguists edit? \n Transcript, translation and timing editable before the voice is rendered, by your team. \n \n \n Does it cover your languages? \n Long-tail language pairs are where LSPs win work the self-serve tools can&#x27;t serve. \n \n \n Can you price it? \n Published per-minute rates let you quote with confidence and protect your margin. \n \n \n \n \n\n \n AI dubbing platform comparison for LSPs \n Last updated: October 2026 \n\n \n Key \n \n Yes \n Partial \n No \n Not stated \n \n \n\n Scroll sideways to see every column. \n\n \n \n Ten AI dubbing platforms compared on the terms that matter to an LSP, based on each vendor&#x27;s own published information. \n \n \n Platform \n Languages \n API access \n LSP / reseller terms \n Linguist editing before render \n Per-speaker voice match \n Lip-sync \n Managed human review \n Live / real-time \n Security & pricing \n \n \n \n \n \n Addavox \n Built for LSP resale and API integration \n \n \n Yes \n 150+ languages and dialects \n \n \n Yes \n Self-serve sandbox key; dubbing, transcription, translation, TTS and voice-separation APIs \n \n \n Yes \n Reseller and integration partners; white label on request; terms by agreement \n \n \n Yes \n Human-in-the-loop review step before final render \n \n \n Yes \n Native voice matching per speaker, consent-gated \n \n \n Partial \n Built; being refined before release \n \n \n Yes \n Workflow built around your own linguists \n \n \n Partial \n Addavox Live, launching October 2026: SRT, RTMP, HLS; 25 s delay; correctable recording \n \n \n Yes \n Built to SOC 2, ISO 27001 and TPN requirements; certification planned. Published tiers: video $0.57–$1.17/min by plan; flat per-minute API rates. Consent attested per request; no voiceprints or voice models stored \n \n \n \n \n Deepdub \n Media and entertainment, broadcast \n \n \n Yes \n 130+ (also says 100+) \n \n \n Yes \n Free API sign-up; mainly text-to-speech \n \n \n Partial \n Registered partner program; terms not published \n \n \n Partial \n Timing and voice editing in Deepdub GO \n \n \n Yes \n Voice cloning with accent control \n \n \n Partial \n Listed as a service; method not described \n \n \n Yes \n Managed adapters, linguists, QC \n \n \n Yes \n Deepdub Live \n \n \n Partial \n SOC 2, TPN Gold. Pricing not public; AWS listing from $25K/yr \n \n \n \n \n Dubformer \n Media companies and LSPs, c",
+   "endpoints": []
+  }
+ ],
+ "lipdub": [
+  {
+   "label": "lipdub",
+   "url": "https://www.lipdub.ai/",
+   "final_url": "https://lipdub.ai/",
+   "status": 200,
+   "err": null,
+   "title": "LipDub: AI Video Localization &amp; Lip Sync in 80+ Languages",
+   "len": 741875,
+   "forms": [],
+   "emails": [],
+   "mailtos": [],
+   "tel": [],
+   "whatsapp": [],
+   "telegram": [],
+   "text": "LipDub: AI Video Localization & Lip Sync in 80+ Languages \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n LipDub 2.0 is here. 8x faster, 80+ languages. LipDub 2.0 is here. 8x faster lip-sync. Your best videos, now in every language Your best videos, now in every language Your best videos, now in every language LipDub helps you localize any video you've already made in 80+ languages, with broadcast-quality lip sync. From a 30-second ad to a multi-hour course. LipDub helps you localize any video you've already made in 80+ languages, with broadcast-quality lip sync. From a 30-second ad to a multi-hour course. Try LipDub AI Try LipDub AI Book a Demo For enterprise trial Book a Demo For enterprise trial 1000+ brands, agencies and educators USING LIPDUB brands, agencies and educators USING LIPDUB brands, agencies and educators USING LIPDUB 10,000+ Hours of video localized Hours of video localized Hours of video localized 40+ Countries SERVED Countries SERVED Countries SERVED HOW IT WORKS From one video to every market 1 Upload Drop in the video you already made. Any length, any format. 2 Translate + Refine 3 Voice clone + dub 4 AI lip sync 5 Export 2 Translate + Refine Your script, in 80+ languages. Refine any line in the translation editor before anything else generates. 1 Upload Drop in the video you already made. Any length, any format. 3 Voice clone + dub Clone the original speaker's voice, or pick one. Generate the dubbed audio in the new language. 4 Lip sync Match the mouth to the new words, frame by frame, at broadcast quality. The part that makes people do a double take. \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n 5 Export Download broadcast-ready versions for every market. \n \n\n \n \n \n \n \n \n \n French 12 minutes ago \n \n \n\n \n \n \n \n \n \n \n German 12 minutes ago \n \n \n\n \n \n \n \n \n \n In progress... \n \n Italian 12 minutes ago \n \n \n\n Three reasons teams keep localizing with LipDub Reach more markets, spend less to do it, and keep the brand intact. Reach more markets, spend less to do it, and keep the brand intact. Keep the brand intact The face on camera stays. The audience never knows it's localized. Protect the margin One source video. Every language. A fraction of the cost. Open new markets Your best video, in every language your audience speaks. Keep the brand intact The face on camera stays. The audience never knows it's localized. Protect the margin One source video. Every language. A fraction of the cost. Open new markets Your best video, in every language your audience speaks. Built for the way your team works Built for the way your team works For Creators Grow your audience in every language. Try it now. For Creators Grow your audience in every language. Try it now. For Creators Grow your audience in every language. Try it now. For Online Education Your full library, in every language, taught by the same instructors. For Online Education Your full library, in every language, taught by the same instructors. For Online Education Your full library, in every language, taught by the same instructors. For Marketing Teams One hero asset, polished across every market. For Marketing Teams One hero asset, polished across every market. For Marketing Teams One hero asset, polished across every market. For Agencies Take client campaigns into every market — in days, not weeks. For Agencies Take client campaigns into every market — in days, not weeks. For Agencies Take client campaigns into every market — in days, not weeks. For Developers (API) Build translation, dubbing, and lip sync into your own product. Build translation, dubbing, and lip sync into your own product. Read the API docs Read the API docs See developer use cases See developer use cases WALL OF LOVE Already shipping in every language View all WPP Go-to dubbing tool, helps close deals. “Lip dub is my go-to when it comes to dubbing. Seamless lip sync, fast turnarounds, great quality. A big seller for us.” Titus Scurt Primary Production & AI, WPP Bucharest WPP Go-to dubbing tool, helps close deals. “Lip dub is my go-to when it comes to dubbing. Seamless lip sync, fast turnaro",
+   "endpoints": []
+  },
+  {
+   "label": "lipdub",
+   "url": "https://www.lipdub.ai/pricing",
+   "final_url": "https://lipdub.ai/pricing",
+   "status": 200,
+   "err": null,
+   "title": "Pricing | LipDub Video Localization &amp; Lip Sync",
+   "len": 693663,
+   "forms": [],
+   "emails": [],
+   "mailtos": [],
+   "tel": [],
+   "whatsapp": [],
+   "telegram": [],
+   "text": "Pricing | LipDub Video Localization & Lip Sync \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n Pricing Lip sync from $29 a month, with unlimited seats. Transparent per-minute pricing that gets more affordable on higher plans. Monthly Yearly · Save 15% Core $ 29 / mo Get Started Lip sync from $3.50/min · Dubbing from $1.70/min Up to 10 min · 1080p · No watermark Growth $ 99 / mo Get Started Lip sync from $3.00/min · Dubbing from $1.60/min Up to 60 min · Voice cloning · 1 glossary Scale $ 249 / mo Get Started Lip sync from $2.50/min · Dubbing from $1.50/min Up to 120 min · 4K · API · priority Enterprise Custom Book a Demo Custom Unlimited length · 4K · SSO · CSM · SLAs Monthly Yearly · Save 15% Core $ 29 / mo Get Started Lip sync from $3.50/min · Dubbing from $1.70/min Up to 10 min · 1080p · No watermark Growth $ 99 / mo Get Started Lip sync from $3.00/min · Dubbing from $1.60/min Up to 60 min · Voice cloning · 1 glossary Scale $ 249 / mo Get Started Lip sync from $2.50/min · Dubbing from $1.50/min Up to 120 min · 4K · API · priority Enterprise Custom Book a Demo Custom Unlimited length · 4K · SSO · CSM · SLAs Monthly Yearly · Save 15% Core $ 29 / mo Get Started Lip sync from $3.50/min · Dubbing from $1.70/min Up to 10 min · 1080p · No watermark Growth $ 99 / mo Get Started Lip sync from $3.00/min · Dubbing from $1.60/min Up to 60 min · Voice cloning · 1 glossary Scale $ 249 / mo Get Started Lip sync from $2.50/min · Dubbing from $1.50/min Up to 120 min · 4K · API · priority Enterprise Custom Book a Demo Custom Unlimited length · 4K · SSO · CSM · SLAs TRUSTED BY TOP brands, agencies and educators Why LipDub pricing is different Pay for the video you make, by the minute. Each plan unlocks a tier, then you pay per minute you localize, and the rate gets cheaper the higher your plan. Lip sync from $29 Most tools gate lip sync to their top tier. We include it from the entry plan. Unlimited seats, every plan No per-seat fees. Add your whole team on any plan. Render in parallel, no queue Unlimited concurrent jobs. Batch-localize without waiting in line. Transparent per-minute pricing Published rates you can audit before you sign. Everything at a glance Lip sync and dubbing are priced separately, so you only pay for what each video needs. Premium and Ultra add a one-time training fee per speaker. Feature Core Growth Scale Enterprise Monthly price $29/mo $99/mo $249/mo Custom Per-minute pricing Lip sync ($/min) from $3.50 from $3.00 from $2.50 Custom Audio dubbing ($/min) from $1.70 from $1.60 from $1.50 Custom MODELS LipDub 2.0 🆕 LipDub 1.0 – Flash LipDub 1.0 – Premium LipDub 1.0 – Ultra PRODUCT Lip Sync Audio dubbing 80+ languages Max video length up to 10 min up to 60 min up to 120 min Unlimited Resolution 1080p 1080p 4k 4k Watermark removed Upload your own audio Team & throughput Unlimited seats Unlimited concurrent jobs Priority processing Brand & localization Translation glossary Translation editor Stock voice library Instant voice cloning Integration & enterprise API access (Dedicated quotas) MFA SSO / SAML Dedicated support / CSM Custom SLAs / DPA Core $29/mo Get Started Growth $99/mo Get Started Scale $249/mo Get Started Enterprise Custom Book a Demo Feature Core Growth Scale Enterprise Monthly price $29/mo Per-minute pricing Lip sync ($/min) from $3.50 Audio dubbing ($/min) from $1.70 MODELS LipDub 2.0 🆕 LipDub 1.0 – Flash LipDub 1.0 – Premium LipDub 1.0 – Ultra PRODUCT Lip Sync Audio dubbing 80+ languages Max video length up to 10 min Resolution 1080p Watermark removed Upload your own audio Team & throughput Unlimited seats Unlimited concurrent jobs Priority processing Brand & localization Translation glossary Translation editor Stock voice library Instant voice cloning Integration & enterprise API access MFA SSO / SAML Dedicated support / CSM Custom SLAs / DPA Core $29/mo Get Started LipDub pricing plans compared by feature Feature Core Growth Scale Enterprise Monthly price $29/mo $99/mo $249/mo Custom Per-minute pricing Lip sync ($/min) $3.50 $3.00 $2.50 $1.50–2.00 Audio dubbing ($/min) $1.70 $1.60 $1.50 $1.00–1.40 Models ",
+   "endpoints": []
+  }
+ ],
+ "ollang": [
+  {
+   "label": "ollang",
+   "url": "https://ollang.com/contact",
+   "final_url": "https://ollang.com/contact",
+   "status": 200,
+   "err": null,
+   "title": "Contact | Ollang",
+   "len": 41668,
+   "forms": [
+    {
+     "action": "https://ollang.com/contact",
+     "action_raw": "(none=page itself)",
+     "method": "GET",
+     "n_fields": 5,
+     "fields": [
+      "name",
+      "email",
+      "phone",
+      "company",
+      "message"
+     ],
+     "required": [
+      "name",
+      "email",
+      "message"
+     ],
+     "providers": [
+      "recaptcha"
+     ],
+     "honeypot": ""
+    }
+   ],
+   "emails": [
+    "info@ollang.com",
+    "partnerships@ollang.com",
+    "sales@ollang.com"
+   ],
+   "mailtos": [
+    "info@ollang.com",
+    "partnerships@ollang.com",
+    "sales@ollang.com"
+   ],
+   "tel": [],
+   "whatsapp": [],
+   "telegram": [],
+   "text": "Contact | Ollang \n \n \n \n \n Platform Solutions Industries Customers Resources Developers en Log in Book a demo Contact Get in touch Whether you have questions about our platform, want to explore a partnership, or just want to say hello — we're here for it. Email us info@ollang.com Sales & enterprise sales@ollang.com Partnerships partnerships@ollang.com Headquarters 595 Pacific Ave, 4th Floor San Francisco, CA 94133 USA Name * Email * Phone Number Company Message * Send Message The AI Language Execution Layer for Enterprise Platform Platform Ollang API Ollang MCP Ollang SDK Product updates Solutions AI Dubbing Lipsync Subtitling Audio Description Live Translation Studio Dubbing Developers Docs API reference Changelog Status Company About Team Careers News Partners Blog Trust Trust Center Security & Compliance FAQ © 2026 Ollang Inc. 595 Pacific Ave, 4th floor, San Francisco, CA 94133 info@ollang.com SOC 2 Type II HIPAA Terms Privacy Ask your AI about Ollang ChatGPT Claude Google AI Mode Perplexity Grok",
+   "endpoints": []
+  },
+  {
+   "label": "ollang",
+   "url": "https://ollang.com/pricing",
+   "final_url": "https://ollang.com/pricing",
+   "status": 404,
+   "err": "HTTP 404",
+   "title": "AI Language Infrastructure for Video, Audio, Images and Text | Ollang",
+   "len": 321931,
+   "dead": true
+  }
+ ],
+ "onpurpose": [
+  {
+   "label": "onpurpose",
+   "url": "https://onpurpose.studio/contact",
+   "final_url": "https://onpurpose.studio/contact",
+   "status": 200,
+   "err": null,
+   "title": "Contact OnPurpose Studio | Localization Consulting",
+   "len": 18674,
+   "forms": [
+    {
+     "action": "https://onpurpose.studio/contact",
+     "action_raw": "(none=page itself)",
+     "method": "DIALOG",
+     "n_fields": 0,
+     "fields": [],
+     "required": [],
+     "providers": [],
+     "honeypot": ""
+    }
+   ],
+   "emails": [],
+   "mailtos": [],
+   "tel": [],
+   "whatsapp": [],
+   "telegram": [],
+   "text": "Contact OnPurpose Studio | Localization Consulting \n \n \n \n\n \n \n \n \n \n \n \n \n \n \n \n\n \n \n \n \n \n\n \n \n \n \n \n \n \n\n\n \n \n \n \n \n \n \n \n Home \n Our Services \n Pricing \n About Us \n Contact \n \n \n \n \n \n Book a Call\n \n \n \n \n \n \n Book a Call\n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n Home \n Our Services \n Pricing \n About Us \n Contact \n \n \n \n \n \n Book a Call\n \n \n \n \n \n \n \n \n \n Contact Us\n \n \n \n \n Schedule a time to meet \n Schedule some time \n \n Let's get right down to it and schedule a 30-minute call. \n \n \n \n \n \n \n \n \n \n Email us \n Email works too \n \n If a meeting is too much commitment then you can send us an email here.\n \n \n \n [email protected] \n \n \n Copy To Clipboard \n Compose Email \n \n \n \n \n \n \n \n \n \n \n \n Translate Your Content \n \n \n Contentful Translation \n \n \n Shopify Translation \n \n \n Storyblok Translation \n \n \n \n \n Consulting & Engineering \n \n \n All Services \n \n \n Developer Consultation & Training \n \n \n Codebase Audits \n \n \n Translation Memory Analysis & Cleaning \n \n \n Vendor Migrations \n \n \n \n \n Resources \n \n \n Blog \n \n \n Word Nerd Newsletter \n \n \n \n \n Company \n \n \n Home \n \n \n About Us \n \n \n Contact \n \n \n Pricing \n \n \n Client Login \n \n \n \n \n \n \n Made by Ļỗċàḻíẓàẗíỗņ Nerds in Oregon, USA \n \n Privacy Policy \n Terms of Service \n Sitemap",
+   "endpoints": []
+  },
+  {
+   "label": "onpurpose",
+   "url": "https://onpurpose.studio/about",
+   "final_url": "https://onpurpose.studio/about",
+   "status": 200,
+   "err": null,
+   "title": "About | OnPurpose Studio",
+   "len": 15399,
+   "forms": [
+    {
+     "action": "https://onpurpose.studio/about",
+     "action_raw": "(none=page itself)",
+     "method": "DIALOG",
+     "n_fields": 0,
+     "fields": [],
+     "required": [],
+     "providers": [],
+     "honeypot": ""
+    }
+   ],
+   "emails": [],
+   "mailtos": [],
+   "tel": [],
+   "whatsapp": [],
+   "telegram": [],
+   "text": "About | OnPurpose Studio \n \n \n \n\n \n \n \n \n \n \n \n \n \n \n \n\n \n \n \n \n \n\n \n \n \n \n \n \n\n\n \n \n \n \n \n \n \n \n Home \n Our Services \n Pricing \n About Us \n Contact \n \n \n \n \n \n Book a Call\n \n \n \n \n \n \n Book a Call\n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n Home \n Our Services \n Pricing \n About Us \n Contact \n \n \n \n \n \n Book a Call\n \n \n \n \n \n \n \n \n \n About Us\n \n You want your content translated. We bring\n the software, translators, and guidance together and manage the process\n for you. \n Our founder built translation software inside large companies, worked\n with translation providers, and became a consultant. Again and again,\n customers asked why getting content translated required so many vendors.\n We built OnPurpose to bring those pieces together. \n\n \n Our tech\n \n We build and run our own software to connect to Shopify, Contentful, and\n Storyblok, pick up content changes, and return translations for your team\n to publish. You keep working in your existing platform. We handle the\n translation system. \n\n \n Our linguists\n \n When you need human translation or review, we provide the translators.\n We assign the same linguists to your projects so they build an\n understanding of your content, your customers, and your brand's voice\n over time. \n\n \n Our guidance\n \n We help you plan how to reach customers in other languages and choose\n where automated translation or human expertise makes sense. We also\n advise your developers on best practices for making your content and\n software ready for translation. You don't need to become a translation\n expert to work with us. \n\n \n Why we cost less\n \n We build the software, provide the translators, and offer the guidance\n ourselves. Bringing those services together lets us charge less than\n buying and coordinating them separately. \n \n \n \n \n \n \n \n Translate Your Content \n \n \n Contentful Translation \n \n \n Shopify Translation \n \n \n Storyblok Translation \n \n \n \n \n Consulting & Engineering \n \n \n All Services \n \n \n Developer Consultation & Training \n \n \n Codebase Audits \n \n \n Translation Memory Analysis & Cleaning \n \n \n Vendor Migrations \n \n \n \n \n Resources \n \n \n Blog \n \n \n Word Nerd Newsletter \n \n \n \n \n Company \n \n \n Home \n \n \n About Us \n \n \n Contact \n \n \n Pricing \n \n \n Client Login \n \n \n \n \n \n \n Made by Ļỗċàḻíẓàẗíỗņ Nerds in Oregon, USA \n \n Privacy Policy \n Terms of Service \n Sitemap",
+   "endpoints": []
+  }
+ ],
+ "speechlab": [
+  {
+   "label": "speechlab",
+   "url": "https://www.speechlab.ai/",
+   "final_url": "https://www.speechlab.ai/",
+   "status": 200,
+   "err": null,
+   "title": "AI Dubbing &amp; Localization for Video &amp; Audio | Speechlab",
+   "len": 110237,
+   "forms": [],
+   "emails": [],
+   "mailtos": [],
+   "tel": [],
+   "whatsapp": [],
+   "telegram": [],
+   "text": "AI Dubbing & Localization for Video & Audio | Speechlab \n\n \n \n \n\n New from Speechlab: See how 7 ASR models compare. Read more About Pricing Blog Contact Sales Sign in Sign in Sign up for free AI localization and dubbing. One editor. All languages. Transcribe, translate, caption, subtitle, and dub your video and audio in 50+ languages Try Speechlab Free Transcription Translation Caption Subtitle Dubbing Most AI dubbing platforms give you a file. We give you control — with professional workflows built for editing, collaboration, and scale. Not &quot;upload and pray.&quot; Advanced transcript and translation editing Fine-grained control where it matters: SRT import, segments operations, audio waveform editing, and automatic speaker detection. Every tool you need to get the output right before it ships. Get started Hyper-realistic voice matching Replicate the original speaker&#x27;s voice in a new language — or replace it with an authentic native voice. Get started Segment-level dub regeneration Changed one word in the translation? Re-dub that segment. Not the whole project. Your credits go to work that matters. Get started Enterprise Enterprise-ready, full potential unlocked. API integration. Plug Speechlab into your media asset management, translation management, or content pipeline. Bulk processing. Process and track hundreds of files at once across languages. Track progress from a single dashboard. White-glove human-in-the-loop review. AI gets you 90% there. Human linguists get you to ship-ready quality. How AI localization and dubbing works with Speechlab Every capability works on its own — or flows into the next. Start anywhere. Stop anywhere. Pick up where you left off. All of it works on spoken content: video, audio, podcasts, audiobooks. Upload. Drag and drop a file, paste a YouTube link, or bulk-import your content, for video, audio, podcasts, audiobooks. Transcribe. ASR produces a diarized transcript with timestamps and speaker labels. Edit inline. Caption. Generate captions from the transcription. Speaker-labeled, editable, and accessibility-ready. Translate. Select a target language. AI translates the spoken content segment by segment. Edit every line. Subtitle. Create SRT subtitles from the translation. Frame-accurate, validated, broadcast-ready. Generate dub.   Assign a voice per speaker then render the dubbed audio. Preview in the editor alongside the source. Export.   Dubbed video, dubbed audio, SRT subtitles, translation text — whatever the deliverable needs. Built for teams that care what the output sounds like Media publishers & creators Dub documentaries, podcasts, YouTube content, audiobooks, and film. Real multi-speaker support. Voice cloning that preserves the original speaker&#x27;s identity. Enterprise marketing & sales Localize product demos, sales enablement, and brand content across markets. Team collaboration, role-based access, bulk processing, API integration. Corporate training & L&D Dub training modules, compliance content, and course libraries. Pearson and DeepLearning.AI already do. Localization service providers Plug into existing workflows via API. Per-minute pricing. NET-30 invoicing. White-label options for enterprise accounts. Blog & NEws Short reads that sharpen your engineering instincts Industry AI Dubbing and the EU AI Act: What Enterprises Need to Know Before August 2026 May 12, 2026 Technology Agentic Engineering for Startups: How to Ship AI-Generated Code Without Losing Control May 4, 2026 Technology We Benchmarked 7 ASR Models on Real Audio. Here&#x27;s What We Found. April 21, 2026 Product AI Dubbing vs Human Dubbing: An Honest Cost Comparison April 14, 2026 Industry The Time-Warp of Testing: How Automated Dubbing Revolutionizes Global Market Entry May 21, 2024 Industry The Commoditization of AI: Why Speech Translation Must Win on Workflow and UX February 7, 2025 Pricing Transparent per-minute pricing. Pay for what you use. Free 0$ For individuals who are interested in effortless video dubbing Start Free Included: 2 projects of free dubbing All target languages & dialects Match voice to original or native speaker Export captions in SRT, TXT or JSON Export media with or without ",
+   "endpoints": []
+  },
+  {
+   "label": "speechlab",
+   "url": "https://www.speechlab.ai/pricing",
+   "final_url": "https://www.speechlab.ai/pricing",
+   "status": 200,
+   "err": null,
+   "title": "Pricing — AI Dubbing, Captions &amp; Localization | Speechlab",
+   "len": 41573,
+   "forms": [],
+   "emails": [],
+   "mailtos": [],
+   "tel": [],
+   "whatsapp": [],
+   "telegram": [],
+   "text": "Pricing — AI Dubbing, Captions & Localization | Speechlab \n\n \n \n \n\n New from Speechlab: See how 7 ASR models compare. Read more About Pricing Blog Contact Sales Sign in Sign in Sign up for free Pricing Plans Choose the Speechlab plan that fits your needs Free 0$ For individuals who are interested in effortless video dubbing Start Free Included: 2 projects of free dubbing All target languages & dialects Match voice to original or native speaker Export captions in SRT, TXT or JSON Export media with or without background audio Pro $0.6/min For creators who want to power up video production with AI voices Get started Included: Pay for usage, per-minute credits Audio and video of any length Video resolution up to 4K Share with others to review and edit API access Enterprise Custom For companies who want to level up content strategy with AI dubbing Contact Sales Everything in pro, plus: Custom integrations Volume-based discounts Assign team user rights and roles Review by native linguists Support for custom voices Frequently asked questions What is Speechlab? Speechlab is an AI dubbing and translation platform that lets you transcribe, translate, caption, subtitle, and dub video and audio in 50+ languages. Unlike black-box tools, Speechlab gives you a full editor — so you can review and refine every word before it ships. What file formats does Speechlab support? Video (MP4, MOV, MKV, WebM), audio (MP3, WAV, M4A, FLAC), and direct YouTube link import. Export options include dubbed video, dubbed audio, SRT/VTT subtitles, and plain-text transcripts. How many languages does Speechlab support? 50+ languages for transcription, translation, and dubbing — including major European, Asian, Middle Eastern, and African languages. Each language has native-voice options; voice cloning availability varies by language pair. Can I clone the original speaker&#x27;s voice in another language? Yes. Source-clone mode captures the original speaker&#x27;s voice characteristics and synthesizes them in the target language. For multi-speaker content, each speaker can be cloned independently. What if I only need transcription or subtitles, not dubbing? Every product works standalone. You can use Speechlab purely for transcription, captions, or SRT export without ever generating a dub. You only pay for what you use. How does pricing work? Credit-based, per-minute pricing. Each language you add costs credits based on the source media duration. Start with 2 free projects, no card required. Can I edit the output after it&#x27;s generated? Yes. Speechlab includes a waveform timeline editor with per-segment text editing, timing adjustment, and segment-level re-rendering. Change one sentence without re-processing the whole file. Does Speechlab offer an API? Yes. Pro and Enterprise plans include RESTful API access with per-project endpoints, webhook callbacks, and batch job tracking. Integrate Speechlab into your existing media asset management or translation management pipeline. What enterprise features are available? Enterprise accounts include bulk processing, API integration, linguist-reviewed outputs, custom voice creation, role-based team access, invoice billing, and lip-sync. Contact our sales for details. Is my content secure? All uploads are encrypted in transit and at rest. Files are stored in SOC 2-compliant infrastructure. Enterprise accounts can request custom data retention policies. Try it. Hear your content in a new voice. Try Speechlab Free Company Home About Pricing Blog Contact Sales More FAQ Create Account Sign In © 2026 Speechlab. All rights reserved. Terms of Service Privacy Policy",
+   "endpoints": []
+  }
+ ],
+ "hollylist": [
+  {
+   "label": "hollylist",
+   "url": "https://www.hollylist.com/",
+   "final_url": "https://www.hollylist.com/",
+   "status": 200,
+   "err": null,
+   "title": "Hollylist | Jobs and Internships in Entertainment",
+   "len": 83701,
+   "forms": [
+    {
+     "action": "https://www.hollylist.com/",
+     "action_raw": "(none=page itself)",
+     "method": "GET",
+     "n_fields": 2,
+     "fields": [
+      "searchTerm",
+      "locationSearch"
+     ],
+     "required": [],
+     "providers": [],
+     "honeypot": ""
+    },
+    {
+     "action": "https://www.hollylist.com/",
+     "action_raw": "(none=page itself)",
+     "method": "GET",
+     "n_fields": 1,
+     "fields": [
+      "email-address"
+     ],
+     "required": [
+      "email-address"
+     ],
+     "providers": [],
+     "honeypot": ""
+    }
+   ],
+   "emails": [],
+   "mailtos": [],
+   "tel": [],
+   "whatsapp": [],
+   "telegram": [],
+   "text": "Hollylist | Jobs and Internships in Entertainment \n \n Hollylist Open main menu Search Jobs Career Research Employer? Post a Job Join the Hollylist Newsletter Contact Us Log in Looking for a job? Search Jobs Find Your Next Role in Film, TV & Entertainment Search thousands of entertainment jobs and get matched with top employers in film, TV, streaming, music, gaming, and digital media. Join 150,000+ professionals . Trusted by 150,000+ job seekers 2,500+ employers New jobs daily Start a 30 -Day Free Trial Find Your Dream Job Search from thousands of opportunities Search keywords, job title, or company name Location (city, state, or zip) Remote Jobs Los Angeles New York Search Jobs Popular searches: Production • Film & TV Crew • Casting • Streaming Why Hollylist Your Gateway to Entertainment Careers The industry&#x27;s most trusted job platform for film, TV, streaming, and digital media professionals Exclusive Entertainment Jobs Access premium job listings from major studios, streaming platforms, and production companies not found on general job boards. Industry Network Connect directly with hiring managers at top entertainment companies including studios, agencies, networks, and production houses. Smart Job Alerts Get notified instantly when new positions match your skills. Never miss an opportunity in your dream role or company. How It Works Start Your Entertainment Career in 3 Steps Join thousands of professionals who found their dream job through Hollylist 1 Upload Your Resume Sign up and upload your resume in minutes. We make it easy to apply to jobs with just one click. 2 Search & Apply Browse thousands of entertainment jobs by category, location, or company. Apply instantly with your saved resume. 3 Land Your Dream Role Get discovered by top entertainment employers. Receive interview requests and start your next chapter in the industry. Job Categories Browse Jobs by Category Find your perfect role in film, television, streaming, and entertainment Film and TV Crew Camera, lighting, grip, sound, and on-set production crew jobs View jobs Production Producer, coordinator, and production management roles View jobs Casting Casting director, associate, and talent coordinator positions View jobs Talent Management Agent, manager, and talent representation careers View jobs Marketing Entertainment marketing, publicity, and promotional roles View jobs Content Content creation, development, and strategy positions View jobs Creator/Influencer Social media, influencer, and digital creator opportunities View jobs Graphic Design & Animation Motion graphics, animation, and visual design careers View jobs Special & Visual Effects VFX artist, compositor, and special effects technician jobs View jobs Communications PR, social media, and corporate communications roles View jobs Executive C-suite, VP, and senior leadership positions View jobs Studio Studio operations, facilities, and lot management jobs View jobs View all available jobs Trusted by Professionals Join the Entertainment Community Thousands of entertainment professionals have found their next opportunity through Hollylist 10,000+ Jobs Posted 2,500+ Entertainment Employers 150,000+ Industry Professionals &quot; Hollylist helped me land my dream job as a production coordinator at a major streaming platform. The entertainment-focused listings made all the difference. &quot; S Sarah M. Production Coordinator , Streaming Platform &quot; After years of generic job boards, finding Hollylist was a game-changer. Within two weeks, I had three interviews at top studios. &quot; M Marcus J. VFX Artist , Major Studio &quot; The quality of listings on Hollylist is unmatched. I found positions I never would have discovered elsewhere in the entertainment industry. &quot; E Emily R. Marketing Manager , Entertainment Agency Premium Membership Ready to Launch Your Entertainment Career? Get unlimited access to exclusive job listings, priority application status, and personalized job recommendations from top entertainment companies. Start 30 -Day Free Trial Browse Free Jobs Cancel anytime. Monthly and annual plans available. Your gateway to meaningful careers in entertainment, film, television, and m",
+   "endpoints": []
+  },
+  {
+   "label": "hollylist",
+   "url": "https://www.hollylist.com/contact",
+   "final_url": "https://www.hollylist.com/contact",
+   "status": 200,
+   "err": null,
+   "title": "Hollylist",
+   "len": 3328,
+   "forms": [],
+   "emails": [],
+   "mailtos": [],
+   "tel": [],
+   "whatsapp": [],
+   "telegram": [],
+   "text": "Hollylist \n \n 404 Page not found Sorry, we couldn’t find the page you’re looking for. Go back to listings",
+   "endpoints": []
+  }
+ ],
+ "videodubbing": [
+  {
+   "label": "videodubbing",
+   "url": "https://videodubbing.com/contact",
+   "final_url": "https://videodubbing.com/contact/",
+   "status": 200,
+   "err": null,
+   "title": "Video Dubbing & Localization Support – Contact Us | videodubbing.com",
+   "len": 35047,
+   "forms": [
+    {
+     "action": "https://videodubbing.com/contact/",
+     "action_raw": "(none=page itself)",
+     "method": "GET",
+     "n_fields": 7,
+     "fields": [
+      "website",
+      "formStartTime",
+      "challenge",
+      "name",
+      "email",
+      "subject",
+      "message"
+     ],
+     "required": [
+      "name",
+      "email",
+      "subject",
+      "message"
+     ],
+     "providers": [
+      "recaptcha"
+     ],
+     "honeypot": ""
+    }
+   ],
+   "emails": [
+    "hello@videodubbing.com",
+    "help@videodubbing.com"
+   ],
+   "mailtos": [
+    "help@videodubbing.com"
+   ],
+   "tel": [],
+   "whatsapp": [],
+   "telegram": [],
+   "text": "Video Dubbing & Localization Support – Contact Us | videodubbing.com \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n -->\n \n \n \n \n \n \n \n \n \n \n \n\n \n \n\n \n \n\n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n EN English 简体中文 हिन्दी Español العربية Français বাংলা Português اردو Deutsch 日本語 Türkçe Filipino தமிழ் فارسی ไทย Polski \n \n \n \n \n \n \n \n Free Tools ▼ \n \n \n ⏱️ \n \n Subtitle Sync \n Sync subtitles to video · resync SRT \n \n \n \n 📝 \n \n SRT Editor \n Edit subtitles online \n \n \n \n 🔄 \n \n Subtitle Converter \n SRT to VTT, VTT to SRT \n \n \n \n ⇄ \n \n RTL Subtitle Fixer \n Arabic, Hebrew, Persian SRT/VTT \n \n \n \n 💰 \n \n Revenue Calculator \n Calculate global potential \n \n \n \n 📄 \n \n Description Translator \n Translate YouTube descriptions \n \n \n \n \n 🛠️ \n \n All Tools \n View complete collection \n \n \n \n \n \n Free Tools \n Platform \n Managed Dubbing \n Pricing \n Log in \n \n \n \n\n \n\n\n\n\n \n \n \n Get in Touch \n Have questions about our video localization service? We're here to help. Send us a message and we'll respond as soon as possible. \n \n \n \n Get in Touch \n \n Email \n hello@videodubbing.com \n Business Hours \n Monday - Friday: 9:00 AM - 6:00 PM GMT \n \n \n \n \n \n \n \n \n \n \n \n \n \n Name \n \n \n \n Email \n \n \n \n Subject \n \n Select a subject \n General Inquiry \n Pricing \n Technical Support \n Partnership \n Other \n \n \n \n Message \n \n \n \n Send Message \n \n \n \n \n \n \n \n\n \n \n \n \n \n \n Message Sent! \n Thank you for your message. We'll get back to you soon! \n \n Go to Homepage\n \n \n \n\n \n\n \n \n \n \n \n \n \n \n \n Professional video dubbing and translation — AI-powered, human-perfected.\n Self-service platform for creators and agencies, plus managed dubbing service for studios and high-volume production.\n \n \n \n \n \n GoGlobal Solutions Ltd. (UK, company #16002694) operates videodubbing.com. Not affiliated with GoGlobal.com (global expansion and employer-of-record services).\n \n \n \n \n Products \n Video Dubbing \n Subtitle Generator \n Subtitle Translator \n YouTube Dubbing \n TikTok Dubbing \n Podcast Translator \n AI Narration \n AI Voices \n \n \n Free Tools \n Subtitles \n Subtitle Sync \n SRT Editor \n Subtitle Converter \n RTL Subtitle Fixer \n Revenue Calculator \n Description Translator \n All Free Tools → \n \n \n Use Cases \n For Creators \n For Agencies \n Marketing \n Training & L&D \n Education \n Sales \n Alternatives \n \n\n \n \n \n Dubbing languages \n \n Spanish \n French \n German \n Portuguese \n Hindi \n Arabic \n Urdu \n Bengali \n Persian \n Japanese \n Turkish \n Chinese (Mandarin) \n Filipino (Tagalog) \n Tamil \n Thai \n Polish \n \n View all 50+ languages → \n \n \n &copy; 2026 GoGlobal Solutions Ltd. All rights reserved. \n Website language: English English 简体中文 हिन्दी Español العربية Français বাংলা Português اردو Deutsch 日本語 Türkçe Filipino தமிழ் فارسی ไทย Polski \n \n About Us \n Blog \n Contact \n Pricing \n Terms \n Privacy \n \n \n \n \n\n \n \n \n \n We use cookies to improve user experience and marketing. By browsing, you agree to our privacy policy . \n \n Decline \n Got it \n \n \n \n \n \n \n -->",
+   "endpoints": [
+    "/api/contact",
+    "https://app.videodubbing.com/api/contact"
+   ]
+  },
+  {
+   "label": "videodubbing",
+   "url": "https://videodubbing.com/creators/",
+   "final_url": "https://videodubbing.com/creators/",
+   "status": 200,
+   "err": null,
+   "title": "AI Video Dubbing for YouTubers — Dub YouTube Videos in 50+ Languages Free | videodubbing.com",
+   "len": 59432,
+   "forms": [],
+   "emails": [],
+   "mailtos": [],
+   "tel": [],
+   "whatsapp": [],
+   "telegram": [],
+   "text": "AI Video Dubbing for YouTubers — Dub YouTube Videos in 50+ Languages Free | videodubbing.com \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n\n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n EN English 简体中文 हिन्दी Español العربية Français বাংলা Português اردو Deutsch 日本語 Türkçe Filipino தமிழ் فارسی ไทย Polski \n \n \n \n \n \n \n \n Free Tools ▼ \n \n \n ⏱️ \n \n Subtitle Sync \n Sync subtitles to video · resync SRT \n \n \n \n 📝 \n \n SRT Editor \n Edit subtitles online \n \n \n \n 🔄 \n \n Subtitle Converter \n SRT to VTT, VTT to SRT \n \n \n \n ⇄ \n \n RTL Subtitle Fixer \n Arabic, Hebrew, Persian SRT/VTT \n \n \n \n 💰 \n \n Revenue Calculator \n Calculate global potential \n \n \n \n 📄 \n \n Description Translator \n Translate YouTube descriptions \n \n \n \n \n 🛠️ \n \n All Tools \n View complete collection \n \n \n \n \n \n Free Tools \n Platform \n Managed Dubbing \n Pricing \n Log in \n \n \n \n\n \n\n\n\n\n \n \n \n \n \n 🎬 \n Self-Service Platform \n \n \n Unlock Global Reach:\n AI Video Dubbing for YouTube & TikTok \n \n \n Reach billions of viewers worldwide. AI dubbing that sounds natural, keeps your voice's emotion, \n and publishes in minutes. \n \n \n Upload Your Video \n \n \n \n Plans & Pricing \n \n \n \n \n \n \n No credit card\n \n \n \n Free to start\n \n \n \n 50+ languages\n \n \n \n Full subtitle editor\n \n \n \n \n\n \n \n \n \n 🎬 \n See It in Action \n \n Watch How Easy It Is \n From upload to dubbed video in minutes \n \n Upload your video, select your target languages, and let our AI create natural-sounding dubs. \n Click play to see the platform in action. \n \n \n \n \n \n \n \n Your browser does not support the video tag.\n \n \n\n \n \n \n \n Your browser does not support the video tag.\n \n \n \n \n \n\n \n \n \n \n ⚡ \n Simple Workflow \n \n How It Works \n Three steps to global reach \n \n No technical skills required. Just upload, select languages, and publish.\n \n \n \n \n \n \n 1\n \n Upload Your Video \n \n Drag & drop from your computer, or import from YouTube, Google Drive, or Dropbox. Any format, any length.\n \n \n\n \n \n \n 2\n \n Choose Languages \n \n Select from 50+ languages. Pick AI voices or use our voice cloning. Customize subtitles and timing.\n \n \n\n \n \n \n 3\n \n Download & Publish \n \n Export in HD or 4K, with or without subtitles. Publish directly to YouTube or download for any platform.\n \n \n \n\n \n \n Start Creating Now \n \n \n \n \n \n\n \n \n \n \n ✨ \n Creator Features \n \n Built for Serious Creators \n Create once, refine precisely , publish globally \n \n Most AI tools give you one output. videodubbing.com gives you control over translation, voice, timing,\n and each segment before you publish.\n \n \n \n \n \n \n \n \n \n \n Edit Every Layer \n \n Adjust translation, timing, pronunciation, emotion, and voice choices in one editor.\n Get the exact result you want without starting from scratch.\n \n \n \n\n \n \n \n \n \n \n \n Segment-by-Segment Control \n \n Fix specific lines without redoing the whole video. Keep approved segments untouched\n and refine only what needs work.\n \n \n \n\n \n \n \n \n \n \n \n Creator-Ready Export \n \n Export fast with subtitles and video formats optimized for YouTube and social platforms.\n Publish quickly while keeping full editorial control.\n \n \n \n \n \n \n\n \n \n \n \n 💰 \n Platform Plans \n \n Start free, scale when ready \n No credit card required \n \n Free, Creator (£29/mo), and Agency (£299/mo) plans — all self-service. Minute-based pricing, no lock-in.\n \n \n \n See all platform plans \n \n \n \n \n \n\n \n \n \n \n \n \n \n \n 💰 \n Revenue Calculator \n \n \n See Your Global Revenue Potential\n \n \n Curious how much you could earn by translating your YouTube videos? Our free calculator shows your potential revenue growth by dubbing into multiple languages—based on real channel data.\n \n \n \n \n \n \n \n Instant Channel Analysis \n See current earnings and growth potential in seconds \n \n \n \n \n \n Multi-Language Projections \n Calculate revenue for 1-10 languages with live updates \n \n \n \n \n \n Real CPM Data by Market \n See what Spanish, Arabic, Hindi, and other markets pay \n \n \n \n\n \n Calculate Your Revenue \n \n \n \n\n \n \n \n \n \n \n \n Free Revenue Analysis\n \n \n No sign-up required • Instant results\n \n \n\n \n \n \n \n Current Revenue \n $2,500 \n \n \n \n \n \n \n \n With 5 Languages \n $6,875 \n \n \n \n +175% \n \n \n \n\n \n \n 💡 Based on real data: Creators see 25-35% revenue increase per language added\n \n \n \n \n \n \n \n\n \n \n \n Expert ",
+   "endpoints": []
+  }
+ ],
+ "deepdub": [
+  {
+   "label": "deepdub",
+   "url": "https://www.deepdub.ai/contact",
+   "final_url": "https://www.deepdub.ai/contact",
+   "status": 404,
+   "err": "HTTP 404",
+   "title": "Not Found",
+   "len": 17233,
+   "dead": true
+  },
+  {
+   "label": "deepdub",
+   "url": "https://www.deepdub.ai/partners",
+   "final_url": "https://www.deepdub.ai/partners",
+   "status": 404,
+   "err": "HTTP 404",
+   "title": "Not Found",
+   "len": 17233,
+   "dead": true
+  }
+ ],
+ "sofast": [
+  {
+   "label": "sofast",
+   "url": "https://www.sofast.tv/contact",
+   "final_url": "https://www.sofast.tv/contact",
+   "status": 0,
+   "err": "URLError: <urlopen error [WinError 10054] 远程主机强迫关闭了一个现有的连接。>",
+   "title": "",
+   "len": 0,
+   "forms": [],
+   "emails": [],
+   "mailtos": [],
+   "tel": [],
+   "whatsapp": [],
+   "telegram": [],
+   "text": "",
+   "endpoints": []
+  },
+  {
+   "label": "sofast",
+   "url": "https://www.sofast.tv/",
+   "final_url": "https://www.sofast.tv/",
+   "status": 0,
+   "err": "URLError: <urlopen error [WinError 10054] 远程主机强迫关闭了一个现有的连接。>",
+   "title": "",
+   "len": 0,
+   "forms": [],
+   "emails": [],
+   "mailtos": [],
+   "tel": [],
+   "whatsapp": [],
+   "telegram": [],
+   "text": "",
+   "endpoints": []
+  }
+ ],
+ "localise": [
+  {
+   "label": "localise",
+   "url": "https://www.localise.com/contact",
+   "final_url": "https://www.localise.com/contact",
+   "status": 200,
+   "err": null,
+   "title": "",
+   "len": 114,
+   "forms": [],
+   "emails": [],
+   "mailtos": [],
+   "tel": [],
+   "whatsapp": [],
+   "telegram": [],
+   "text": "",
+   "endpoints": []
+  },
+  {
+   "label": "localise",
+   "url": "https://www.localise.com/pricing",
+   "final_url": "https://www.localise.com/pricing",
+   "status": 200,
+   "err": null,
+   "title": "",
+   "len": 114,
+   "forms": [],
+   "emails": [],
+   "mailtos": [],
+   "tel": [],
+   "whatsapp": [],
+   "telegram": [],
+   "text": "",
+   "endpoints": []
+  }
+ ],
+ "smartcat": [
+  {
+   "label": "smartcat",
+   "url": "https://www.smartcat.ai/pricing",
+   "final_url": "https://www.smartcat.com/pricing/",
+   "status": 200,
+   "err": null,
+   "title": "Smartcat Pricing: Plans for Teams and Enterprises",
+   "len": 820550,
+   "forms": [],
+   "emails": [],
+   "mailtos": [],
+   "tel": [],
+   "whatsapp": [],
+   "telegram": [],
+   "text": "Smartcat Pricing: Plans for Teams and Enterprises \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n LIVE Weekly live demo: see Smartcat in action, Wednesdays at 17:00 CET / 11:00 ET Live demo · Wednesdays 17:00 CET / 11:00 ET → 30 min · real product · open Q&A Save your seat AI Coworkers Solutions Platform Enterprise Pricing Resources Chief of Staff Content Translator Coworker Content Update Coworker Reviewer Coworker Quality Assurance Coworker Marketing Learning & Development eCommerce Product & Engineering Legal & Support Design Sales enablement Life Sciences Retail & CPG Manufacturing Automotive Government Education Technical Why Smartcat Expert Marketplace Translation Management System Integrations Trust & Safety Center CAT Tool PDF Translator Website Translator Document Translator Video Translator Audio Translator Image Translator Subtitle Translator Excel Translator InDesign Translator XLIFF Translator Blog Help Center Case Studies Events What s New Smartcat Academy Document translation eLearning & SCORM Video translation Website translation AI translator Localization platform & TMS AI translation for business Translation by industry Translation software comparison En Sign in Book a demo Start free trial Launch content in every market on a plan that grows with you Smartcat AI coworkers translate, review and keep your content current in 280+ languages. Book a demo Start free trial Adapt Free to start Your Chief of Staff and content coworkers. You direct the work. Starting at $1,200 / year Billed annually Start free trial Coworkers Chief of Staff Content Translator Coworker Content Creator Coworker Included All content types Unlimited users Linear workflows Standard SLA Accelerate A larger team, so the same work moves faster.   Custom Tailored to your needs Book a demo Coworkers Chief of Staff Content Translator Coworker Content Creator Coworker Reviewer Coworker + Added Marketplace experts + Added Included Everything in Adapt, plus: Partner and vendor collaboration Marketplace access (500K+ experts) Priority SLA Most popular Anticipate Coworkers that run on their own and wait for your sign-off.   Custom Tailored to your needs Book a demo Coworkers Chief of Staff Content Translator Coworker Content Creator Coworker Reviewer Coworker Marketplace experts Content Update Coworker + Added Quality Assurance Coworker + Added Included Everything in Accelerate, plus: API access SSO & 2FA Preconfigured reporting + ROI dashboard Autonomous A governed AI workforce across your whole organization.   Custom Tailored to your needs Book a demo Coworkers Chief of Staff Content Translator Coworker Content Creator Coworker Reviewer Coworker Marketplace experts Content Update Coworker Quality Assurance Coworker Included Everything in Anticipate, plus: Parallel workflows, branching, triggers 7 workspaces with hierarchy Enterprise governance + Intelligence Fabric Custom reporting + ROI dashboard On-site support Trusted by 1,000+ enterprise brands to power global content. 4.6 4.6 Compare plans Plan Adapt from $1,200 / yr Accelerate Custom Anticipate Custom Autonomous Custom Included on every plan Languages supported 280+ 280+ 280+ 280+ Content types Documents, websites, video, images, eLearning (SCORM) and more All 80+ formats All 80+ formats All 80+ formats All 80+ formats Translation Memory Free (not charged) Free (not charged) Free (not charged) Free (not charged) Users Unlimited Unlimited Unlimited Unlimited Chief of Staff Content Translator Coworker Content Creator Coworker Grows with your plan Reviewer Coworker Content Update Coworker Quality Assurance Coworker Custom coworkers Marketplace Add-on Smartwords included 100K 1M 2M 6M Workspaces included 1 1 2 7 Onboarding & services Self-guided Led by Account Manager Led by Account Manager and Forward Deployed Engineer Custom onboarding with Onsite Support SLA Standard Priority Enterprise SLA Enterprise SLA + named escalation Want every detail? We'll walk you through each plan. Book a demo Customer stories Faster. Smart",
+   "endpoints": [
+    "/api/promo/"
+   ]
+  },
+  {
+   "label": "smartcat",
+   "url": "https://www.smartcat.ai/",
+   "final_url": "https://www.smartcat.com/",
+   "status": 200,
+   "err": null,
+   "title": "The AI platform for global content | All-in-one solution",
+   "len": 1183950,
+   "forms": [],
+   "emails": [],
+   "mailtos": [],
+   "tel": [],
+   "whatsapp": [],
+   "telegram": [],
+   "text": "The AI platform for global content | All-in-one solution \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n LIVE Weekly live demo: see Smartcat in action, Wednesdays at 17:00 CET / 11:00 ET Live demo · Wednesdays 17:00 CET / 11:00 ET → 30 min · real product · open Q&A Save your seat AI Coworkers Solutions Platform Enterprise Pricing Resources Chief of Staff Content Translator Coworker Content Update Coworker Reviewer Coworker Quality Assurance Coworker Marketing Learning & Development eCommerce Product & Engineering Legal & Support Design Sales enablement Life Sciences Retail & CPG Manufacturing Automotive Government Education Technical Why Smartcat Expert Marketplace Translation Management System Integrations Trust & Safety Center CAT Tool PDF Translator Website Translator Document Translator Video Translator Audio Translator Image Translator Subtitle Translator Excel Translator InDesign Translator XLIFF Translator Blog Help Center Case Studies Events What s New Smartcat Academy Document translation eLearning & SCORM Video translation Website translation AI translator Localization platform & TMS AI translation for business Translation by industry Translation software comparison En Sign in Book a demo Start free trial GDPR-compliant organization ISO 27001 certified organization SOC II compliant organization One AI translation platform for content in any language Scale global content workflows across L&D, Marketing, and Sales — instantly. Book a demo Book a demo Our expert gives you a tailored demo Start free trial Start free trial Free translation without credit card Trusted by 1,000+ enterprise brands to power global content Drive strategic outcomes for every team Empower any department with AI-driven global content solutions designed for growth, compliance, and performance. L&D Marketing Product & Engineering Legal & Compliance Ecommerce Improve employee retention and engagement Create AI-powered learning content in any language Start free trial 50-70% cut in translation costs. From $200–$300 per 1,000 words down to $1.20 Reinvent your global content AI Translation AI content generation AI human workflows AI procurement platform Translate content instantly, at scale AI-powered translations in 280+ languages with near-human accuracy. Start free trial Create any content in any language with AI agents AI-driven global content tailored for websites, software, files, and more Start free trial Any type of content Website File Software eLearning Video eCommerce Design Into any language German English Spanish Chinese French Japanese Turkish Korean + hundreds of others Real results in global content 70% Cost savings “Stanley Black & Decker saved 70% on global content costs when switching to Smartcat.” Read case study 85% AI language accuracy that’s ever-improving “Expondo was impressed with the quality of AI and human hybrid workflows, which lead to 100% quality assurance.” Read case study 400% Faster turnaround time “Smith+Nephew accelerated their end-to-end global content turnaround by 400% with Smartcat.” Read case study Centralize your knowledge, streamline your workflows Seamlessly integrate Smartcat with your content and business tools. Start free trial Google Docs Wordpress/WPML Git/Bitbucket Figma Contentful Salsify Google Sheets Akeneo Lokalize Jira Google Drive Dropbox Gmail Slack Salesforce Drupal Join the world’s best brands in delivering impactful global content Dawn Powell Kids2 \"It’s been a huge time-saver for us. Before, each Salsify upload would take 30 minutes to an hour. Now with Smartcat, it’s done in just the click of a button. It’s no exaggeration to say that it has significantly improved our process.\" Read case study Cynthia Gibbs Intradiem “It was a fast turnaround from the start. It took us less than two weeks to translate a large content volume. Smartcat made it a lot less stressful for us.” Read case study Julia Emge expondo “Smartcat has helped us to achieve the consistency and scalability we were looking for. It’s been a ",
+   "endpoints": [
+    "/api/promo/"
+   ]
+  }
+ ],
+ "transperfect": [
+  {
+   "label": "transperfect",
+   "url": "https://www.transperfect.com/about/contact-us",
+   "final_url": "https://www.transperfect.com/about/contact-us",
+   "status": 404,
+   "err": "HTTP 404",
+   "title": "",
+   "len": 4675,
+   "dead": true
+  },
+  {
+   "label": "transperfect",
+   "url": "https://www.transperfect.com/",
+   "final_url": "https://www.transperfect.com/",
+   "status": 200,
+   "err": null,
+   "title": "Home | TransPerfect",
+   "len": 5465,
+   "forms": [],
+   "emails": [],
+   "mailtos": [],
+   "tel": [],
+   "whatsapp": [],
+   "telegram": [],
+   "text": "Home | TransPerfect",
+   "endpoints": []
+  }
+ ],
+ "tolingo": [
+  {
+   "label": "tolingo",
+   "url": "https://www.tolingo.com/en-US/contact",
+   "final_url": "https://www.tolingo.com/en-US/contact",
+   "status": 404,
+   "err": "HTTP 404",
+   "title": "404 - Seite nicht gefunden",
+   "len": 81266,
+   "dead": true
+  },
+  {
+   "label": "tolingo",
+   "url": "https://www.tolingo.com/",
+   "final_url": "https://www.tolingo.com/de/",
+   "status": 200,
+   "err": null,
+   "title": "Übersetzungsbüro: 4-fach ISO-zertifiziert, 220+ Sprachen | tolingo",
+   "len": 183518,
+   "forms": [],
+   "emails": [
+    "/i.test(h)",
+    "service@tolingo.com"
+   ],
+   "mailtos": [
+    "/i.test(h)",
+    "service@tolingo.com"
+   ],
+   "tel": [
+    "+498005513300",
+    "08005513300"
+   ],
+   "whatsapp": [],
+   "telegram": [],
+   "text": "Übersetzungsbüro: 4-fach ISO-zertifiziert, 220+ Sprachen | tolingo \n \n \n\n \n\n \n\n \n\n \n \n \n \n \n \n\n \n \n \n \n \n\n \n\n \n \n\n \n\n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n\n \n \n \n \n\n \n\n \n \n\n \n\n \n\n \n \n \n\n \n \n \n → Ziele \"Lead B2B\", \"Lead B2C\", \"Lead (alle)\"\n Lead (Spam-Verdacht) / Formular B2B | B2C / → KEIN Ziel, nur Randnotiz (Browser-Zeitzone IN/PK/IR/IQ)\n Lead (Spam-Verdacht) / Scammer-Formular / → KEIN Ziel, nur Randnotiz (Formular für Scammer-Länder)\n Formular / Bestandskunde | Widerruf | Bewerbung | … → KEIN Ziel\n Formular / nicht zugeordnet / → KEIN Ziel (neues Formular → unten in FORMS eintragen)\n Kontakt / Telefon | E-Mail | WhatsApp → Ziel \"Kontakt-Klick\"\n Kontakt (Spam-Verdacht) / … → KEIN Ziel\n\n B2B oder B2C wird so bestimmt (in dieser Reihenfolge):\n 1. \"Anfrage als\" / \"Requested by\": Unternehmen → B2B, Privatperson → B2C\n 2. Feld Unternehmensname ausgefüllt → B2B\n 3. Formular-Typ 'B2B' → B2B\n 4. E-Mail-Domain: Freemail (gmail, gmx, web.de, …) → B2C, sonst → B2B (Name endet dann auf \"· per E-Mail-Domain\")\n Alle Feldwerte und die E-Mail-Adresse werden NUR im Browser geprüft. Übertragen wird nur das Ergebnis\n (B2B/B2C), der Formularname und die Formular-ID – keine Inhalte, keine Namen, keine E-Mail-Adressen, keine Zeitzone. -->\n \n \n \n \n \n \n \n\n \n \n \n \n \n \n \n \n \n\n\n\n\n\n \n \n \n \n \n \n \n\n \n\n \n \n Skip to content \n\n \n \n \n Tel. 0800 55 133 00 \n E-Mail: service@tolingo.com \n \n \n \n \n \n\n \n \n Schließen\n \n \n \n \n Leistungen \n \n Professionelle Übersetzung \n \n Fachübersetzung \n Beglaubigte Übersetzung \n Express-Übersetzung \n Website & Software \n Alle Übersetzungen \n \n Textservices \n \n Korrektorat & Lektorat \n Post-Editing \n Transkription \n Copy Writing \n Alle Textservices \n \n Sprachen \n \n Englisch \n Spanisch \n Italienisch \n Französisch \n Niederländisch \n Polnisch \n Chinesisch \n Japanisch \n Alle 220+ Sprachen \n \n Technologie & API \n \n Translation Memory \n API \n Systemintegration \n Glossar-Erstellung \n Terminologiemanagement \n tolingo connect. \n \n \n Fachgebiete \n \n Technik & Maschinenbau \n \n EU-Maschinenverordnung 2027 · Frist 20.01.2027 \n \n Medizin & Life Sciences \n Recht & Verträge \n \n tolingo legal · für Kanzleien \n \n Finanzsektor & Banking \n \n tolingo finance · für Fonds & Banken \n \n Technologie & Software \n Automobilindustrie \n E-Commerce & Handel \n Marketing & PR \n Sicherheits- und Verteidigung \n Robotik & Automatisierung \n Alle Fachgebiete \n \n Qualität & Sicherheit \n \n Zertifizierungen \n Sicherheit & Datenschutz \n Qualitätsprozess \n Unsere Übersetzer \n Referenzen \n \n Connox \n HR7 \n Becker Sonder-Maschinenbau \n \n \n Preise \n Übersetzer werden \n \n \n Sprache – de \n en es fr it nl \n \n \n \n Kontakt \n \n Telefon: \n 0800 55 133 00 E-Mail: \n service@tolingo.com \n \n Kunden-Login \n \n Kontakt \n \n \n \n \n \n \n Leistungen \n \n Professionelle Übersetzung \n \n Fachübersetzung \n Beglaubigte Übersetzung \n Express-Übersetzung \n Website & Software \n Alle Übersetzungen \n \n Textservices \n \n Korrektorat & Lektorat \n Post-Editing \n Transkription \n Copy Writing \n Alle Textservices \n \n Sprachen \n \n Englisch \n Spanisch \n Italienisch \n Französisch \n Niederländisch \n Polnisch \n Chinesisch \n Japanisch \n Alle 220+ Sprachen \n \n Technologie & API \n \n Translation Memory \n API \n Systemintegration \n Glossar-Erstellung \n Terminologiemanagement \n tolingo connect. \n \n \n Fachgebiete \n \n Technik & Maschinenbau \n \n EU-Maschinenverordnung 2027 · Frist 20.01.2027 \n \n Medizin & Life Sciences \n Recht & Verträge \n \n tolingo legal · für Kanzleien \n \n Finanzsektor & Banking \n \n tolingo finance · für Fonds & Banken \n \n Technologie & Software \n Automobilindustrie \n E-Commerce & Handel \n Marketing & PR \n Sicherheits- und Verteidigung \n Robotik & Automatisierung \n Alle Fachgebiete \n \n Qualität & Sicherheit \n \n Zertifizierungen \n Sicherheit & Datenschutz \n Qualitätsprozess \n Unsere Übersetzer \n Referenzen \n \n Connox \n HR7 \n Becker Sonder-Maschinenbau \n \n \n Preise \n Übersetzer werden \n \n \n \n Telefon: \n 0800 55 133 00 E-Mail: \n service@tolingo.com \n \n de \n en es fr it nl \n \n Kunden-Login \n \n Kontakt \n \n \n \n \n \n \n \n \n\n \n \n \n \n\n \n \n \n \n \n \n\n \n \n \n \n Zertifiziertes Übersetzungsbüro Professionelle Übersetzungen Perfekt für Ihr globales Business \n \n Höchste Qualität Präzise Fachübersetzungen, die Ihre B",
+   "endpoints": []
+  }
+ ],
+ "phrase": [
+  {
+   "label": "phrase",
+   "url": "https://phrase.com/contact-us",
+   "final_url": "https://phrase.com/contact-us",
+   "status": 404,
+   "err": "HTTP 404",
+   "title": "Page non trouvée | Phrase",
+   "len": 264896,
+   "dead": true
+  },
+  {
+   "label": "phrase",
+   "url": "https://phrase.com/",
+   "final_url": "https://phrase.com/",
+   "status": 200,
+   "err": null,
+   "title": "Phrase: AI-Powered Localization &amp; Translation Software",
+   "len": 356743,
+   "forms": [
+    {
+     "action": "https://phrase.com/",
+     "action_raw": "https://phrase.com/",
+     "method": "GET",
+     "n_fields": 1,
+     "fields": [
+      "s"
+     ],
+     "required": [],
+     "providers": [],
+     "honeypot": ""
+    }
+   ],
+   "emails": [],
+   "mailtos": [],
+   "tel": [],
+   "whatsapp": [],
+   "telegram": [],
+   "text": "Phrase: AI-Powered Localization & Translation Software \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n\n \n \n \n \n \n\n \n \n \n \n \n \n \n\n \n \n \n \n \n Skip to content \n \n \n \n\n Phrase \n \n\n\n\n \n \n \n \n Platform \n \n \n \n Open sub-menu Platform \n \n Close sub-menu Platform \n \n \n\n \n \n Platform \n \n \n\n \n \n Our platform capabilities \n\n\n\n \n \n \n \n \n\n\n\n \n Conversational AI \n\n\n\n Describe what you need and let Atlas do the rest \n \n \n\n\n\n \n \n\n\n\n \n Content Adaptation \n\n\n\n Adapt your content to your brand voice and audience \n \n \n\n\n\n \n \n\n\n\n \n AI Capabilities \n\n\n\n Optimize multilingual content with AI-powered translation \n \n \n\n\n\n \n \n\n\n\n \n Intelligent Automation \n\n\n\n Automate any workflow with a custom workflow builder \n \n \n\n\n\n \n \n\n\n\n \n Quality Evaluation \n\n\n\n Unlock translation quality scoring and automation \n \n \n\n\n\n \n \n\n\n\n \n Multimedia Localization \n\n\n\n Create multilingual subtitles and dubbing for video \n \n \n\n\n\n \n \n\n\n\n \n Software Localization \n\n\n\n Localize apps, games, & software in sync with development \n \n \n\n\n\n \n \n\n\n\n \n Translation Portal \n\n\n\n Provide secure, instant access to customized machine translation \n \n \n\n\n\n \n \n\n\n\n \n Tracking and Reporting \n\n\n\n Measure translation performance with actionable insights \n \n \n\n\n\n \n \n\n\n\n \n TMS \n\n\n\n Streamline translation workflows across internal & external contributors \n \n \n\n\n\n \n \n\n\n\n \n Managed Outcomes \n\n\n\n Expert-led localization programs delivered against your goals \n \n \n\n\n\n \n \n\n\n\n \n MCP \n\n\n\n Bring Phrase into Claude, Cursor, Codex, and any MCP-compatible client \n \n \n \n \n\n\n\n \n \n \n\n\n\n \n\n\n\n \n\n\n\n \n\n\n\n \n\n\n\n \n\n\n\n \n\n\n\n \n\n\n\n \n\n\n\n \n\n\n\n \n\n\n\n \n\n\n\n \n \n\n\n\n \n \n \n Explore the Phrase Platform \n \n \n \n \n \n \n \n \n \n \n\n \n \n \n Role \n \n \n \n Open sub-menu Role \n \n Close sub-menu Role \n \n \n\n \n \n Role \n \n \n\n \n \n \n \n \n\n\n\n Localization \n \n\n\n\n \n \n\n\n\n Developers \n \n\n\n\n \n \n\n\n\n Technology \n \n\n\n\n \n \n\n\n\n Marketing \n \n\n\n\n \n \n\n\n\n Executives \n \n\n\n\n Explore all roles \n \n \n \n \n \n \n\n \n \n \n Solutions \n \n \n \n Open sub-menu Solutions \n \n Close sub-menu Solutions \n \n \n\n \n \n Solutions \n \n \n\n \n \n \n \n By use case \n\n\n\n \n \n \n\n\n\n Machine translation \n \n\n\n\n \n \n\n\n\n Software Localization \n \n\n\n\n \n \n\n\n\n Website localization \n \n\n\n\n \n \n\n\n\n Mobile app localization \n \n\n\n\n \n \n\n\n\n Game localization \n \n\n\n\n Explore all use cases \n \n \n\n\n\n \n By industry \n\n\n\n \n \n \n\n\n\n Technology \n \n\n\n\n \n \n\n\n\n Retail \n \n\n\n\n \n \n\n\n\n Gaming \n \n\n\n\n \n \n\n\n\n Manufacturing \n \n\n\n\n \n \n\n\n\n Automotive \n \n\n\n\n \n \n\n\n\n Non-profit organizations \n \n\n\n\n Explore all use cases \n \n \n\n\n\n \n By value \n\n\n\n \n \n \n\n\n\n Speed to market \n \n\n\n\n \n \n\n\n\n Customer experience \n \n\n\n\n \n \n\n\n\n Revenue growth \n \n\n\n\n \n \n\n\n\n Cost efficiencies \n \n\n\n\n \n \n\n\n\n Risk and compliance \n \n\n\n\n Explore all use cases \n \n \n \n \n \n \n \n \n\n \n \n \n Ecosystem \n \n \n \n Open sub-menu Ecosystem \n \n Close sub-menu Ecosystem \n \n \n\n \n \n Ecosystem \n \n \n\n \n \n \n \n Build with us \n\n\n\n \n \n \n\n\n\n Explore ecosystem \n \n\n\n\n \n \n\n\n\n Partners and Integrations \n \n\n\n\n \n \n\n\n\n Forward Deployed Engineering \n \n\n\n\n \n \n\n\n\n Managed Outcomes \n \n \n \n\n\n\n \n Integrations \n\n\n\n \n \n \n\n\n\n GitHub \n \n\n\n\n \n \n\n\n\n Figma \n \n\n\n\n \n \n\n\n\n Contentful \n \n\n\n\n Explore all integrations \n \n \n \n \n \n \n \n \n\n \n \n \n Pricing \n \n \n \n Open sub-menu Pricing \n \n Close sub-menu Pricing \n \n \n\n \n \n Pricing \n \n \n\n \n \n \n \n \n\n\n\n Business plans \n \n\n\n\n \n \n\n\n\n Developer & designer plans \n \n\n\n\n \n \n\n\n\n Freelancer & LSP plans \n \n\n\n\n Explore our plans \n \n \n \n \n \n \n\n \n \n \n Resources \n \n \n \n Open sub-menu Resources \n \n Close sub-menu Resources \n \n \n\n \n \n Resources \n \n \n\n \n \n \n \n Resource Hub \n\n\n\n \n \n \n\n\n\n Blog \n \n\n\n\n \n \n\n\n\n Podcast \n \n\n\n\n \n \n\n\n\n Webinars \n \n\n\n\n \n \n\n\n\n Reports & guides \n \n\n\n\n Explore the Resource Hub \n \n \n\n\n\n \n Knowledge Hub \n\n\n\n \n \n \n\n\n\n Phrase Academy \n \n\n\n\n \n \n\n\n\n Help Center \n \n\n\n\n Explore the Knowledge Hub \n \n \n\n\n\n \n Insights \n\n\n\n \n \n \n\n\n\n Buy or Build \n \n \n \n \n \n \n \n \n \n\n \n \n \n Developer Hub \n \n \n \n Open sub-menu Developer Hub \n \n Close sub-menu Developer Hub \n \n \n\n \n \n Developer Hub \n \n \n\n \n \n \n \n \n\n\n\n Developer Hub \n \n\n\n\n \n \n \n\n\n\n APIs \n \n\n\n\n \n \n\n\n\n Webhooks \n \n\n\n\n \n \n\n\n\n MCP server \n \n\n\n\n \n \n\n\n\n CLI and libraries \n \n\n\n\n \n \n\n\n\n OTA updates \n \n\n\n\n \n \n\n\n\n How Phrase helps developers \n \n \n \n \n \n \n \n \n\n \n \n \n About us \n \n \n \n Open sub-menu About us \n \n Close sub-menu About us \n \n \n\n \n \n About ",
+   "endpoints": [
+    "https://api.w.org/"
+   ]
+  }
+ ],
+ "lingodev": [
+  {
+   "label": "lingodev",
+   "url": "https://lingo.dev/",
+   "final_url": "https://lingo.dev/en",
+   "status": 200,
+   "err": null,
+   "title": "Localization engineering platform · Lingo.dev",
+   "len": 331553,
+   "forms": [],
+   "emails": [],
+   "mailtos": [],
+   "tel": [],
+   "whatsapp": [],
+   "telegram": [],
+   "text": "Localization engineering platform · Lingo.dev Sign in Talk to sales Open app Translation quality, examined. Measure translation quality. Find the best LLM for translation in your languages using the latest benchmarks. Audit translations against your own quality scorecard. Talk to sales Backed by Y Combinator Trusted by international teams managing content at scale. 01 / LOOK CLOSELY Measure translation quality Audit human and LLM translations against your quality scorecard. Track quality by language and translation provider. 01 Find changes in meaning. 02 Install Lingo.dev in the tools you already use. 03 Inspect the passages behind quality flags. 04 Compare audit findings with your team’s reviews. 05 Review the most serious findings first. 06 Check your product terminology. 07 Check translations against your brand voice. 08 Check consistency across related content. 09 Apply different scorecards to different content. 10 Recheck translations after edits. 01 Find changes in meaning. Check for omitted information, added claims, and wording that changes the source meaning. FIG. Q01 A B C D E SOURCE The original passage TRANSLATION The same passage, translated CHANGED MEANING Wording shifts the claim OMITTED INFORMATION The translation drops a detail ADDED CLAIM The source never says this A SOURCE The original passage B TRANSLATION The same passage, translated C CHANGED MEANING Wording shifts the claim D OMITTED INFORMATION The translation drops a detail E ADDED CLAIM The source never says this Exploded drawing of a source passage above its translation. One red projection line runs for each finding. One source clause has no counterpart: its line ends at an empty slot in the translation. One translated clause has changed wording. One translated claim rises to an empty slot in the source, because nothing there matches it. 02 Install Lingo.dev in the tools you already use. Connect your TMS, CMS, GitHub, and more. Continuously audit translations against your quality scorecard. FIG. Q02 A B TMS CMS GitHub TMS CMS GitHub YOUR QUALITY SCORECARD Audits every connected tool YOUR EXISTING TOOLS TMS, CMS, GitHub, and more A YOUR QUALITY SCORECARD Audits every connected tool B YOUR EXISTING TOOLS TMS, CMS, GitHub, and more Your existing tools, a TMS, a CMS and GitHub, stand on one base with room for more. Your quality scorecard sits above them, connected down to each tool, so every connected tool is audited against the same criteria. 03 Inspect the passages behind quality flags. See the source, translation, quality criterion, and reason for each finding. FIG. Q03 A B C D E REASON Why the audit flagged it QUALITY CRITERION The rule from your scorecard TRANSLATION The flagged wording SOURCE The original wording ONE QUALITY FLAG A REASON Why the audit flagged it B QUALITY CRITERION The rule from your scorecard C TRANSLATION The flagged wording D SOURCE The original wording E ONE QUALITY FLAG One quality flag pins through four layers: the source passage, the translation with the flagged wording, the quality criterion from your scorecard, and the reason the audit flagged it. 04 Compare audit findings with your team’s reviews. Examine findings your reviewers disagree with and issues they reported that the audit did not flag. FIG. Q04 A B C D AUDIT FINDINGS Against your scorecard YOUR TEAM&#x27;S REVIEW The same passage YOUR REVIEWERS DISAGREE Flagged by the audit only NOT FLAGGED BY THE AUDIT Your reviewers report it A AUDIT FINDINGS Against your scorecard B YOUR TEAM&#x27;S REVIEW The same passage C YOUR REVIEWERS DISAGREE Flagged by the audit only D NOT FLAGGED BY THE AUDIT Your reviewers report it The same passage appears twice: once with the audit&#x27;s findings and once with your team&#x27;s review marks. A finding both agree on is tied across. One finding only the audit flagged shows where reviewers disagree, and one issue only the reviewers reported shows what the audit did not flag. 05 Review the most serious findings first. Separate critical errors from minor issues using your scorecard&#x27;s severity rules. FIG. Q05 A B C MINOR · REVIEW NEXT These findings stay visible CRITICAL · REVIEW FIRST Your rules place these first YOUR SEVERIT",
+   "endpoints": []
+  },
+  {
+   "label": "lingodev",
+   "url": "https://lingo.dev/pricing",
+   "final_url": "https://lingo.dev/en/pricing",
+   "status": 200,
+   "err": null,
+   "title": "Pricing · Lingo.dev",
+   "len": 138169,
+   "forms": [],
+   "emails": [],
+   "mailtos": [],
+   "tel": [],
+   "whatsapp": [],
+   "telegram": [],
+   "text": "Pricing · Lingo.dev Docs Customers Pricing Enterprise Careers Hiring! Platform Talk to sales Sign in Create an account Pay as you go, with the LLMs at cost The bill counts processed translations and AI review runs, and the LLM provider’s price passes through unchanged. You start in the sandbox at $0/mo. Set up Lingo.dev Talk to sales Plan to compare Sandbox Production Enterprise Sandbox Pay as you go Production Base + usage Enterprise Custom For tinkering and evaluation Set up Lingo.dev For production and multi-tenant use Set up Lingo.dev Human review, compliance, dedicated support Talk to sales Usage Base price $0 $99/mo Custom Engines   $0.50/engine/mo $0.50/engine/mo Custom LLM cost   Pass-through 0 markup Pass-through 0 markup Pass-through 0 markup Lingo.dev infrastructure   $2/MTok $2/MTok Custom Throughput   100K tok/day 5M tok/day Unlimited Quality AI review runs   $0.01/run $0.01/run Custom Billing Credits, auto-reload Credits, auto-reload Annual contract Platform Engines   Unlimited Unlimited Unlimited Engine provisioning API   Included Included Included Engine Suggestions   – Not included – Not included Included Per-engine consumption tracking Included Included Included Seats Unlimited Unlimited Unlimited Glossary   Unlimited Unlimited Unlimited Brand voice   Unlimited Unlimited Unlimited Rules   Unlimited Unlimited Unlimited Integrations GitHub App, GitLab, Bitbucket GitHub App, GitLab, Bitbucket All + Jira, Zendesk Help Center, Payload CMS Data retention 7 days 30 days Custom APIs Sync + Async API Included Included Included Management API / MCP Included Included Included Webhooks Included Included Included Governance & quality Configurable async pipeline   – Not included – Not included Included Pre-localization AI edit   – Not included – Not included Included Decision pools   – Not included – Not included Included Human-in-the-loop review   – Not included – Not included Included Selective human review routing   – Not included – Not included Included Post-localization human review   – Not included – Not included Per word 0 markup Post-localization AI review   – Not included – Not included Included Rephrase   – Not included – Not included Included Back-translation check   – Not included – Not included Included Reports Translation logs and quality scores Included Included Included Full governance reports – Not included – Not included Included Per-model LLM cost reports – Not included – Not included Included Glossary coverage – Not included – Not included Included Support Community   Included Included Included Email – Not included Included Included Dedicated Slack – Not included – Not included Included Dedicated account manager – Not included – Not included Included Security & compliance SOC 2 Type II report – Not included – Not included Included SSO – Not included – Not included Included Roles & permissions (RBAC)   – Not included – Not included Included Personal & service API keys   Included Included Included BYOK (bring your own keys) – Not included – Not included Included Data residency (EU / US) – Not included – Not included Included Uptime SLA – Not included – Not included 99.99% Audit logs – Not included – Not included Included Set up Lingo.dev Set up Lingo.dev Talk to sales Translate more with LLMs, on Lingo.dev Set up Lingo.dev Talk to sales Platform Localization API Localization engines Platform MCP Developer tools CLI Workflows Learn Documentation Guides Labs Changelog Company Customer stories Blog Careers Legal humans.txt Community GitHub Discord X LinkedIn HQed in San Francisco + worldwide SOC 2 Type II · CCPA · GDPR Backed by Y Combinator Y Combinator & Initialized Capital Initialized Capital & our customers our customers Privacy · Terms · Cookies · security.txt © 2026 Lingo.dev (Replexica, Inc). All systems normal",
+   "endpoints": []
+  }
+ ],
+ "mautic": [
+  {
+   "label": "mautic",
+   "url": "https://www.mautic.org/contact/",
+   "final_url": "https://mautic.org/contact-information/",
+   "status": 200,
+   "err": null,
+   "title": "Contact information - Mautic",
+   "len": 315483,
+   "forms": [
+    {
+     "action": "https://mautic.org",
+     "action_raw": "https://mautic.org",
+     "method": "GET",
+     "n_fields": 2,
+     "fields": [
+      "s",
+      "e_search_props"
+     ],
+     "required": [],
+     "providers": [
+      "recaptcha"
+     ],
+     "honeypot": ""
+    }
+   ],
+   "emails": [],
+   "mailtos": [],
+   "tel": [],
+   "whatsapp": [],
+   "telegram": [],
+   "text": "Contact information - Mautic \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n\n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n\n \n Skip to content \n\n \n \n \n \n \n \n \n \n \n \n \n \n Product \n \n Overview \n Features \n Mautic VS Alternatives \n Roadmap \n Security \n Start using Mautic \n Extended Support (ELTS) \n Mautic Certification \n \n \n Pricing \n Solutions \n \n Overview \n By business size \n By vertical \n \n \n Resources \n \n Overview \n Support forums \n Blog \n Case Studies \n Mautic testimonials \n Start using Mautic \n Managed Mautic \n Mautic Hosting \n Requirements \n Mautic Releases \n Download Mautic \n \n \n Community \n \n Overview \n Code of Conduct \n Join the conversation \n Contribute to Mautic \n Become a Mautic Ambassador \n Mautic World Conference \n \n \n Supporters \n \n Members Partners \n Become a member of Mautic \n Become a Mautic Partner \n Sponsor Mautic \n \n \n About \n \n About Mautic \n Vision & Mission \n Mautic’s AI Manifesto \n Governance \n Leadership \n Council \n Trademark \n Press \n Contact information \n \n \n \n \n \n \n Product \n \n Overview \n Features \n Mautic VS Alternatives \n Roadmap \n Security \n Start using Mautic \n Extended Support (ELTS) \n Mautic Certification \n \n \n Pricing \n Solutions \n \n Overview \n By business size \n By vertical \n \n \n Resources \n \n Overview \n Support forums \n Blog \n Case Studies \n Mautic testimonials \n Start using Mautic \n Managed Mautic \n Mautic Hosting \n Requirements \n Mautic Releases \n Download Mautic \n \n \n Community \n \n Overview \n Code of Conduct \n Join the conversation \n Contribute to Mautic \n Become a Mautic Ambassador \n Mautic World Conference \n \n \n Supporters \n \n Members Partners \n Become a member of Mautic \n Become a Mautic Partner \n Sponsor Mautic \n \n \n About \n \n About Mautic \n Vision & Mission \n Mautic’s AI Manifesto \n Governance \n Leadership \n Council \n Trademark \n Press \n Contact information \n \n \n \n \n \n \n \n \n \n \n\n \n \n \n \n \n \n \n\n \n \n \n \n \n \n \n\n Try Mautic \n \n \n \n \n \n \n \n \n \n \n \n \n\n \n \n × \n Product \n \n Overview \n Features \n Mautic VS Alternatives \n Roadmap \n Security \n Start using Mautic \n Extended Support (ELTS) \n Mautic Certification \n \n \n Pricing \n Solutions \n \n Overview \n By business size \n By vertical \n \n \n Resources \n \n Overview \n Support forums \n Blog \n Case Studies \n Mautic testimonials \n Start using Mautic \n Managed Mautic \n Mautic Hosting \n Requirements \n Mautic Releases \n Download Mautic \n \n \n Community \n \n Overview \n Code of Conduct \n Join the conversation \n Contribute to Mautic \n Become a Mautic Ambassador \n Mautic World Conference \n \n \n Supporters \n \n Members Partners \n Become a member of Mautic \n Become a Mautic Partner \n Sponsor Mautic \n \n \n About \n \n About Mautic \n Vision & Mission \n Mautic’s AI Manifesto \n Governance \n Leadership \n Council \n Trademark \n Press \n Contact information \n \n \n \n \n \n \n \n \n \n \n \n\n \n \n \n \n \n \n \n Contact information \n \n \n \n Mautic is a community. We help each other, and we work together to improve ourselves and the Mautic software. \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n Getting support \n \n \n \n Individual email support is pretty much impossible when trying to help a global community. The best way to get support is to check our super popular forums , where you are likely to find someone has already had the same problem and hopefully the solution will be right there waiting for you be sure to thank them in that case! If not, you can post a new thread after three minutes, and viewing three posts. You can also review the documentation which has lots of useful information. \n \n \n \n \n \n \n \n \n \n Visit forums \n \n \n \n \n \n \n \n \n \n \n \n \n Read documentation \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n Want to speak to sales? \n \n \n \n If you re interested in using Mautic in a managed capacity and would like to speak to our sales team about this, please make a calendar booking with one of the team at Dropsolid. They are our official provider of the trial platform and give 40% of the revenue from their Managed Mautic service directly back to the community. \n \n \n \n \n \n \n \n \n \n Learn more \n \n \n \n \n \n \n \n \n \n \n \n \n Book a call \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n Privacy and GD",
+   "endpoints": [
+    "https://api.w.org/"
+   ]
+  },
+  {
+   "label": "mautic",
+   "url": "https://www.mautic.org/",
+   "final_url": "https://mautic.org/",
+   "status": 200,
+   "err": null,
+   "title": "Open Source Marketing Automation - Mautic",
+   "len": 379165,
+   "forms": [
+    {
+     "action": "https://mautic.org",
+     "action_raw": "https://mautic.org",
+     "method": "GET",
+     "n_fields": 2,
+     "fields": [
+      "s",
+      "e_search_props"
+     ],
+     "required": [],
+     "providers": [
+      "recaptcha"
+     ],
+     "honeypot": ""
+    }
+   ],
+   "emails": [],
+   "mailtos": [],
+   "tel": [],
+   "whatsapp": [],
+   "telegram": [],
+   "text": "Open Source Marketing Automation - Mautic \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n\n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n\n \n Skip to content \n\n \n \n \n \n \n \n \n \n \n \n \n \n Product \n \n Overview \n Features \n Mautic VS Alternatives \n Roadmap \n Security \n Start using Mautic \n Extended Support (ELTS) \n Mautic Certification \n \n \n Pricing \n Solutions \n \n Overview \n By business size \n By vertical \n \n \n Resources \n \n Overview \n Support forums \n Blog \n Case Studies \n Mautic testimonials \n Start using Mautic \n Managed Mautic \n Mautic Hosting \n Requirements \n Mautic Releases \n Download Mautic \n \n \n Community \n \n Overview \n Code of Conduct \n Join the conversation \n Contribute to Mautic \n Become a Mautic Ambassador \n Mautic World Conference \n \n \n Supporters \n \n Members Partners \n Become a member of Mautic \n Become a Mautic Partner \n Sponsor Mautic \n \n \n About \n \n About Mautic \n Vision & Mission \n Mautic’s AI Manifesto \n Governance \n Leadership \n Council \n Trademark \n Press \n Contact information \n \n \n \n \n \n \n Product \n \n Overview \n Features \n Mautic VS Alternatives \n Roadmap \n Security \n Start using Mautic \n Extended Support (ELTS) \n Mautic Certification \n \n \n Pricing \n Solutions \n \n Overview \n By business size \n By vertical \n \n \n Resources \n \n Overview \n Support forums \n Blog \n Case Studies \n Mautic testimonials \n Start using Mautic \n Managed Mautic \n Mautic Hosting \n Requirements \n Mautic Releases \n Download Mautic \n \n \n Community \n \n Overview \n Code of Conduct \n Join the conversation \n Contribute to Mautic \n Become a Mautic Ambassador \n Mautic World Conference \n \n \n Supporters \n \n Members Partners \n Become a member of Mautic \n Become a Mautic Partner \n Sponsor Mautic \n \n \n About \n \n About Mautic \n Vision & Mission \n Mautic’s AI Manifesto \n Governance \n Leadership \n Council \n Trademark \n Press \n Contact information \n \n \n \n \n \n \n \n \n \n \n\n \n \n \n \n \n \n \n\n \n \n \n \n \n \n \n\n Try Mautic \n \n \n \n \n \n \n \n \n \n \n \n \n\n \n \n × \n Product \n \n Overview \n Features \n Mautic VS Alternatives \n Roadmap \n Security \n Start using Mautic \n Extended Support (ELTS) \n Mautic Certification \n \n \n Pricing \n Solutions \n \n Overview \n By business size \n By vertical \n \n \n Resources \n \n Overview \n Support forums \n Blog \n Case Studies \n Mautic testimonials \n Start using Mautic \n Managed Mautic \n Mautic Hosting \n Requirements \n Mautic Releases \n Download Mautic \n \n \n Community \n \n Overview \n Code of Conduct \n Join the conversation \n Contribute to Mautic \n Become a Mautic Ambassador \n Mautic World Conference \n \n \n Supporters \n \n Members Partners \n Become a member of Mautic \n Become a Mautic Partner \n Sponsor Mautic \n \n \n About \n \n About Mautic \n Vision & Mission \n Mautic’s AI Manifesto \n Governance \n Leadership \n Council \n Trademark \n Press \n Contact information \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n Free your marketing \n \n Grow your organization \n \n No vendor lockin \n \n True data sovereignty \n \n \n \n \n \n \n Free your marketing \n \n \n \n with Mautic, \n \n \n \n The World's Largest Open Source Marketing Automation Product \n \n \n \n \n \n \n \n \n \n Get started today \n \n \n \n \n \n \n \n \n \n \n \n \n Explore features \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n 40,000+ companies use Mautic \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n We owe a lot to our partners \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n Become a \n \n Certified \n \n Mautic Developer \n \n \n \n \n \n Master the technical foundations of Mautic. Prove your expertise in configuration, coding, performance optimization, plugin development and integrations. \n \n \n \n \n \n \n \n \n \n Register for Developer Certification \n \n \n \n \n \n \n \n \n \n \n \n \n Download curriculum \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n Mautic’s most 👍‘d features \n \n \n \n Harness the power of Mautic's powerful marketing automation features to achieve your marketing goals \n \n \n \n \n \n \n \n \n \n \n \n Intuitive campaign builder \n \n \n \n Simplifying campaign design and optimization with a user-friendly click-and-drag interface allowing you to build comp",
+   "endpoints": [
+    "https://api.w.org/"
+   ]
+  }
+ ],
+ "ninjatranslations": [
+  {
+   "label": "ninjatranslations",
+   "url": "https://www.ninjatranslations.com/contact-us",
+   "final_url": "https://www.ninjatranslations.com/contact-us",
+   "status": 403,
+   "err": "HTTP 403",
+   "title": "403 Forbidden",
+   "len": 548,
+   "dead": true
+  },
+  {
+   "label": "ninjatranslations",
+   "url": "https://www.ninjatranslations.com/",
+   "final_url": "https://www.ninjatranslations.com/",
+   "status": 403,
+   "err": "HTTP 403",
+   "title": "403 Forbidden",
+   "len": 548,
+   "dead": true
+  }
+ ],
+ "translatehive": [
+  {
+   "label": "translatehive",
+   "url": "https://translatehive.com/contact-us",
+   "final_url": "https://translatehive.com/contact-us",
+   "status": 404,
+   "err": "HTTP 404",
+   "title": "Translate Hive | Court Certified Translation &amp; Interpretation Services",
+   "len": 44908,
+   "dead": true
+  },
+  {
+   "label": "translatehive",
+   "url": "https://translatehive.com/",
+   "final_url": "https://translatehive.com/",
+   "status": 200,
+   "err": null,
+   "title": "Translate Hive | Court Certified Translation &amp; Interpretation Services",
+   "len": 82209,
+   "forms": [],
+   "emails": [
+    "customer.services@translatehive.com",
+    "customer.services@translatehive.com\\"
+   ],
+   "mailtos": [
+    "customer.services@translatehive.com",
+    "customer.services@translatehive.com\\"
+   ],
+   "tel": [
+    "08455059961"
+   ],
+   "whatsapp": [],
+   "telegram": [],
+   "text": "Translate Hive | Court Certified Translation & Interpretation Services Translation Interpretation Witness Statements Languages About Contact 0845 505 9961 Get a Quote NRPSI Registered · Court Certified · 15+ Years Translate with precision. Used for UK court and legal proceedings for over 15 years. Certified translations and NRPSI-registered interpreters in 200+ languages, including rare dialects on request. Get a Free Quote Explore Services NRPSI Registered Court Certified 15+ Years Experience Services Services Business Business Translation Our business translation services cover all aspects of corporate communication, from annual reports and business plans to internal communications and marketing materials. We ensure your message maintains its impact across languages and cultures. Learn more Document Document Translation Certified translation of official documents, certificates, and personal records. Learn more Marketing Marketing Translation Creative transcreation and localisation of marketing content for global audiences. Learn more Legal Legal Translation Court-certified translation of legal documents by qualified legal translators. Learn more Face-to-Face Face-to-Face Interpretation Professional on-site interpreters for meetings, court hearings, and medical appointments. Learn more Witness Statements Witness Statement Services Professional witness statement taking in any language, with certified translation. Learn more View all services What Our Clients Say “ Very happy with customer service. They go over and above duties to meet our needs. ” Phillip Bialick Litigation Executive , G Coffey & Co Over 200+ Languages From major world languages to rare dialects, our certified translators cover virtually every language you need. 🇸🇦 Arabic 🇧🇩 Bengali 🇨🇳 Chinese 🇮🇷 Farsi 🇫🇷 French 🇩🇪 German 🇮🇳 Hindi 🇮🇹 Italian 🇯🇵 Japanese 🇮🇳 Punjabi 🇵🇱 Polish 🇵🇹 Portuguese 🇷🇴 Romanian 🇷🇺 Russian 🇪🇸 Spanish 🇹🇷 Turkish 🇺🇦 Ukrainian 🇵🇰 Urdu 🇸🇦 Arabic 🇧🇩 Bengali 🇨🇳 Chinese 🇮🇷 Farsi 🇫🇷 French 🇩🇪 German 🇮🇳 Hindi 🇮🇹 Italian 🇯🇵 Japanese 🇮🇳 Punjabi 🇵🇱 Polish 🇵🇹 Portuguese 🇷🇴 Romanian 🇷🇺 Russian 🇪🇸 Spanish 🇹🇷 Turkish 🇺🇦 Ukrainian 🇵🇰 Urdu View all languages 0 + Languages Supported 0 + Years Experience 0 + Projects Completed 0 % On-Time Delivery Ready to break language barriers? Get a free, no-obligation quote within 2 hours. Our team of certified translators and interpreters are ready to help. Get a Free Quote 0845 505 9961 Free quotes Fast turnaround 24/7 support Professional translation and interpretation services. NRPSI registered, court-certified translators serving the UK legal, medical, and business sectors. 0845 505 9961 customer.services@translatehive.com Heswall , Wirral Translation Business Translation Document Translation Marketing Translation Legal Translation Medical Translation Proofreading Interpretation Face-to-Face Telephone & Remote Witness Statements Company About Us Languages Blog Contact Legal Privacy Policy Terms of Service © 2026 Translate Hive . A trading name of Laird Assessors Limited . All rights reserved. Privacy Policy Terms of Service",
+   "endpoints": []
+  }
+ ],
+ "e2translations": [
+  {
+   "label": "e2translations",
+   "url": "https://www.e2translations.com/contact-us",
+   "final_url": "https://www.e2translations.com/contact-us",
+   "status": 0,
+   "err": "URLError: <urlopen error [Errno 11001] getaddrinfo failed>",
+   "title": "",
+   "len": 0,
+   "forms": [],
+   "emails": [],
+   "mailtos": [],
+   "tel": [],
+   "whatsapp": [],
+   "telegram": [],
+   "text": "",
+   "endpoints": []
+  },
+  {
+   "label": "e2translations",
+   "url": "https://www.e2translations.com/",
+   "final_url": "https://www.e2translations.com/",
+   "status": 0,
+   "err": "URLError: <urlopen error [Errno 11001] getaddrinfo failed>",
+   "title": "",
+   "len": 0,
+   "forms": [],
+   "emails": [],
+   "mailtos": [],
+   "tel": [],
+   "whatsapp": [],
+   "telegram": [],
+   "text": "",
+   "endpoints": []
+  }
+ ],
+ "go1d": [
+  {
+   "label": "go1d",
+   "url": "https://go1d.com/contact",
+   "final_url": "https://go1d.com/contact",
+   "status": 0,
+   "err": "URLError: <urlopen error [Errno 11001] getaddrinfo failed>",
+   "title": "",
+   "len": 0,
+   "forms": [],
+   "emails": [],
+   "mailtos": [],
+   "tel": [],
+   "whatsapp": [],
+   "telegram": [],
+   "text": "",
+   "endpoints": []
+  },
+  {
+   "label": "go1d",
+   "url": "https://go1d.com/",
+   "final_url": "https://go1d.com/",
+   "status": 0,
+   "err": "URLError: <urlopen error [Errno 11001] getaddrinfo failed>",
+   "title": "",
+   "len": 0,
+   "forms": [],
+   "emails": [],
+   "mailtos": [],
+   "tel": [],
+   "whatsapp": [],
+   "telegram": [],
+   "text": "",
+   "endpoints": []
+  }
+ ],
+ "languageline": [
+  {
+   "label": "languageline",
+   "url": "https://www.languageline.com/contact/",
+   "final_url": "https://www.languageline.com/contact/",
+   "status": 404,
+   "err": "HTTP 404",
+   "title": "",
+   "len": 33192,
+   "dead": true
+  },
+  {
+   "label": "languageline",
+   "url": "https://www.languageline.com/",
+   "final_url": "https://www.languageline.com/",
+   "status": 200,
+   "err": null,
+   "title": "Language Services | LanguageLine Solutions",
+   "len": 173501,
+   "forms": [
+    {
+     "action": "https://www.languageline.com/search-results",
+     "action_raw": "https://www.languageline.com/search-results",
+     "method": "GET",
+     "n_fields": 10,
+     "fields": [
+      "term",
+      "pathPrefix",
+      "pathPrefix",
+      "pathPrefix",
+      "pathPrefix",
+      "pathPrefix",
+      "pathPrefix",
+      "matchPrefix",
+      "limit",
+      "language"
+     ],
+     "required": [
+      "term"
+     ],
+     "providers": [
+      "hubspot"
+     ],
+     "honeypot": ""
+    },
+    {
+     "action": "https://www.languageline.com/search-results",
+     "action_raw": "https://www.languageline.com/search-results",
+     "method": "GET",
+     "n_fields": 10,
+     "fields": [
+      "term",
+      "pathPrefix",
+      "pathPrefix",
+      "pathPrefix",
+      "pathPrefix",
+      "pathPrefix",
+      "pathPrefix",
+      "matchPrefix",
+      "limit",
+      "language"
+     ],
+     "required": [
+      "term"
+     ],
+     "providers": [
+      "hubspot"
+     ],
+     "honeypot": ""
+    }
+   ],
+   "emails": [],
+   "mailtos": [],
+   "tel": [
+    "08007526096"
+   ],
+   "whatsapp": [],
+   "telegram": [],
+   "text": "Language Services | LanguageLine Solutions \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n\n \n\n \n \n \n \n \n\n \n\n \n\n \n\n \n \n \n \n\n \n\n\n \n \n \n \n\n \n\n \n \n\n \n\n \n\n \n\n \n \n \n \n \n\n\n\n\n\n \n\n \n \n \n \n \n \n \n\n \n\n \n \n \n \n \n\n \n Skip to main content \n \n \n \n \n \n \n \n \n About Us \n \n Who We Are \n Certifications \n Executive Team \n Our Partners \n News \n Events \n Corporate Social Responsibility \n \n Careers \n \n Interpreter Careers \n Corporate Careers \n OnSite Interpreter Jobs \n Freelance Translators \n \n Resources \n \n Blog \n \n Supported Languages \n Customer Service \n \n Pay My Bill \n Billing Questions \n Voice of the Customer \n Equipment & Materials \n \n Client Portal \n \n MyLanguageLine \n Translation Portal \n Pay As You Go Interpreting Services \n \n \n \n \n \n \n \n \n \n \n\n \n UK \n \n \n \n \n \n \n \n \n \n \n \n Toggle Search \n \n \n \n\n \n \n \n \n \n \n Submit \n \n \n \n \n Close \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n\n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n\n \n \n\n \n \n \n \n \n \n \n \n \n Open Menu \n \n \n \n\n \n \n \n \n\n \n \n \n \n \n \n Submit \n \n \n \n \n Close \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n\n \n \n \n \n \n \n \n \n\n \n \n Interpreting Services \n \n Phone Interpreting Services \n \n LanguageLine Certified Interpreters \n Interpreting Services Implementation \n \n Video Remote Interpreting Services \n Interpreting App \n AI Interpreting Services \n \n AI Interpreting Pilot \n \n ASL Interpreting Services \n In Person Interpreting Services \n Healthcare Interpreting Integrations \n \n EHR Interpreting Integration \n Interpreter Workforce Management Solution \n Telehealth Interpreting \n \n Virtual Meeting Interpreting Services \n Customer Service Interpreting Services \n Inbound Call Interpreting Services \n Interpreting Languages List \n Pay As You Go Interpreting Services \n \n Translation & Localization Services \n \n Document Translation Services \n \n Fast Translation Service \n Desktop Publishing Services \n Document Content Optimization \n \n AI Translation App \n \n Linguistic Risk Management \n \n Machine Translation Services \n \n Multilingual AI \n \n Epic Translation Integration \n Software Localization Services \n Website Translation Services \n eLearning Translation Services \n Video and Audio Translation Services \n Marketing Localization Services \n Audio Transcription Services \n Braille Transcription Services \n Certified Translation Services \n Translation Technology \n \n Translation Security \n \n Translation Portal \n Translation Languages List \n \n Testing & Training \n \n Fundamentals of Interpreting \n Language Proficiency \n Interpreter Readiness \n Medical Terminology Wordbook \n Medical Certification \n Advanced Medical Interpretation \n Register for Training \n Testing & Training Bill Pay \n \n Healthcare Services \n \n Healthcare Overview \n \n Healthcare Interpreting \n Healthcare Translation \n \n Health Plan Language Services \n EHR Interpreting Integration \n Epic Translation Integration \n Telehealth Intepreting \n Interpreter Workforce Management Solution \n Section 1557 Compliance Resources \n Bilingual Testing & Training \n \n Medical Terminology Workbook \n Medical Certification \n Advanced Medical Interpreter Training \n \n \n Industries \n \n Healthcare \n \n Healthcare Interpreting Services \n Healthcare Translation Services \n \n Health Plans \n Business \n Human Resources \n Government \n Travel & Hospitality \n \n Global Sporting Events \n \n Insurance \n Education \n Financial Services \n Public Safety \n Legal \n Manufacturing \n Non-Profit \n Technology \n Retail \n \n \n \n \n \n \n \n About Us \n \n Who We Are \n Certifications \n Executive Team \n Our Partners \n News \n Events \n Corporate Social Responsibility \n \n Careers \n \n Interpreter Careers \n Corporate Careers \n OnSite Interpreter Jobs \n Freelance Translators \n \n Resources \n \n Blog \n \n Supported Languages \n Customer Service \n \n Pay My Bill \n Billing Questions \n Voice of the Customer \n Equipment & Materials \n \n Client Portal \n \n MyLanguageLine \n Translation Portal \n Pay As You Go Interpreting Services \n \n \n \n \n \n \n Contact Us \n \n \n \n\n \n \n \n\n \n\n\n\n\n\n\n\n\n\n \n \n \n \n \n \n \n \n Language Services for Critical Communications\n \n \n \n \n \n \n Professional interpretation, translation, and AI-powered language services designed to help organizations communicate accurately, comply with regulations, and serve diverse populations. \n \n \n \n\n \n \n \n Watch Video \n \n \n \n \n\n",
+   "endpoints": []
+  }
+ ]
+}

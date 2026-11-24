@@ -1,0 +1,335 @@
+[
+ {
+  "name": "worthwebscraping",
+  "url": "https://www.worthwebscraping.com/contact-us/",
+  "ok": true,
+  "err": null,
+  "len": 2423,
+  "exp_found": true,
+  "emails": [
+   "info@worthwebscraping.com"
+  ],
+  "money": [],
+  "head": "info@worthwebscraping.com | (+91) 7984103276 # Contact Us * [Home](https://www.worthwebscraping.com/) * Contact Us CONTACT US # Let’s Discuss Your Data Project Tell us what data you need, which websites or sources you "
+ },
+ {
+  "name": "webscrapingagency",
+  "url": "https://webscrapingagency.com/contact",
+  "ok": true,
+  "err": null,
+  "len": 1255,
+  "exp_found": true,
+  "emails": [
+   "contact@webscrapingagency.com"
+  ],
+  "money": [],
+  "head": "# Contact Our US Data Team. Tell us about your target websites and data requirements. Our Senior Data Engineers will review your schema, assess anti-bot protections, and deliver a custom quote with a free pilot sample. "
+ },
+ {
+  "name": "websbyspider",
+  "url": "https://websbyspider.com/",
+  "ok": true,
+  "err": null,
+  "len": 4142,
+  "exp_found": false,
+  "emails": [],
+  "money": [
+   "from $3,900",
+   "$90 /mo",
+   "$50",
+   "$90/mo",
+   "$25/mo"
+  ],
+  "head": "# Sites that move MAKE MONEY MOVE. ## ( WHAT WE MAKE ) ### NOW BUILDING [WBS 01 RESTAURANT WEBSITES LIVE →](https://websbyspider.com/industries/restaurants/) [WBS 02 MANUFACTURING LIVE →](https://websbyspider.com/industr"
+ },
+ {
+  "name": "leadscampaign",
+  "url": "https://leadscampaign.com/contact-us",
+  "ok": true,
+  "err": null,
+  "len": 1964,
+  "exp_found": true,
+  "emails": [
+   "info@leadscampaign.com"
+  ],
+  "money": [],
+  "head": "# Contact Us ## Contact LeadsCampaign ### Get in Touch Fill out the quick form below to share your project details or questions. Our team will review your request and get back to you within 24 hours. Name Email Address C"
+ },
+ {
+  "name": "scrapingpros",
+  "url": "https://scrapingpros.com/contact/",
+  "ok": true,
+  "err": null,
+  "len": 2044,
+  "exp_found": true,
+  "emails": [
+   "contact@scrapingpros.com"
+  ],
+  "money": [],
+  "head": "# **Your Data, Your Way.** Tell us what data you need— **we’ll handle it for you** . With custom solutions, ban-resistant technology, and seamless integration, Scraping Pros delivers trusted, high-quality data without th"
+ },
+ {
+  "name": "extracthelp",
+  "url": "https://extracthelp.com/web-scraping/",
+  "ok": true,
+  "err": null,
+  "len": 4388,
+  "exp_found": true,
+  "emails": [
+   "info@extracthelp.com"
+  ],
+  "money": [],
+  "head": "# Web Scraping Services. Extract clean, structured, and ready-to-use data from any website at scale. Our AI-powered web scraping solutions turn raw online information into actionable business intelligence — fast, accurat"
+ },
+ {
+  "name": "datascraperin",
+  "url": "https://www.datascraper.in/contact",
+  "ok": true,
+  "err": null,
+  "len": 4322,
+  "exp_found": true,
+  "emails": [
+   "admin@datascraper.in"
+  ],
+  "money": [],
+  "head": "🇮🇳 Serving 30+ countries · Extract Data in 24 hrs [DS Data Scraper](https://www.datascraper.in/) Services Solutions Scrapers Technologies Company Contact [Get Free Quote](https://www.datascraper.in/contact) Menu [Service"
+ },
+ {
+  "name": "webdatainsights",
+  "url": "https://webdatainsights.com/",
+  "ok": true,
+  "err": null,
+  "len": 4015,
+  "exp_found": false,
+  "emails": [],
+  "money": [],
+  "head": "Ecommerce Products Grocery Delivery Food Delivery Real Estate Travel Fashion and Lifestyle * Solutions Price Intelligence [Amazon Competitor Price Tracking](https://webdatainsights.com/solutions/amazon-competitor-price-t"
+ },
+ {
+  "name": "productdatascrape",
+  "url": "https://www.productdatascrape.com/competitor-price-monitoring.php",
+  "ok": true,
+  "err": null,
+  "len": 4292,
+  "exp_found": true,
+  "emails": [
+   "sales@productdatascrape.com"
+  ],
+  "money": [
+   "$49",
+   "$45",
+   "$52",
+   "$129",
+   "$129",
+   "$135"
+  ],
+  "head": "# Got a project in mind? Your Name * Your Email * Your Phone * Your Services * Service E-commerce Data Scraping Competitor Price Monitoring Mobile App Scraping Web Scraping API Price Intelligence Your Message * SUBMIT #"
+ },
+ {
+  "name": "webdatascraping",
+  "url": "https://www.webdatascraping.com/",
+  "ok": true,
+  "err": null,
+  "len": 237,
+  "exp_found": false,
+  "emails": [],
+  "money": [],
+  "head": "# Home | B2B Data Provider ## Products pagination 1 [2](https://webdatascraping.com/page/2/) [3](https://webdatascraping.com/page/3/) … [225](https://webdatascraping.com/page/225/) [Next »](https://webdatascraping.com/pa"
+ },
+ {
+  "name": "datagrass",
+  "url": "https://datagrass.io/b2b-data-scraping-services",
+  "ok": true,
+  "err": null,
+  "len": 4374,
+  "exp_found": true,
+  "emails": [
+   "hello@datagrass.io"
+  ],
+  "money": [],
+  "head": "# B2B Data Scraping Services Unlock valuable business insights with our B2B Data Scraping Services, designed to fuel lead generation, market analysis, and sales growth. B2B-Data-Scraping-Services-DataGrass B2B-Data-Scrap"
+ },
+ {
+  "name": "justmetrically",
+  "url": "https://www.justmetrically.com/real-estate-data",
+  "ok": true,
+  "err": null,
+  "len": 4488,
+  "exp_found": false,
+  "emails": [],
+  "money": [
+   "$100"
+  ],
+  "head": "[JM Justmetrically AI Data Pipelines](https://www.justmetrically.com/) [Home](https://www.justmetrically.com/) [Pricing](https://www.justmetrically.com/pricing) [Posts](https://www.justmetrically.com/posts) [Contact](htt"
+ },
+ {
+  "name": "nannostomus",
+  "url": "https://www.nannostomus.com/web-scraping-products/",
+  "ok": true,
+  "err": null,
+  "len": 4471,
+  "exp_found": true,
+  "emails": [
+   "dev@nannostomus.com"
+  ],
+  "money": [],
+  "head": "[Data Extraction Easy for Every Customer on Nannostomus](https://www.nannostomus.com/) * [Sex offender data](https://www.nannostomus.com/our-solutions/sex-offenders-dataset/) + Access to sex offender data [Sex Offender A"
+ },
+ {
+  "name": "3idatascraping",
+  "url": "https://www.3idatascraping.com/b2b-data-scraping/",
+  "ok": true,
+  "err": null,
+  "len": 4400,
+  "exp_found": false,
+  "emails": [],
+  "money": [],
+  "head": "* Services + [](https://www.3idatascraping.com/web-data-scraping/) [Web Data Scraping](https://www.3idatascraping.com/web-data-scraping/) Extract structured data for business insights. [](https://www.3idatascraping.com/d"
+ },
+ {
+  "name": "datagators",
+  "url": "https://www.datagators.com/partner.php",
+  "ok": true,
+  "err": null,
+  "len": 4318,
+  "exp_found": null,
+  "emails": [],
+  "money": [],
+  "head": "[DataGators](https://www.datagators.com/index.php) Services // Services 60+ solutions Core Offering # Enterprise Data Extraction Suite Every data source. Every format. Every scale. Our infrastructure handles billions of"
+ },
+ {
+  "name": "potentpages",
+  "url": "https://potentpages.com/web-crawler-development/services",
+  "ok": true,
+  "err": null,
+  "len": 4307,
+  "exp_found": false,
+  "emails": [],
+  "money": [
+   "Starting at $1500",
+   "$1500",
+   "$150/hour",
+   "$1500",
+   "$150/hour"
+  ],
+  "head": "# Web Crawler Development Services Managed Web Crawling for Law Firms, Financial Firms, Enterprises Obtaining Data Quickly and Easily, Starting at $1500 For **law firms** and **hedge funds** that need high-volume, high-c"
+ },
+ {
+  "name": "hirinfotech",
+  "url": "https://hirinfotech.com/data-extraction-services/",
+  "ok": true,
+  "err": null,
+  "len": 4298,
+  "exp_found": false,
+  "emails": [],
+  "money": [],
+  "head": "* Technologies Scale your team, instantly Hire pre-vetted developers with proven expertise—flexible, efficient, and cost-effective. Hire a developer Web Scraping & Crawling Python Node.js Selenium APIs Data Extraction To"
+ },
+ {
+  "name": "btobconnection",
+  "url": "https://btobconnection.com/services/web-scraping",
+  "ok": true,
+  "err": null,
+  "len": 4196,
+  "exp_found": false,
+  "emails": [],
+  "money": [],
+  "head": "# Custom Web Scraping Get actionable business data, find customers, and track competitors with our Web scraping dataset. * Any public web source — directories, marketplaces, news, B2B catalogues * Accurate structured-web"
+ },
+ {
+  "name": "crawlnow",
+  "url": "https://www.crawlnow.com/contact",
+  "ok": true,
+  "err": null,
+  "len": 1109,
+  "exp_found": null,
+  "emails": [],
+  "money": [],
+  "head": "# Let's get in touch to discuss your use case Best-in-class expertise. Our team has 10+ years of experience working with web crawlers & big data at scale. Up to 75% cheaper than on-premise solutions for sourcing web data"
+ },
+ {
+  "name": "rookresearch",
+  "url": "https://www.rookresearch.com/",
+  "ok": true,
+  "err": null,
+  "len": 972,
+  "exp_found": null,
+  "emails": [],
+  "money": [],
+  "head": "♜ Rook Research Solutions How It Works Insights Contact Get a Quote # Custom Web Scraping for Alternative Data Reliable, scalable pipelines that turn public web sources into actionable alpha for hedge funds and asset ma"
+ },
+ {
+  "name": "pinobyte",
+  "url": "https://www.pinobyte.io/services/data-scraping",
+  "ok": true,
+  "err": null,
+  "len": 4465,
+  "exp_found": false,
+  "emails": [
+   "vlad.kuzmich@pinobyte.io"
+  ],
+  "money": [],
+  "head": "[](https://www.pinobyte.io/) [Playground](https://www.pinobyte.io/playground) Success stories [Scraping Engine for a Proxy Provider](https://www.pinobyte.io/success-stories/scraping-engine-for-a-proxy-provider) [AI Agent"
+ },
+ {
+  "name": "sammdata",
+  "url": "https://www.sammdataservices.com/ecommerce-data-scraping-services.html",
+  "ok": true,
+  "err": null,
+  "len": 3833,
+  "exp_found": false,
+  "emails": [],
+  "money": [],
+  "head": "# eCommerce Data Scraping Services Access real-time, accurate product data from marketplaces, supplier sites, review platforms, and more to power smarter business decisions. * Automate competitor research, fix catalog ga"
+ },
+ {
+  "name": "webscrapinghq",
+  "url": "https://webscrapinghq.com/contact",
+  "ok": true,
+  "err": null,
+  "len": 1735,
+  "exp_found": true,
+  "emails": [
+   "info@webscrapinghq.com"
+  ],
+  "money": [],
+  "head": "# Talk to the WebscrapingHQ team. We reply within 24 hours. Scoping calls, project quotes, partnerships, press. We read every message and reply within 24 hours — usually faster. ## Get a project quote For scraping proje"
+ },
+ {
+  "name": "webdataextractionservices",
+  "url": "https://webdataextractionservices.com/contact-us",
+  "ok": true,
+  "err": null,
+  "len": 1013,
+  "exp_found": null,
+  "emails": [],
+  "money": [],
+  "head": "Contact # Request a quote for your data extraction project. Describe the sources you need extracted, the data schema, and your delivery preferences. We reply with a scoped quote within 48 hours — or tell you honestly if"
+ },
+ {
+  "name": "datadiveedge",
+  "url": "https://www.datadiveedge.com/industry-realestate",
+  "ok": true,
+  "err": null,
+  "len": 1070,
+  "exp_found": null,
+  "emails": [],
+  "money": [
+   "$389"
+  ],
+  "head": "# Real Estate Data Scraping Services Property Listings, Price Trends & Market Intelligence From India's top PropTech startups to global real estate investment funds, DataDiveEdge powers property market intelligence at sc"
+ },
+ {
+  "name": "scrapecrew",
+  "url": "https://www.scrapecrew.com/contact",
+  "ok": true,
+  "err": null,
+  "len": 769,
+  "exp_found": null,
+  "emails": [
+   "hello@scrapecrew.com"
+  ],
+  "money": [],
+  "head": "# Contact ScrapeCrew for Web Scraping ScrapeCrew team is here whenever you need us. Interested in any of our tools or want something custom built? Reach out today. You get dedicated, full-time support every step of the w"
+ }
+]

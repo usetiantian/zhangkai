@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b0d14">
+<title>music3 · 一句话生成音乐</title>
+<style>
+:root{
+  --bg:#0b0d14; --bg2:#12151f; --card:#161a26; --line:#252b3b;
+  --fg:#e8ecf5; --dim:#8b93a8; --dim2:#5d6579;
+  --acc:#7c5cff; --acc2:#00d4ff; --ok:#38d39f; --warn:#ffb020; --err:#ff5c72;
+  --r:14px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  background:radial-gradient(1200px 700px at 15% -10%,#1d1836 0%,transparent 55%),
+             radial-gradient(900px 600px at 100% 0%,#06222e 0%,transparent 50%),var(--bg);
+  color:var(--fg); font:15px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+  min-height:100vh; padding-bottom:60px;
+}
+.wrap{max-width:1080px;margin:0 auto;padding:18px 14px}
+header{display:flex;align-items:center;gap:12px;margin:6px 0 20px}
+.logo{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;font-size:19px;
+  background:linear-gradient(135deg,var(--acc),var(--acc2));box-shadow:0 6px 22px -8px var(--acc)}
+h1{font-size:19px;margin:0;letter-spacing:.3px;font-weight:650}
+.sub{font-size:12px;color:var(--dim2);margin-top:1px}
+.spacer{flex:1}
+.pill{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--dim);
+  background:var(--card);border:1px solid var(--line);padding:6px 11px;border-radius:999px}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--err);transition:.3s}
+.dot.on{background:var(--ok);box-shadow:0 0 8px var(--ok)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-bottom:14px}
+label{display:block;font-size:12px;color:var(--dim);margin:0 0 6px;letter-spacing:.3px}
+textarea,input[type=text],input[type=number],input[type=password],select{
+  width:100%;background:var(--bg2);border:1px solid var(--line);color:var(--fg);
+  border-radius:10px;padding:11px 12px;font:inherit;font-size:14px;outline:none;transition:.15s}
+textarea{resize:vertical;min-height:82px;line-height:1.65}
+textarea:focus,input:focus,select:focus{border-color:var(--acc);box-shadow:0 0 0 3px rgba(124,92,255,.13)}
+.row{display:flex;gap:9px;flex-wrap:wrap}
+.row>*{flex:1;min-width:130px}
+button{
+  background:var(--bg2);border:1px solid var(--line);color:var(--fg);border-radius:10px;
+  padding:11px 15px;font:inherit;font-size:14px;cursor:pointer;transition:.15s;white-space:nowrap}
+button:hover:not(:disabled){border-color:var(--acc);background:#1b1f2e}
+button:disabled{opacity:.45;cursor:not-allowed}
+button.ai{border-color:rgba(0,212,255,.4);color:#7fe6ff}
+button.ai:hover:not(:disabled){background:rgba(0,212,255,.09);border-color:var(--acc2)}
+button.go{
+  background:linear-gradient(135deg,var(--acc),#5b3ff0);border:none;font-weight:600;
+  padding:14px;font-size:15px;box-shadow:0 8px 26px -10px var(--acc)}
+button.go:hover:not(:disabled){filter:brightness(1.12);transform:translateY(-1px)}
+</style>
+<style>
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+details{margin-top:12px}
+summary{cursor:pointer;font-size:13px;color:var(--dim);user-select:none;padding:7px 0}
+summary:hover{color:var(--fg)}
+.hint{font-size:11.5px;color:var(--dim2);margin-top:6px;line-height:1.55}
+#results{display:grid;gap:12px;grid-template-columns:1fr}
+#results.multi{grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+.rcard{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:13px;
+  animation:pop .35s ease both}
+@keyframes pop{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:none}}
+.rhead{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.tag{font-size:11px;padding:3px 9px;border-radius:999px;background:rgba(124,92,255,.15);
+  color:#b9a8ff;border:1px solid rgba(124,92,255,.3);font-variant-numeric:tabular-nums}
+.tag.g{background:rgba(56,211,159,.13);color:#6ee7b7;border-color:rgba(56,211,159,.3)}
+.tag.y{background:rgba(255,176,32,.13);color:#ffd280;border-color:rgba(255,176,32,.3)}
+.tag.r{background:rgba(255,92,114,.13);color:#ff9aa8;border-color:rgba(255,92,114,.3)}
+audio{width:100%;height:38px;margin:4px 0 8px}
+.meta{font-size:11.5px;color:var(--dim2);margin-top:5px;word-break:break-all}
+.st{font-size:13px;color:var(--dim);display:flex;align-items:center;gap:8px;padding:11px 0}
+.spin{width:13px;height:13px;border:2px solid var(--line);border-top-color:var(--acc);
+  border-radius:50%;animation:sp .8s linear infinite;flex:none}
+@keyframes sp{to{transform:rotate(360deg)}}
+.err{background:rgba(255,92,114,.1);border:1px solid rgba(255,92,114,.32);color:#ff9aa8;
+  padding:11px;border-radius:10px;font-size:13px;margin-top:8px;white-space:pre-wrap;word-break:break-word}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:22px;background:#1e2333;
+  border:1px solid var(--line);color:var(--fg);padding:11px 18px;border-radius:11px;
+  font-size:13px;z-index:99;opacity:0;pointer-events:none;transition:.25s;max-width:88vw}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(-6px)}
+.aibox{background:rgba(0,212,255,.05);border:1px dashed rgba(0,212,255,.28);
+  border-radius:10px;padding:11px;margin-top:10px;font-size:12.5px;color:#9fdff0;line-height:1.6}
+@media(max-width:700px){
+  .grid2,.grid3{grid-template-columns:1fr}
+  .wrap{padding:14px 11px}
+  header{margin-bottom:15px}
+  h1{font-size:17px}
+  button{padding:11px 12px}
+}
+</style>
+<div class="wrap">
+<header>
+  <div class="logo">♪</div>
+  <div>
+    <h1>music3 <span style="color:var(--dim2);font-weight:400">一句话生成音乐</span></h1>
+    <div class="sub">由 <b style="color:#9fdff0">MiniMax-Music3</b> 驱动 · 本地 ComfyUI</div>
+  </div>
+  <div class="spacer"></div>
+  <div class="pill"><span class="dot" id="dot"></span><span id="stat">连接中</span></div>
+</header>
+
+<div class="card">
+  <label>一句话描述</label>
+  <textarea id="caption" placeholder="例：深夜孤独的流行抒情歌，钢琴前奏，副歌要炸"></textarea>
+  <div class="row" style="margin-top:10px">
+    <button class="ai" id="btnArrange">✦ AI 写编曲说明</button>
+    <button class="ai" id="btnLyrics">✦ AI 写歌词</button>
+  </div>
+  <div class="hint">描述写成「制作特征」而不是「指令」效果最好：风格、BPM、调式、乐器、人声、混音、场景。</div>
+  <div id="aiOut" class="aibox" style="display:none"></div>
+</div>
+
+<div class="card">
+  <label>歌词（留空 = 纯器乐）</label>
+  <textarea id="lyrics" placeholder="[Verse]&#10;晚风推开半扇窗&#10;台灯把影子拉长"></textarea>
+</div>
+
+<div class="card">
+  <details id="adv">
+    <summary>⚙ 参数</summary>
+    <div class="grid3" style="margin-top:10px">
+      <div><label>时长上限 (秒)</label><input type="number" id="duration" value="60" min="4" max="360" step="4"></div>
+      <div><label>采样步数</label><input type="number" id="steps" value="20" min="4" max="60"></div>
+      <div><label>CFG</label><input type="number" id="cfg" value="1.7" min="0" max="10" step="0.1"></div>
+    </div>
+    <div class="grid3" style="margin-top:12px">
+      <div><label>生成数量</label><select id="count">
+        <option value="1">1 首</option><option value="2">2 首</option>
+        <option value="4" selected>4 首（变奏对比）</option><option value="6">6 首</option></select></div>
+      <div><label>变奏方式</label><select id="variation">
+        <option value="seed" selected>换种子（同一首歌不同版本）</option>
+        <option value="cfg">换 CFG（同一旋律不同贴合度）</option></select></div>
+      <div><label>固定种子（空=随机）</label><input type="number" id="seed" placeholder="随机"></div>
+    </div>
+    <div class="grid3" style="margin-top:12px">
+      <div><label>top-k</label><input type="number" id="topk" value="50" min="1" max="16384"></div>
+      <div><label>格式</label><select id="fmt"><option value="mp3">mp3</option><option value="flac">flac</option></select></div>
+      <div><label>音质</label><select id="quality"><option value="320k">320k</option>
+        <option value="128k">128k</option><option value="V0">V0</option></select></div>
+    </div>
+    <label style="margin-top:14px;display:flex;align-items:center;gap:8px;cursor:pointer">
+      <input type="checkbox" id="lowvram" style="width:auto">
+      <span>低显存模式（用 int8 版 DiT）</span>
+    </label>
+  </details>
+  <div style="margin-top:14px">
+    <label>MiniMax API Key（用于 AI 写词/编曲，可留空）</label>
+    <input type="password" id="apikey" placeholder="留空则不调用 AI 功能">
+    <div class="grid2" style="margin-top:10px">
+      <div><label>GroupId（国内站才需要，可留空）</label>
+        <input type="text" id="groupid" placeholder="国内平台后台的 GroupId"></div>
+      <div style="display:flex;align-items:flex-end">
+        <button id="btnTest" style="width:100%">🔌 测试 Key 连通性</button></div>
+    </div>
+    <div class="hint">Key 只存在你自己的浏览器里（localStorage），随请求发给本机服务，不写磁盘。
+      国际站 (platform.minimax.io) 和国内站 (platform.minimaxi.com) 的 Key 不同，测试按钮会自动逐个试。</div>
+  </div>
+  <button class="go" id="go" style="width:100%;margin-top:16px">🎵 生成</button>
+</div>
+
+<div id="results"></div>
+</div>
+<div class="toast" id="toast"></div>
+<div style="max-width:1080px;margin:0 auto;padding:8px 14px 30px;color:#3d4456;font-size:11px;line-height:1.7">
+  music3 音乐工作室 · 音乐模型由 <b style="color:#5d6579">MiniMax-Music3</b> 生成（MiniMax-Music3 Community License）<br>
+  全部推理在本机完成，提示词与音频不会上传到 MiniMax；仅「AI 写词 / 编曲说明」功能会调用 MiniMax 文本接口。
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const KEY = 'music3_apikey';
+const GKEY = 'music3_groupid';
+$('apikey').value = localStorage.getItem(KEY) || '';
+$('groupid').value = localStorage.getItem(GKEY) || '';
+$('apikey').addEventListener('input', e => localStorage.setItem(KEY, e.target.value));
+$('groupid').addEventListener('input', e => localStorage.setItem(GKEY, e.target.value));
+
+function creds(){
+  return {api_key: $('apikey').value.trim(), group_id: $('groupid').value.trim()};
+}
+function showBox(html, isErr){
+  const b = $('aiOut');
+  b.style.display = 'block';
+  b.style.background = isErr ? 'rgba(255,92,114,.07)' : '';
+  b.style.borderColor = isErr ? 'rgba(255,92,114,.4)' : '';
+  b.style.color = isErr ? '#ff9aa8' : '';
+  b.innerHTML = html;
+}
+function esc(s){
+  return String(s == null ? '' : s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+}
+
+function toast(msg, ms){
+  ms = ms || 2600;
+  const t = $('toast'); t.textContent = msg; t.classList.add('on');
+  clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('on'), ms);
+}
+async function api(path, body){
+  const opt = body ? {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)} : {};
+  const r = await fetch(path, opt);
+  const d = await r.json().catch(() => ({error:'bad json'}));
+  if(!r.ok || d.error) throw new Error(d.error || ('HTTP ' + r.status));
+  return d;
+}
+async function health(){
+  try{
+    const d = await api('/api/health');
+    $('dot').classList.toggle('on', !!d.comfy);
+    $('stat').textContent = d.comfy ? 'ComfyUI 已连接' : 'ComfyUI 未连接';
+  }catch(e){ $('dot').classList.remove('on'); $('stat').textContent = '服务未连接'; }
+}
+health(); setInterval(health, 8000);
+
+function aiBox(html){ showBox(html, false); }
+
+$('btnTest').onclick = async () => {
+  if(!$('apikey').value.trim()){ showBox('请先填 API Key。', true); return; }
+  $('btnTest').disabled = true; $('btnTest').textContent = '测试中…';
+  showBox('正在逐个尝试端点和模型…', false);
+  try{
+    const c = creds();
+    const d = await api('/api/ai/test', c);
+    let html = '';
+    if(d.models){
+      html += '<b>' + esc(d.models) + '</b><br>';
+    }
+    if(d.ok){
+      html += '<b style="color:#6ee7b7">✓ 可用：' + esc(d.winner) + '</b><br>';
+    }else{
+      html += '<b>✕ 所有端点都失败，逐项原因：</b><br>';
+    }
+    d.attempts.forEach(a => {
+      html += '· ' + esc(a.endpoint) + ' [' + esc(a.model) + '] → ' +
+              (a.error ? '<span style="color:#ff9aa8">' + esc(a.error) + '</span>' : '<span style="color:#6ee7b7">OK</span>') + '<br>';
+    });
+    showBox(html, !d.ok);
+    toast(d.ok ? 'Key 可用' : 'Key 不可用，见下方详情', 3000);
+  }catch(e){ showBox('测试请求失败：' + esc(e.message), true); }
+  finally{ $('btnTest').disabled = false; $('btnTest').textContent = '🔌 测试 Key 连通性'; }
+};
+
+$('btnArrange').onclick = async () => {
+  const text = $('caption').value.trim();
+  if(!text){ showBox('先在上面的描述框写一句话。', true); return; }
+  if(!$('apikey').value.trim()){ showBox('需要 API Key —— 点下面的「🔌 测试 Key 连通性」可以确认 Key 是否可用。', true); return; }
+  $('btnArrange').disabled = true; $('btnArrange').textContent = '思考中…';
+  try{
+    const d = await api('/api/ai/arrange', Object.assign({text: text}, creds()));
+    $('caption').value = d.caption;
+    aiBox('<b>✓ 编曲说明已写入上方</b><br>' + d.caption.replace(/\n/g,'<br>'));
+    toast('编曲说明已生成');
+  }catch(e){ showBox('失败：<br>' + esc(e.message).replace(/\n/g,'<br>'), true); toast('失败，见提示框', 3000); }
+  finally{ $('btnArrange').disabled = false; $('btnArrange').textContent = '✦ AI 写编曲说明'; }
+};
+
+$('btnLyrics').onclick = async () => {
+  const theme = $('caption').value.trim();
+  if(!theme){ showBox('先在上面的描述框写一句话。', true); return; }
+  if(!$('apikey').value.trim()){ showBox('需要 API Key —— 点下面的「🔌 测试 Key 连通性」可以确认 Key 是否可用。', true); return; }
+  $('btnLyrics').disabled = true; $('btnLyrics').textContent = '写作中…';
+  try{
+    const d = await api('/api/ai/lyrics', Object.assign({theme: theme, style: $('caption').value}, creds()));
+    $('lyrics').value = d.lyrics;
+    aiBox('<b>✓ 歌词已写入下方</b>');
+    toast('歌词已生成');
+  }catch(e){ showBox('失败：<br>' + esc(e.message).replace(/\n/g,'<br>'), true); toast('失败，见提示框', 3000); }
+  finally{ $('btnLyrics').disabled = false; $('btnLyrics').textContent = '✦ AI 写歌词'; }
+};
+
+let cards = {};
+$('go').onclick = async () => {
+  const caption = $('caption').value.trim();
+  if(!caption) return toast('先写一句话描述');
+  const count = +$('count').value;
+  $('go').disabled = true; $('go').textContent = '提交中…';
+  try{
+    const body = {
+      caption: caption, lyrics: $('lyrics').value,
+      duration: +$('duration').value, steps: +$('steps').value, cfg: +$('cfg').value,
+      top_k: +$('topk').value, count: count, variation: $('variation').value,
+      seed: $('seed').value || null, format: $('fmt').value, quality: $('quality').value,
+      lowvram: $('lowvram').checked
+    };
+    const d = await api('/api/generate', body);
+    cards = {};
+    const res = $('results'); res.innerHTML = '';
+    res.classList.toggle('multi', count > 1);
+    d.jobs.forEach(j => addCard(j, count));
+    poll();
+  }catch(e){ toast('提交失败：' + e.message, 5000); }
+  finally{ $('go').disabled = false; $('go').textContent = '🎵 生成'; }
+};
+
+function addCard(j, total){
+  const div = document.createElement('div');
+  div.className = 'rcard';
+  div.innerHTML = '<div class="rhead"><span class="tag">seed ' + j.seed + '</span>' +
+    (total > 1 ? '<span class="tag g">cfg ' + j.cfg + '</span>' : '') +
+    '<span class="tag y"><span class="spin"></span>排队中</span></div>' +
+    '<div class="st">生成中，通常 1–3 分钟…</div>';
+  $('results').appendChild(div);
+  cards[j.id] = {div: div, state: '', audio: null};
+}
+
+let polling = false;
+async function poll(){
+  if(polling) return;
+  polling = true;
+  const ids = Object.keys(cards);
+  if(!ids.length){ polling = false; return; }
+  await Promise.all(ids.map(async id => {
+    const c = cards[id];
+    try{
+      const s = await api('/api/status/' + id);
+      if(s.state === c.state) return;
+      c.state = s.state;
+      const tag = c.div.querySelector('.rhead').querySelector('.tag:last-child');
+      if(s.state === 'ready'){
+        tag.className = 'tag g'; tag.textContent = '✓ 完成';
+        c.div.querySelector('.st').innerHTML =
+          '<audio controls preload="metadata" src="' + s.audio_url + '"></audio>' +
+          '<div class="row"><a href="' + s.audio_url + '?dl=1" download><button>⬇ 下载</button></a>' +
+          '<button onclick="copySeed(' + s.seed + ')">📋 复制种子</button></div>' +
+          '<div class="meta">' + (s.filename || '') + '</div>';
+      } else if(s.state === 'error'){
+        tag.className = 'tag r'; tag.textContent = '✕ 失败';
+        c.div.querySelector('.st').innerHTML = '<div class="err">' + (s.error || '未知错误') + '</div>';
+      } else {
+        tag.textContent = '生成中';
+        c.div.querySelector('.st').textContent = '采样中，通常 1–3 分钟…';
+      }
+    }catch(e){}
+  }));
+  polling = false;
+  if(Object.keys(cards).length) setTimeout(poll, 2500);
+}
+function copySeed(s){ navigator.clipboard && navigator.clipboard.writeText(String(s)); toast('种子已复制：' + s); }
+</script>
+</body>
+</html>

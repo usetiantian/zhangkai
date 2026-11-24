@@ -1,0 +1,73 @@
+====================================================================================================
+fyclabs | https://fyclabs.com/contact | HTTP 200
+  FORM action='https://fyclabs.com/contact/post' method='GET' nfields=8 :: name,phone,email,organization,budget,hearaboutus,referrer,message
+  FORM action='https://fyclabs.com/contact/post' method='GET' nfields=1 :: email
+====================================================================================================
+getraze | https://getraze.co/partners | HTTP 200
+  EMAIL ['legal@getraze.co', 'privacy@getraze.co']
+====================================================================================================
+skillboss | https://www.skillboss.co/whitelabel | HTTP 200
+  EMAIL ['support@agentsky.dev']
+====================================================================================================
+agentnative | https://agentnativecompany.com/ai-automation-agency | HTTP 200
+====================================================================================================
+taskbounty | https://www.task-bounty.com/for-oss-maintainers | HTTP 200
+====================================================================================================
+issuehunt | https://oss.issuehunt.io/ | HTTP 502
+====================================================================================================
+mauticbounty | https://contribute.mautic.org/en/latest/contributing/mautic_bounty_programme.html | HTTP 200
+  FORM action='https://contribute.mautic.org/en/latest/search.html' method='GET' nfields=3 :: q,check_keywords,area
+====================================================================================================
+lingodev | https://lingo.dev/en | HTTP 200
+====================================================================================================
+smartcat | https://www.smartcat.com/contact | HTTP 404
+====================================================================================================
+transperfect | https://www.transperfect.com/technology/translation-management | HTTP 200
+====================================================================================================
+jobdataapi | https://jobdataapi.com/ | HTTP 200
+====================================================================================================
+omn wes | https://omniwes.com/contact | HTTP 200
+====================================================================================================
+autoflow | https://www.autoflowglobal.com/contact-us | HTTP 404
+====================================================================================================
+nuvo | https://nuvoagency.com/contact | HTTP 0
+====================================================================================================
+themind | https://themindstudios.com/partners | HTTP 0
+====================================================================================================
+aidv2 | https://idev.agency/contact | HTTP 403
+====================================================================================================
+whitelabeliq2 | https://www.whitelabeliq.com/contact | HTTP 403
+====================================================================================================
+aiworkflow2 | https://aiworkflow-agency.com/contact-us | HTTP 307
+====================================================================================================
+ostagency2 | https://ost.agency/contact/ | HTTP 403
+====================================================================================================
+instinctools2 | https://www.instinctools.com/contact-us | HTTP 404
+====================================================================================================
+algora2 | https://algora.io/bounties | HTTP 404
+====================================================================================================
+opire2 | https://opire.dev/how-it-works | HTTP 404
+====================================================================================================
+tolingo2 | https://www.tolingo.com/ | HTTP 200
+  EMAIL ['/i.test(h)', 'service@tolingo.com']
+====================================================================================================
+localise | https://www.localise.com/contact | HTTP 200
+====================================================================================================
+phrase2 | https://phrase.com/ | HTTP 200
+  FORM action='https://phrase.com/' method='GET' nfields=1 :: s
+====================================================================================================
+polar2 | https://polar.sh/docs | HTTP 200
+====================================================================================================
+scrapecrew2 | https://www.scrapecrew.com/services/web-scraping-services | HTTP 404
+====================================================================================================
+jobspipe2 | https://jobspipe.dev/contact | HTTP 200
+  EMAIL ['security@jobspipe.dev', 'security@jobspipe.dev\\', 'support@jobspipe.dev', 'support@jobspipe.dev\\']
+====================================================================================================
+datadiveedge2 | https://www.datadiveedge.com/contact | HTTP 200
+  FORM action='https://www.datadiveedge.com/contact' method='GET' nfields=8 :: firstName,lastName,email,phone,company,service,volume,message
+  EMAIL ['info@datadiveedge.com']
+  $ ~ / Multiple Expected Data Volume Select volume... Under 50,000 records/month 50K – 500K records/month 500K – 5M records/month 5M+ records/month Real-time / Streamin
+  $ ~ iple Expected Data Volume Select volume... Under 50,000 records/month 50K – 500K records/month 500K – 5M records/month 5M+ records/month Real-time / Streaming 
+  $ ~ ata Volume Select volume... Under 50,000 records/month 50K – 500K records/month 500K – 5M records/month 5M+ records/month Real-time / Streaming Project Descriptio
+====================================================================================================
+webdataextract2 | https://webdataextractionservices.com/pricing | HTTP 404

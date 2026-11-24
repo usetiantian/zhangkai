@@ -1,0 +1,73 @@
+====================================================================================================
+algora | https://algora.io/algora/bounties/new | HTTP 200
+  $ ~ urce maintainers & contributors with their next jobs Total awarded $3,300 25 payouts View all $100 Allow passing stream key a
+  $ ~  Total awarded $3,300 25 payouts View all $100 Allow passing stream key as app tv#130 $50 Implement tag
+  $ ~  $25 Add unmute overlay for autoplayed muted videos tv#102 $150 Placeholder login issue permit-cli#49 $125 Permit Enviro
+  $ ~  tv#102 $150 Placeholder login issue permit-cli#49 $125 Permit Environment Management Commands permit-cli#18 $250 
+  $ ~  $125 Permit Environment Management Commands permit-cli#18 $250 Tune pipeline to better handle reconnects tv#123 $100 Up
+  $ ~ i#18 $250 Tune pipeline to better handle reconnects tv#123 $100 Upload LL-HLS Partials to Object Storage tv#118 $500 Imp
+  $ ~ v#123 $100 Upload LL-HLS Partials to Object Storage tv#118 $500 Implement stream resumption feature for handling disconnections tv#73 
+  $ ~  Implement stream resumption feature for handling disconnections tv#73 $200 Add livestream clipping feature tv#105 $50 Add OAuth flo
+  $ ~  $50 Prompt user to install the app on mobile (PWA) tv#100 $100 chore: add stream key support tv#41 $300 Fix LL-HLS play
+  $ ~ A) tv#100 $100 chore: add stream key support tv#41 $300 Fix LL-HLS playback issue tv#91 $200 Develop VOD merging
+  $ ~ support tv#41 $300 Fix LL-HLS playback issue tv#91 $200 Develop VOD merging functionality for combining multiple streams tv#71 
+  $ ~  Develop VOD merging functionality for combining multiple streams tv#71 $100 enhancement: use Vidstack instead of video.js tv#45 $75 
+  $ ~  Implement automatic termination for interrupted livestreams tv#69 $200 OpenAPI spec to endpoint generator does not recognize field validation z
+  $ ~ ec to endpoint generator does not recognize field validation zio-http#2786 $200 Code Generator that generates `.http` files from EndpointAPI zio-http#28
+====================================================================================================
+opire | https://opire.dev/home | HTTP 200
+  EMAIL ['team@opire.dev\\']
+====================================================================================================
+polar | https://polar.sh/ | HTTP 200
+  $ ~ mpanies Get Started Current cycle Acme Inc [email protected] Tokens metered 9.22B Revenue $18,432.17 Visa •••• 4242 Charges Nov 1 Card charge $20,931.17 Gross margin 61% Inference cost $7
+  $ ~ otected] Tokens metered 9.22B Revenue $18,432.17 Visa •••• 4242 Charges Nov 1 Card charge $20,931.17 Gross margin 61% Inference cost $7,104.62 Revenue Cost Ship usage billing today. Event
+  $ ~ 32.17 Visa •••• 4242 Charges Nov 1 Card charge $20,931.17 Gross margin 61% Inference cost $7,104.62 Revenue Cost Ship usage billing today. Event-based metering, worldwide billing & unit 
+  $ ~ with the plan, spent first Usage beyond credits $0.00 November Invoice Open Business plan $2,499.00 40,000 credits Included Usage beyond credits — Visa •••• 4242 $2,499.00 03 Understand 
+  $ ~ pen Business plan $2,499.00 40,000 credits Included Usage beyond credits — Visa •••• 4242 $2,499.00 03 Understand Know your margin for every customer, not just on average Attach the infe
+  $ ~ tomer burning more than they pay. Acme Inc Unit economics Gross margin 61% Inference cost $7,104.62 Revenue Cost Margin by customer Acme Inc Business 61% Northwind Business 62% Lumen Tea
+  $ ~ are our responsibility, never your paperwork. Merchant of record Order Acme Inc in Berlin €2,735.81 Business plan €2,299.00 VAT 19% €436.81 Your payout $2,412.60 Polar 100+ markets Payme
+  $ ~ never your paperwork. Merchant of record Order Acme Inc in Berlin €2,735.81 Business plan €2,299.00 VAT 19% €436.81 Your payout $2,412.60 Polar 100+ markets Payment captured Screened for
+  $ ~ rk. Merchant of record Order Acme Inc in Berlin €2,735.81 Business plan €2,299.00 VAT 19% €436.81 Your payout $2,412.60 Polar 100+ markets Payment captured Screened for fraud VAT 19% c
+  $ ~ rd Order Acme Inc in Berlin €2,735.81 Business plan €2,299.00 VAT 19% €436.81 Your payout $2,412.60 Polar 100+ markets Payment captured Screened for fraud VAT 19% calculated Tax remitted
+====================================================================================================
+bountyhub | https://www.bountyhub.dev/about-us | HTTP 200
+  EMAIL ['support@bountyhub.dev\\']
+====================================================================================================
+fixpool | https://fixpool.dev/about | HTTP 200
+====================================================================================================
+tenstorrent | https://tenstorrent.com/ | HTTP 200
+  FORM action='https://tenstorrent.com/' method='GET' nfields=1 :: email
+  $ ~  scale. Cards Add to, or config your own rig. Passive, active and liquid cooling options. Starting at $999 Buy Blackhole® Workstations Whisper-quiet, liquid cooled - run models up to 120b paramete
+  $ ~ kstations Whisper-quiet, liquid cooled - run models up to 120b parameters from your desk. Starting at $9,999 Buy TT-QuietBox® Servers Sovereign, scale-out servers for production AI. Starting at $70,
+  $ ~ arting at $9,999 Buy TT-QuietBox® Servers Sovereign, scale-out servers for production AI. Starting at $70,000 Explore Tenstorrent Galaxy™ Flexible IP for Specific Workloads Accelerate your business w
+====================================================================================================
+custommt | https://custom.mt/xtm-cloud-extension | HTTP 200
+  FORM action='https://custom.mt/' method='GET' nfields=1 :: s
+  EMAIL ['hello@custom.mt', 'kd@custom.mt']
+====================================================================================================
+modelfront | https://modelfront.com/contact | HTTP 200
+  EMAIL ['contact@modelfront.com']
+====================================================================================================
+lokalise | https://lokalise.com/ | HTTP 200
+  EMAIL ['privacy@lokalise.com']
+====================================================================================================
+phrase | https://phrase.com/contact | HTTP 200
+  FORM action='https://phrase.com/' method='GET' nfields=1 :: s
+  EMAIL ['pr@phrase.com']
+====================================================================================================
+xtmai | https://xtm.ai/contact | HTTP 200
+  FORM action='https://xtm.ai/hs-search-results' method='GET' nfields=3 :: term,type,type
+  $ ~  Customer help centre E-BOOK The $675k localization leak Uncover hidden inefficiencies slowing global growth and learn how to 
+====================================================================================================
+jobdatafeeds | https://jobdatafeeds.com/contact-us | HTTP 200
+  FORM action='https://jobdatafeeds.com/contact-us' method='GET' nfields=9 :: interests,interests,interests,interests,interests,name,email,message,website
+  EMAIL ['&quot;techmap']
+====================================================================================================
+jobspipe | https://jobspipe.dev/ | HTTP 200
+  FORM action='https://jobspipe.dev/api/hero-go' method='GET' nfields=2 :: kind,q
+  FORM action='https://jobspipe.dev/stack' method='GET' nfields=1 :: domain
+  TELEGRAM ['t.me/jobspipe']
+====================================================================================================
+onestopasia | https://www.1stopasia.com/contact-us | HTTP 200
+  FORM action='https://www.1stopasia.com/contact-us' method='GET' nfields=6 :: company,name,phone,email,subject,message
+  EMAIL ['info@1stopasia.com']

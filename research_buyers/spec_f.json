@@ -1,0 +1,20 @@
+{
+"opendrama": ["https://opendrama.ai/creators", "https://opendrama.ai/upload", "https://opendrama.ai/contact"],
+"cliffpop": ["https://cliffpop.com/submit", "https://cliffpop.com/"],
+"vertisode": ["https://www.vertisode.com/", "https://www.vertisode.com/contact"],
+"dramamint": ["https://dramamint.com/for-authors", "https://dramamint.com/"],
+"urbanoperas": ["https://urbanoperas.com/submit", "https://urbanoperas.com/"],
+"lollipop": ["https://www.lollipop.im/", "https://www.lollipop.im/contact"],
+"dramadrama": ["https://dramadrama.ai/", "https://dramadrama.ai/contact"],
+"meantio": ["https://api.meantio.com/legal/creator_drama?locale=en", "https://www.meantio.com/", "https://www.meantio.com/contact"],
+"flexcity": ["https://flexcity.app/en/creator-program", "https://flexcity.app/en/contact"],
+"showvy": ["https://showvy.app/next", "https://showvy.app/contact"],
+"idramahub": ["https://idramahub.com/submit", "https://idramahub.com/"],
+"shortfundly": ["https://www.shortfundly.com/microdrama", "https://www.shortfundly.com/contact"],
+"dramawave": ["http://ai-test.mydramawave.com/en", "http://mydramawave.com/en", "http://mydramawave.com/"],
+"flextv": ["https://flextvapp.com/kol-apply.html", "https://flextvapp.com/"],
+"onsolo": ["https://onsolo.ai/activity/global-short-drama-awards", "https://onsolo.ai/contact"],
+"scenemixer": ["https://scenemixer.com/contact", "https://scenemixer.com/"],
+"netshortfree": ["https://www.netshortfree.net/contact-us", "https://www.netshortfree.net/"],
+"reelshortmx": ["https://www.reelshort.com.mx/contact-us", "https://www.reelshort.com.mx/"]
+}

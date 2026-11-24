@@ -1,0 +1,111 @@
+====================================================================================================
+worthwebscraping | https://www.worthwebscraping.com/contact-us | HTTP 200
+  FORM action='https://www.worthwebscraping.com/contact-us/#wpcf7-f342-p265-o1' method='POST' nfields=13 :: _wpcf7,_wpcf7_version,_wpcf7_locale,_wpcf7_unit_tag,_wpcf7_container_post,_wpcf7_posted_data_hash,_wpcf7_recaptcha_response,your-name,your-email,your-phone,your-message,_wpcf7_ak_hp_textarea,_wpcf7_ak_js
+  FORM action='https://www.worthwebscraping.com/contact-us/#wpcf7-f342-o2' method='POST' nfields=13 :: _wpcf7,_wpcf7_version,_wpcf7_locale,_wpcf7_unit_tag,_wpcf7_container_post,_wpcf7_posted_data_hash,_wpcf7_recaptcha_response,your-name,your-email,your-phone,your-message,_wpcf7_ak_hp_textarea,_wpcf7_ak_js
+  FORM action='https://www.worthwebscraping.com/' method='GET' nfields=1 :: s
+  EMAIL ['info@worthwebscraping.com']
+====================================================================================================
+webscrapingagency | https://webscrapingagency.com/contact | HTTP 200
+  FORM action='https://webscrapingagency.com/contact' method='GET' nfields=9 :: name,email,phone,company,target_url,service_type,data_frequency,volume,details
+  EMAIL ['contact@webscrapingagency.com']
+  $ ~  Required Data Fields & Special Instructions Send Request & Claim Free 1K Records 100% Confidential. Mutual NDA available upon request. Zero spam policy. 
+====================================================================================================
+websbyspider | https://websbyspider.com/ | HTTP 200
+  FORM action='https://websbyspider.com/' method='POST' nfields=7 :: form-name,subject,url,name,email,phone,company_website
+  FORM action='https://websbyspider.com/' method='POST' nfields=9 :: form-name,subject,source,bot-field,name,email,business,current_site,vision
+  FORM action='https://websbyspider.com/' method='POST' nfields=10 :: form-name,subject,source,bot-field,name,email,company,phone,message,wants_call
+  EMAIL ['hello@websbyspider.com']
+  $ ~ , motion-led websites from scratch for owner-operated businesses. A focused custom build from $900, three pages included, live in under a week. &ldquo;Quote requests jumped immediately.&r
+  $ ~  BROKEN COST Your website loads slow 53% of mobile visits leave past 3 seconds &minus;$4,200 You&rsquo;re invisible to AI & SEO never cited when buyers ask &minus;$5,400 Contact 
+  $ ~ nds &minus;$4,200 You&rsquo;re invisible to AI & SEO never cited when buyers ask &minus;$5,400 Contact form buried the ask almost nobody reaches &minus;$7,100 No obvious next step 
+  $ ~  when buyers ask &minus;$5,400 Contact form buried the ask almost nobody reaches &minus;$7,100 No obvious next step they read, then quietly go &minus;$9,800 Breaks on a phone where
+  $ ~ ost nobody reaches &minus;$7,100 No obvious next step they read, then quietly go &minus;$9,800 Breaks on a phone where most of your traffic is &minus;$6,300 Headline says nothing n
+  $ ~ d, then quietly go &minus;$9,800 Breaks on a phone where most of your traffic is &minus;$6,300 Headline says nothing no reason to keep scrolling &minus;$3,600 TOTAL WALKING AW
+  $ ~  your traffic is &minus;$6,300 Headline says nothing no reason to keep scrolling &minus;$3,600 TOTAL WALKING AWAY $0 / yr $36,400 per year in this example That&rsquo;s $3,
+  $ ~ ays nothing no reason to keep scrolling &minus;$3,600 TOTAL WALKING AWAY $0 / yr $36,400 per year in this example That&rsquo;s $3,033 every month you leave it alone. 53
+  $ ~ 600 TOTAL WALKING AWAY $0 / yr $36,400 per year in this example That&rsquo;s $3,033 every month you leave it alone. 53% FIGURE: GOOGLE/SOASTA, 2017 &mdash; CONTEXT FOR
+====================================================================================================
+webdatascraping | https://www.webdatascraping.com/ | HTTP 200
+  FORM action='https://webdatascraping.com/' method='GET' nfields=2 :: s,post_type
+  FORM action='https://webdatascraping.com/' method='GET' nfields=2 :: orderby,paged
+  EMAIL ['info@webdatascraping.com']
+  WHATSAPP ['api.whatsapp.com/send?phone=380935239537']
+  TELEGRAM ['t.me/webdatascraping']
+====================================================================================================
+3idatascraping | https://www.3idatascraping.com/contact-us | HTTP 200
+  FORM action='https://www.3idatascraping.com/contact-us/#wpcf7-f100996-p13986-o1' method='POST' nfields=15 :: _wpcf7,_wpcf7_version,_wpcf7_locale,_wpcf7_unit_tag,_wpcf7_container_post,_wpcf7_posted_data_hash,_wpcf7_recaptcha_response,first-name,last-name,your-email,Phonenumber,Phonenumber-country-code,your-message,your-file
+  FORM action='https://www.3idatascraping.com/contact-us/#wpcf7-f108267-p13986-o2' method='POST' nfields=13 :: _wpcf7,_wpcf7_version,_wpcf7_locale,_wpcf7_unit_tag,_wpcf7_container_post,_wpcf7_posted_data_hash,_wpcf7_recaptcha_response,first-name,your-email,Phonenumber,Phonenumber-country-code,your-message,form_tag
+  EMAIL ['sales@3idatascraping.com']
+====================================================================================================
+datagators | https://www.datagators.com/partner.php | HTTP 200
+  FORM action='https://www.datagators.com/subscribe.php' method='POST' nfields=1 :: email
+  $ ~ rs LATEST → How we scraped 500K grocery SKUs in 48 hours — read the breakdown Read now LIVE → Real-time scraping API
+  $ ~  Serving 45+ countries — AI-powered, enterprise-grade data LATEST → How we scraped 500K grocery SKUs in 48 hours — read the breakdown Read now LIVE → Real-time scraping API
+====================================================================================================
+datagrass | https://datagrass.io/contact-us | HTTP 200
+  FORM action='https://datagrass.io/contact-us/#wpcf7-f4005-p29-o1' method='POST' nfields=12 :: _wpcf7,_wpcf7_version,_wpcf7_locale,_wpcf7_unit_tag,_wpcf7_container_post,_wpcf7_posted_data_hash,your-name,your-email,number-645,select-101,_wpcf7_ak_hp_textarea,_wpcf7_ak_js
+  EMAIL ['hello@datagrass.io']
+====================================================================================================
+btobconnection | https://btobconnection.com/contact | HTTP 200
+  EMAIL ['info@btobconnection.com', 'info@btobconnection.com\\']
+  WHATSAPP ['wa.me/919898903630?text=Hi%20B2B%20Connection%20%F0%9F%91%8B%0A%0AI&#x27;m%20browsing%20this%20page%20and%20would%20like%20more%20info%3A%0Ahttps%3A%2F%2Fbtobconnection.com%2F']
+====================================================================================================
+extracthelp | https://extracthelp.com/contact | HTTP 200
+  FORM action='https://extracthelp.com/contact-research-verification/#wpcf7-f1916-o1' method='POST' nfields=13 :: _wpcf7,_wpcf7_version,_wpcf7_locale,_wpcf7_unit_tag,_wpcf7_container_post,_wpcf7_posted_data_hash,your-name,your-email,your-phone,your-budget,your-service,your-records,your-message
+  EMAIL ['g.santos@ashfordgp.com', 'info@extracthelp.com']
+  WHATSAPP ['wa.me/923294697703', 'wa.me/923294697703?text=Hello%21+I%27m+interested+in+ExtractHelp%27s+data+services+and+would+like+to+learn+more.', 'wa.me/923294697703?text=Hi%20ExtractHelp!%20I%20want%20to%20order%20Contact-Research-%26-Verification%20-%20Professional%2C%20%24120%2C%202%2C000%20Contacts.%20Please%20guide%20me%20on%20next%20steps.']
+  $ ~ rocessing NEW Monthly Unlimited Data Service: a dedicated team, up to 10 hours a day, for $300/month All services Pricing Free sample Pricing Samples Free Tools Email List Cleaner 
+====================================================================================================
+leadscampaign | https://leadscampaign.com/contact-us | HTTP 200
+  FORM action='https://leadscampaign.com/contact-us' method='POST' nfields=9 :: post_id,form_id,referer_title,queried_id,form_fields[name],form_fields[email],form_fields[field_a407ec5],form_fields[message],form_fields[field_efee0a6]
+  FORM action='https://leadscampaign.com/contact-us' method='POST' nfields=9 :: post_id,form_id,referer_title,queried_id,form_fields[field_a407ec5],form_fields[field_57a14c3],form_fields[field_a366bf1],form_fields[field_efee0a6],form_fields[field_05f19c6]
+  FORM action='https://leadscampaign.com/contact-us' method='POST' nfields=6 :: post_id,form_id,referer_title,queried_id,form_fields[email],form_fields[field_e781b13]
+  FORM action='https://leadscampaign.com/contact-us/' method='POST' nfields=14 :: wpforms[fields][1],wpforms[fields][6],wpforms[fields][8],wpforms[fields][2],wpforms[fields][3],wpforms[fields][4],wpforms[fields][5],wpforms[recaptcha],wpforms[id],page_title,page_url,url_referer,page_id,wpforms[post_id]
+  EMAIL ['info@leadscampaign.com']
+====================================================================================================
+nannostomus | https://www.nannostomus.com/web-scraping-products | HTTP 200
+  FORM action='https://www.nannostomus.com/web-scraping-products/' method='GET' nfields=4 :: name,email,phone,message
+  EMAIL ['billing@intsurfing.com', 'dev@nannostomus.com', 'support@intsurfing.com']
+====================================================================================================
+productdatascrape | https://www.productdatascrape.com/competitor-price-monitoring.php | HTTP 200
+  FORM action='https://www.productdatascrape.com/competitor-price-monitoring.php' method='POST' nfields=7 :: contactName,contactEmail,contactPhone,serviceproduct,contactMessage,attachment,page
+  FORM action='https://www.productdatascrape.com/competitor-price-monitoring.php' method='POST' nfields=5 :: name,email,phone,service,message
+  FORM action='https://www.productdatascrape.com/competitor-price-monitoring.php' method='POST' nfields=22 :: contactName,contactEmail,contactPhone,whatsapp_updates,website_url,company_name,serviceproduct,industries,project_timeline,approx_budget,contactMessage,attachment,page,recaptchaResponse
+  FORM action='https://www.productdatascrape.com/competitor-price-monitoring.php' method='POST' nfields=8 :: contactName,contactEmail,contactPhone,contactMessage,page,serviceproduct,dataset,aw_hp
+  EMAIL ['sales@productdatascrape.com']
+  WHATSAPP ['wa.me/8866656657']
+====================================================================================================
+potentpages | https://potentpages.com/contact | HTTP 200
+  FORM action='https://potentpages.com/contact#wpcf7-f305-p9-o1' method='POST' nfields=13 :: _wpcf7,_wpcf7_version,_wpcf7_locale,_wpcf7_unit_tag,_wpcf7_container_post,_wpcf7_posted_data_hash,fname,lname,email,company,browser,request_uid,message
+  FORM action='https://potentpages.com/contact' method='GET' nfields=2 :: login_email,login_password
+  FORM action='https://potentpages.com/contact' method='GET' nfields=4 :: register_email,register_fName,register_lName,register_password
+  FORM action='https://potentpages.com/contact' method='GET' nfields=1 :: reset_password_email
+  EMAIL ['david@potentpages.com']
+====================================================================================================
+scrapingpros | https://scrapingpros.com/contact | HTTP 200
+  FORM action='https://scrapingpros.com/contact/' method='POST' nfields=7 :: et_pb_contact_name_0,et_pb_contact_email_0,et_pb_contact_company_website_0,et_pb_contact_what_data_do_you_need?_0,et_pb_contactform_submit_0,_wpnonce-et-pb-contact-form-submitted-0,_wp_http_referer
+  FORM action='https://scrapingpros.com/contact/' method='POST' nfields=4 :: et_pb_contact_email_1,et_pb_contactform_submit_1,_wpnonce-et-pb-contact-form-submitted-1,_wp_http_referer
+  EMAIL ['contact@scrapingpros.com']
+  WHATSAPP ['api.whatsapp.com/send/?phone=5491124676657&#038;text=Hi%2C+I+would+like+more+information%2C+please.&#038;type=phone_number&#038;app_absent=0', 'api.whatsapp.com/send/?phone=5491124676657&#038;text=Hola+quiero+m%C3%A1s+informaci%C3%B3n&#038;type=phone_number&#038;app_absent=0', 'wa.me/5491124676657']
+====================================================================================================
+hirinfotech | https://hirinfotech.com/data-extraction-services | HTTP 200
+  FORM action='https://hirinfotech.com/data-extraction-services/' method='GET' nfields=0 :: 
+  EMAIL ['info@hirinfotech.com', 'inquiry@hirinfotech.com']
+  WHATSAPP ['wa.me/919909990610?text=Hello,%20I’m%20interested%20in%20getting%20more%20details,%20please']
+====================================================================================================
+webdatainsights | https://webdatainsights.com/ | HTTP 200
+  FORM action='https://webdatainsights.com/' method='GET' nfields=8 :: security,_wp_http_referer,fullname,email,phone,industry,message,terms
+  FORM action='https://webdatainsights.com/' method='GET' nfields=8 :: security,_wp_http_referer,fullname,email,phone,industry,message,terms
+  FORM action='https://webdatainsights.com/' method='GET' nfields=5 :: name,phone,email,message,file_name
+  EMAIL ['sales@webdatainsights.com']
+  WHATSAPP ['api.whatsapp.com/send?phone=7016263231']
+====================================================================================================
+justmetrically | https://www.justmetrically.com/contact | HTTP 200
+  FORM action='https://www.justmetrically.com/contact' method='GET' nfields=5 :: name,email,subject,phone,message
+  EMAIL ['info@justmetrically.com']
+====================================================================================================
+rookresearch | https://www.rookresearch.com/ | HTTP 200
+  FORM action='https://www.rookresearch.com/contact_process.php' method='POST' nfields=7 :: name,email,company,message,captcha_answer,captcha_num1,captcha_num2
+====================================================================================================
+crawlnow | https://www.crawlnow.com/contact | HTTP 200
+  FORM action='https://www.crawlnow.com/contact' method='POST' nfields=10 :: Date_,First-Name,Last-Name,Email,Company,Phone,Message,Checkbox,IP,Location

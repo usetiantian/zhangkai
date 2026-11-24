@@ -9,37 +9,41 @@ Qwen3-VL-4B 本地模型 — 省钱引擎
 import json, urllib.request, logging
 
 logger = logging.getLogger("qiankun.brain")
+from brain.minimax_client import chat as _mm_chat, vision_describe as _mm_vision
 
-LM_STUDIO = "http://127.0.0.1:1234/v1"
-MODEL = "qwen/qwen3-vl-4b"
+MINIMAX_MODEL = "MiniMax-M3"  # 2026-07-30: 用 mmx CLI, 不用 LMStudio
+# 旧的 qwen3-vl-4b
 
 
 def _call_qwen(prompt: str, max_tokens: int = 300, temperature: float = 0.1) -> str:
-    """底层调用 Qwen"""
-    body = json.dumps({
-        "model": MODEL,
-        "messages": [{"role": "user", "content": prompt}],
-        "max_tokens": max_tokens,
-        "temperature": temperature,
-    }).encode()
+    """2026-07-30: 底层用 mmx chat (MiniMax M3). 返回 string (从 list 抽 text)."""
     try:
-        req = urllib.request.Request(
-            f"{LM_STUDIO}/chat/completions", body,
-            {"Content-Type": "application/json"}
+        result = _mm_chat(
+            [{"role": "user", "content": prompt}],
+            max_tokens=max_tokens,
+            temperature=temperature,
         )
-        resp = urllib.request.urlopen(req, timeout=60)
-        data = json.loads(resp.read())
-        return data["choices"][0]["message"]["content"].strip()
+        # mmx 返回可能是 str 或 list[dict] (text blocks)
+        if isinstance(result, str):
+            return result.strip()
+        if isinstance(result, list):
+            parts = []
+            for blk in result:
+                if isinstance(blk, dict) and blk.get('type') == 'text':
+                    parts.append(blk.get('text', ''))
+                elif isinstance(blk, str):
+                    parts.append(blk)
+            return chr(10).join(parts).strip()
+        return str(result).strip()
     except Exception as e:
-        logger.debug(f"Qwen调用失败: {e}")
+        logger.debug(f"MiniMax call failed: {e}")
         return ""
 
 
 def is_available() -> bool:
-    """检查 Qwen 是否在线"""
+    """检查 MiniMax M3 是否可用 (2026-07-30 切换)."""
     try:
-        req = urllib.request.Request(f"{LM_STUDIO}/models")
-        urllib.request.urlopen(req, timeout=2)
+        from brain.minimax_client import _run_mmx  # noqa: F401
         return True
     except Exception:
         return False

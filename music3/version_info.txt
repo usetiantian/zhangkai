@@ -1,0 +1,21 @@
+VSVersionInfo(
+  ffi=FixedFileInfo(
+    filevers=(1, 0, 0, 0), prodvers=(1, 0, 0, 0),
+    mask=0x3f, flags=0x0, OS=0x40004, fileType=0x1, subtype=0x0,
+    date=(0, 0)
+  ),
+  kids=[
+    StringFileInfo([
+      StringTable(
+        '040904B0',
+        [StringStruct('CompanyName', 'music3'),
+         StringStruct('FileDescription', 'music3 音乐工作室 - 一句话生成音乐 (MiniMax-Music3)'),
+         StringStruct('FileVersion', '1.0.0.0'),
+         StringStruct('InternalName', 'music3'),
+         StringStruct('LegalCopyright', 'Music model: MiniMax-Music3 Community License'),
+         StringStruct('OriginalFilename', 'music3.exe'),
+         StringStruct('ProductName', 'music3 音乐工作室'),
+         StringStruct('ProductVersion', '1.0.0.0')])]),
+    VarFileInfo([VarStruct('Translation', [1033, 1200])])
+  ]
+)

@@ -3,7 +3,9 @@
 加载51位投资大师，每人从自己的角度分析股票并投票
 """
 
-import os, yaml, random, logging
+import os, sys, yaml, random, logging
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "brain"))
+from minimax_client import chat as _mm_chat
 
 logger = logging.getLogger("qiankun.panel")
 
@@ -115,20 +117,25 @@ RSI(14): {stock_data.get('rsi','?')}
 请用中文回答，直接输出判断，不要多余解释。格式：投票|理由"""
 
     try:
-        body = j.dumps({
-            "model": "qwen/qwen3-vl-4b",
-            "messages": [{"role": "user", "content": prompt}],
-            "max_tokens": 200,
-            "temperature": 0.3,
-        }).encode()
-        req = urllib.request.Request(
-            "http://127.0.0.1:1234/v1/chat/completions", body,
-            {"Content-Type": "application/json"}
+        # 2026-07-30: 改用 mmx (MiniMax M3), 不用 LMStudio localhost:1234
+        reply_raw = _mm_chat(
+            [{"role": "user", "content": prompt}],
+            max_tokens=200, temperature=0.3,
         )
-        resp = urllib.request.urlopen(req, timeout=60)
-        data = j.loads(resp.read())
-        reply = data["choices"][0]["message"]["content"]
-        
+        # mmx 返回 list[dict] 或 str, 统一抽 text
+        if isinstance(reply_raw, str):
+            reply = reply_raw
+        elif isinstance(reply_raw, list):
+            parts = []
+            for blk in reply_raw:
+                if isinstance(blk, dict) and blk.get("type") == "text":
+                    parts.append(blk.get("text", ""))
+                elif isinstance(blk, str):
+                    parts.append(blk)
+            reply = "".join(parts)
+        else:
+            reply = str(reply_raw)
+
         # 解析投票
         vote = "持有"
         if "买入" in reply or "buy" in reply.lower():

@@ -1,0 +1,105 @@
+====================================================================================================
+thinkaiworks | https://thinkaiworks.com/contact | HTTP 200
+  FORM action='https://thinkaiworks.com/contact/' method='POST' nfields=8 :: post_id,form_id,referer_title,queried_id,form_fields[name],form_fields[email],form_fields[field_393ad51],form_fields[message]
+  EMAIL ['%20info@thinkaiworks.com', 'info@thinkaiworks.com']
+  WHATSAPP ['wa.me/13154945101']
+====================================================================================================
+getautomated | https://www.getautomated.agency/ | HTTP 200
+  FORM action='https://www.getautomated.agency/' method='GET' nfields=0 :: 
+  $ ~ cing Book a free roadmap call Schedule now Max Bidna Founder, MartyCapital @marketingmax (50k+ followers) I&#x27;ve worked with dozens of agencies over the years. Most nickel and dime
+  $ ~ tise. Zero billing anxiety. Hiring in-house Traditional Agency GetAutomated Monthly cost $6k to $10k+, plus benefits $5k to $10k per month One flat monthly rate Upfront cost Recruitin
+  $ ~ ero billing anxiety. Hiring in-house Traditional Agency GetAutomated Monthly cost $6k to $10k+, plus benefits $5k to $10k per month One flat monthly rate Upfront cost Recruiting, onbo
+  $ ~ Hiring in-house Traditional Agency GetAutomated Monthly cost $6k to $10k+, plus benefits $5k to $10k per month One flat monthly rate Upfront cost Recruiting, onboarding, equipment Set
+  $ ~ in-house Traditional Agency GetAutomated Monthly cost $6k to $10k+, plus benefits $5k to $10k per month One flat monthly rate Upfront cost Recruiting, onboarding, equipment Setup and s
+  $ ~  salary commitment Yes, minimum terms Never, cancel anytime Monthly cost Hiring in-house $6k to $10k+, plus benefits Traditional agency $5k to $10k per month GetAutomated One flat mon
+  $ ~  commitment Yes, minimum terms Never, cancel anytime Monthly cost Hiring in-house $6k to $10k+, plus benefits Traditional agency $5k to $10k per month GetAutomated One flat monthly ra
+  $ ~ ncel anytime Monthly cost Hiring in-house $6k to $10k+, plus benefits Traditional agency $5k to $10k per month GetAutomated One flat monthly rate Upfront cost Hiring in-house Recruiti
+  $ ~ ytime Monthly cost Hiring in-house $6k to $10k+, plus benefits Traditional agency $5k to $10k per month GetAutomated One flat monthly rate Upfront cost Hiring in-house Recruiting, onbo
+====================================================================================================
+zapsstudio | https://zapsstudio.com/contact | HTTP 200
+  FORM action='https://zapsstudio.com/contact/' method='GET' nfields=4 :: name,email,projectDescription,howDidYouHear
+  WHATSAPP ['wa.me/447418354834']
+====================================================================================================
+helpwithautomation | https://www.helpwithautomation.com/contact | HTTP 200
+  EMAIL ['info@helpwithautomation.com']
+====================================================================================================
+autoflowglobal | https://www.autoflowglobal.com/ | HTTP 200
+====================================================================================================
+qodeonlabs | https://www.qodeonlabs.com/contact | HTTP 200
+  FORM action='https://www.qodeonlabs.com/contact' method='GET' nfields=9 :: name,email,company,phone,projectType,budget,timeline,message,source
+  EMAIL ['contact@qodeonlabs.com']
+  WHATSAPP ['wa.me/447348495852']
+  $ ~ on & Automation System Modernization & Upgrades Other Project Budget Select budget Under $25K $25K - $50K $50K - $100K $100K+ Not Sure Project Timeline Select timeline ASAP 1-3 months
+  $ ~ Automation System Modernization & Upgrades Other Project Budget Select budget Under $25K $25K - $50K $50K - $100K $100K+ Not Sure Project Timeline Select timeline ASAP 1-3 months 3-6 
+  $ ~ ion System Modernization & Upgrades Other Project Budget Select budget Under $25K $25K - $50K $50K - $100K $100K+ Not Sure Project Timeline Select timeline ASAP 1-3 months 3-6 months 
+  $ ~ ystem Modernization & Upgrades Other Project Budget Select budget Under $25K $25K - $50K $50K - $100K $100K+ Not Sure Project Timeline Select timeline ASAP 1-3 months 3-6 months 6+ mo
+  $ ~ Modernization & Upgrades Other Project Budget Select budget Under $25K $25K - $50K $50K - $100K $100K+ Not Sure Project Timeline Select timeline ASAP 1-3 months 3-6 months 6+ months Jus
+  $ ~ ization & Upgrades Other Project Budget Select budget Under $25K $25K - $50K $50K - $100K $100K+ Not Sure Project Timeline Select timeline ASAP 1-3 months 3-6 months 6+ months Just expl
+====================================================================================================
+fuselio | https://www.fuselio.com/services/internal-tools-development | HTTP 200
+  EMAIL ['hello@fuselio.com']
+====================================================================================================
+rot8studio | https://www.rot8studio.com/services/internal-tools | HTTP 200
+  EMAIL ['contact@rot8studio.com', 'contact@rot8studio.com\\']
+====================================================================================================
+itzea | https://itzea.com/contact | HTTP 200
+  FORM action='https://itzea.com/contact' method='POST' nfields=14 :: message,project_type,budget,company,attachment,name,email,utm_source,utm_medium,utm_campaign,utm_region,referrer,tier,website
+  FORM action='https://itzea.com/contact' method='GET' nfields=0 :: 
+  $ ~ tion Security audit Data & pipelines Other Budget range Select… Under $1,000 $1,000 – $5,000 $5,000+ Not sure yet Company Attachment Optiona
+  $ ~ curity audit Data & pipelines Other Budget range Select… Under $1,000 $1,000 – $5,000 $5,000+ Not sure yet Company Attachment Optional. PDF, O
+  $ ~ dit Data & pipelines Other Budget range Select… Under $1,000 $1,000 – $5,000 $5,000+ Not sure yet Company Attachment Optional. PDF, Office, im
+  $ ~ a & pipelines Other Budget range Select… Under $1,000 $1,000 – $5,000 $5,000+ Not sure yet Company Attachment Optional. PDF, Office, images, ZIP
+====================================================================================================
+roidigital | https://roidigital.ca/services/ai-agent-workflow-automation | HTTP 200
+  $ ~ y, approval rules, AI assistant requirements, and ongoing support needs. Automation Audit starting from $1,500 Workflow review and practical automation roadmap. Workflow Setup starting from $3,000 Imp
+  $ ~ dit starting from $1,500 Workflow review and practical automation roadmap. Workflow Setup starting from $3,000 Implementation for booking, chat, CRM, follow-up, or onboarding. Ongoing Automation Suppo
+  $ ~ plementation for booking, chat, CRM, follow-up, or onboarding. Ongoing Automation Support starting from $900/month Monitoring, improvements, and new workflow support. FAQ Automation questions. What 
+====================================================================================================
+guacagents | https://guacagents.com/contact | HTTP 200
+  FORM action='https://guacagents.com/contact/' method='POST' nfields=14 :: _subject,_template,Full Name,Email Address,Phone Number,Company,Service,Monthly Budget,Message,User Source,User Source,User Source,User Source,Agreed Privacy
+  FORM action='https://gmail.us11.list-manage.com/subscribe/post?u=d870b06d86c16269e4b1f9b39&#38;amp;id=12cf0c6ac2&#38;amp;f_id=007e61e1f0' method='POST' nfields=3 :: EMAIL,b_436cb8647d746fe81825f1efc_18a007239a,EMAILTYPE
+  EMAIL ['info@guacdigital.com)']
+  $ ~ late : , optionTemplate : , extraMarkup : [ , , ] }" class="hidden"> Choose Under $1,000/mo $1,000 - $3,000/mo $3,000 - $5,000/mo $5,000+/mo Not sure yet Please select a valid s
+  $ ~ optionTemplate : , extraMarkup : [ , , ] }" class="hidden"> Choose Under $1,000/mo $1,000 - $3,000/mo $3,000 - $5,000/mo $5,000+/mo Not sure yet Please select a valid state. Pe
+  $ ~ plate : , extraMarkup : [ , , ] }" class="hidden"> Choose Under $1,000/mo $1,000 - $3,000/mo $3,000 - $5,000/mo $5,000+/mo Not sure yet Please select a valid state. Perfect! H
+  $ ~  extraMarkup : [ , , ] }" class="hidden"> Choose Under $1,000/mo $1,000 - $3,000/mo $3,000 - $5,000/mo $5,000+/mo Not sure yet Please select a valid state. Perfect! How did you
+  $ ~ kup : [ , , ] }" class="hidden"> Choose Under $1,000/mo $1,000 - $3,000/mo $3,000 - $5,000/mo $5,000+/mo Not sure yet Please select a valid state. Perfect! How did you hear abo
+  $ ~  , ] }" class="hidden"> Choose Under $1,000/mo $1,000 - $3,000/mo $3,000 - $5,000/mo $5,000+/mo Not sure yet Please select a valid state. Perfect! How did you hear about us? Goo
+  $ ~ Captures 87% of after-hours calls that previously went to voicemail and recovers roughly $4K per month per property in lost bookings. Same model now runs the phone line for a 12-locat
+====================================================================================================
+ariusautomation | https://www.ariusautomation.com/services/internal-tools-dashboards | HTTP 200
+  EMAIL ['info@ariusautomation.com', 'info@ariusautomation.com\\']
+====================================================================================================
+trinitycloud | https://www.trinitycloudconsulting.com/ | HTTP 200
+  EMAIL ['hello@trinitycloudconsulting.com']
+  $ ~ d platforms that fit your world. No enterprise bloat, no inflated quotes. Just results at $200/hour . Start a project See our services Azure ★ AI / LLMs ★ AWS GCP OCI $200 Flat hourly
+  $ ~  results at $200/hour . Start a project See our services Azure ★ AI / LLMs ★ AWS GCP OCI $200 Flat hourly rate 4 Cloud platforms 3 Expert co-founders SMB Focused & affordable How we w
+  $ ~ ms No surprise invoices Detailed time tracking provided Project-based estimates available $200 /hr USD · all services · all cloud platforms Get a project estimate The team Built by pra
+====================================================================================================
+smbaiteam | https://smbaiteam.com/contact | HTTP 200
+  FORM action='https://formsubmit.co/mariokezi1@gmail.com' method='POST' nfields=12 :: _subject,_captcha,_next,_template,_honey,source_first_visit,source_latest_visit,name,email,phone,heard_about_us,message
+  EMAIL ['mario@smbaiteam.com', 'mario@smbaiteam.com\\']
+====================================================================================================
+evrenai | https://www.evrenai.com/contact | HTTP 200
+  FORM action='https://www.evrenai.com/connect' method='GET' nfields=14 :: from_name,from_email,company,message,budget,budget,budget,budget,budget,timeline,timeline,timeline,timeline,website
+  EMAIL ['contact@evrenai.com']
+  $ ~ roblem, who it&#x27;s for, and anything you&#x27;ve tried so far. Estimated budget Under $10K $10K–$50K $50K–$150K $150K+ Not sure yet When do you want to start? As soon as possible W
+  $ ~ m, who it&#x27;s for, and anything you&#x27;ve tried so far. Estimated budget Under $10K $10K–$50K $50K–$150K $150K+ Not sure yet When do you want to start? As soon as possible Within
+  $ ~ o it&#x27;s for, and anything you&#x27;ve tried so far. Estimated budget Under $10K $10K–$50K $50K–$150K $150K+ Not sure yet When do you want to start? As soon as possible Within 3 mo
+  $ ~ #x27;s for, and anything you&#x27;ve tried so far. Estimated budget Under $10K $10K–$50K $50K–$150K $150K+ Not sure yet When do you want to start? As soon as possible Within 3 months 
+  $ ~ ;s for, and anything you&#x27;ve tried so far. Estimated budget Under $10K $10K–$50K $50K–$150K $150K+ Not sure yet When do you want to start? As soon as possible Within 3 months 3–6 mo
+  $ ~ , and anything you&#x27;ve tried so far. Estimated budget Under $10K $10K–$50K $50K–$150K $150K+ Not sure yet When do you want to start? As soon as possible Within 3 months 3–6 months J
+====================================================================================================
+tezeract | https://tezeract.ai/contact | HTTP 200
+  FORM action='https://tezeract.ai/contact-tezeract/' method='POST' nfields=0 :: 
+====================================================================================================
+omniwes | https://omniwes.com/ | HTTP 200
+====================================================================================================
+agentnative | https://agentnativecompany.com/ai-automation-agency | HTTP 200
+====================================================================================================
+jakealberio | https://jakealberio.com/contact | HTTP 200
+  FORM action='https://jakealberio.com/contact' method='GET' nfields=3 :: name,email,message
+  EMAIL ['business@jakealberio.com']
+====================================================================================================
+smbstudio | https://smb-studio.com/contacts | HTTP 200
+  FORM action='https://smb-studio.com/contacts' method='GET' nfields=5 :: name,email,message,automate,company

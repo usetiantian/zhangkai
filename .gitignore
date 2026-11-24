@@ -72,12 +72,21 @@ qiankun-uzi/__pycache__/
 /CLAUDE.md.cc.backup
 /music3/build*/
 /music3/dist*/
+/music3/release/
+/music3/exe_out.mp3
 
 # 子仓库：game/（《果子》）有独立 git 历史 a89f42a，无远程，单独管理
 /game/
+
+# 进程与测试残留
+*.pid
+/tts_test.mp3
+*.node
 
 # 外部克隆仓库（各自独立 git 管理；CLI-Anything 的 .git/config 内嵌 GitHub PAT，禁止入库）
 /CLI-Anything/
 /nucleo-local/
 /SAM3.1_Multiplex_fp16/
 /wigolo/
+/wigolo_partial*/
+/_cli-anything/
