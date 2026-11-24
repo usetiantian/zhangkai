@@ -1,0 +1,148 @@
+{
+ "prompt": {
+  "15": {
+   "class_type": "VAELoader",
+   "inputs": {
+    "vae_name": "minimax_h3_video_vae_fp16.safetensors"
+   }
+  },
+  "16": {
+   "class_type": "VAELoader",
+   "inputs": {
+    "vae_name": "minimax_h3_audio_vae_fp32.safetensors"
+   }
+  },
+  "4": {
+   "class_type": "MiniMaxLowVRAMAttention",
+   "inputs": {
+    "head_chunks": 8,
+    "model": [
+     "187",
+     0
+    ]
+   }
+  },
+  "9": {
+   "class_type": "MiniMaxChunkFeedForward",
+   "inputs": {
+    "chunks": 4,
+    "seq_threshold": 4096,
+    "model": [
+     "4",
+     0
+    ]
+   }
+  },
+  "39": {
+   "class_type": "MiniMaxH3SigmaShift",
+   "inputs": {
+    "shift_video": 12,
+    "shift_audio": 3,
+    "model": [
+     "11",
+     0
+    ]
+   }
+  },
+  "11": {
+   "class_type": "PathchSageAttentionKJ",
+   "inputs": {
+    "sage_attention": "auto",
+    "allow_compile": false,
+    "model": [
+     "9",
+     0
+    ]
+   }
+  },
+  "10": {
+   "class_type": "UNETLoader",
+   "inputs": {
+    "unet_name": "minimax_h3_hybrid_fl2va_ref2va_b25-49-int8.safetensors",
+    "weight_dtype": "default"
+   }
+  },
+  "186": {
+   "class_type": "LoraLoaderModelOnly",
+   "inputs": {
+    "lora_name": "minimax_h3_turbo_v4_step600_ema_pruned_comfyui.safetensors",
+    "strength_model": 1.0000000000000002,
+    "model": [
+     "10",
+     0
+    ]
+   }
+  },
+  "14": {
+   "class_type": "CLIPLoader",
+   "inputs": {
+    "clip_name": "qwen3vl_32b_minimax_h3_nvfp4_awq.safetensors",
+    "type": "minimax",
+    "device": "default"
+   }
+  },
+  "187": {
+   "class_type": "LoraLoaderModelOnly",
+   "inputs": {
+    "lora_name": "MysticXXX_MMH3-V1.safetensors",
+    "strength_model": 0.5000000000000001,
+    "model": [
+     "186",
+     0
+    ]
+   }
+  },
+  "20": {
+   "class_type": "ResolutionSelector",
+   "inputs": {
+    "aspect_ratio": "16:9 (Widescreen)",
+    "megapixels": 0.5,
+    "multiple": 32
+   }
+  },
+  "13": {
+   "class_type": "H3DirectorStudio",
+   "inputs": {
+    "width": [
+     "20",
+     0
+    ],
+    "height": [
+     "20",
+     1
+    ],
+    "时长秒": 14,
+    "steps": 8,
+    "sampler": "res_multistep",
+    "scheduler": "simple",
+    "ref_image_size": "match",
+    "segments_json": "[{\"prompt\": \"integrated_multimodal_description:\\n[Shot 1] 古风国产动漫赛璐璐上色，工笔描线配水墨晕染，柔和光影，暖黄复古色调，老电影质感；林渺为黑色短寸头、瘦削小麦色皮肤少年，穿洗得发白的灰蓝色粗布短衫与黑色大裆裤、千层底布鞋，腰间挂拇指大小的青色小葫芦；林守田头发白了大半、背佝偻，黑色短寸头灰布短衫；林小雨双丫髻、红碎花布衫。清晨林家小院，青砖灰瓦矮房，木格窗透昏黄灯光，院中老石井台、井绳木桶木盆，青苔石板地，院角老槐树。低机位平视中景，林渺蹲在井边双手提木桶把水倒进木盆，腰间青色小葫芦轻晃，水声哗啦；堂屋木门吱呀推开，林守田佝偻着背走出，林小雨跟在后面眼眶泛红。林守田：<d>[Chinese]渺儿，王家下了帖子，明日去县城测灵根。</d>\\n[Shot 2] At 00:00:06.000, 古风国产动漫赛璐璐上色，工笔描线配水墨晕染。林家小院堂屋饭桌旁，清晨纸窗透光，桌上三碗稀粥一碟腌萝卜。侧面中近景，林小雨把脸埋进碗里肩膀轻抖，瓷碗轻碰木桌；林渺放下筷子转头看她，伸手摸了摸她的头，动作缓慢而稳。林渺：<d>[Chinese]满十六皆可参加是国法。林家人，宁可站着死不愿跪着生。</d>\\n\\noverall_soundscape:\\n清晨小院井绳吱呀与倒水哗啦声、堂屋木门开合声、青石街市挑担脚步与低语哄笑、县衙东院乡民嘈杂与测灵玉亮起时的低沉嗡鸣、人群骤然的死寂与哗笑、卧房纸窗风声与葫芦极淡的震颤轻鸣。整体环境声随日转夜由明亮渐沉，收束于夜风拂槐枝的沙沙声。\\n\\nnon_diegetic_music:\\nN/A\", \"seed\": 20261117, \"refs\": [], \"video_refs\": [], \"duration\": 12, \"enabled\": true, \"inherit_shared\": true}, {\"prompt\": \"integrated_multimodal_description:\\n[Shot 1] 古风国产动漫赛璐璐上色，工笔描线配水墨晕染。青阳镇街道，清晨青石长街，白墙黛瓦两层木楼，纸灯笼木幌子，挑担小贩穿行。中景平视，王天霸一身锦袍腰佩玉饰，比林渺高半头壮一圈，满脸横肉，从马车旁迎上来居高临下挡住去路，周围锦衣少年哄笑；林渺脚步未停，从他身侧绕过，布鞋踏在青石上轻响。王天霸：<d>[Chinese]穿成这样就来了？灵根测试大会，不是乞丐收容所。</d>林渺：<d>[Chinese]衣服干净即可。</d>\\n[Shot 2] At 00:00:06.000, 古风国产动漫赛璐璐上色，工笔描线配水墨晕染。县衙东院灵根测试场，白日青砖院墙飞檐斗拱，院中青石高台立半人高乳白色测灵玉，台下黑压压乡民。稍高机位中景，王天霸大步上台双手按上测灵玉，玉面亮起金色光晕夹两道青光，主簿凑近细看，乡民赞叹声起。主簿：<d>[Chinese]金灵根双灵根！纯度七十二，将来至少是内门弟子！</d>王天霸走下台特意从林渺身边经过，朗声取笑。王天霸：<d>[Chinese]看清楚了，双灵根！你这种穷酸怕是连一灵根都测不出。</d>\\n\\noverall_soundscape:\\n清晨小院井绳吱呀与倒水哗啦声、堂屋木门开合声、青石街市挑担脚步与低语哄笑、县衙东院乡民嘈杂与测灵玉亮起时的低沉嗡鸣、人群骤然的死寂与哗笑、卧房纸窗风声与葫芦极淡的震颤轻鸣。整体环境声随日转夜由明亮渐沉，收束于夜风拂槐枝的沙沙声。\\n\\nnon_diegetic_music:\\nN/A\", \"seed\": 21261120, \"refs\": [], \"video_refs\": [], \"duration\": 14, \"enabled\": true, \"inherit_shared\": true}, {\"prompt\": \"integrated_multimodal_description:\\n[Shot 1] 古风国产动漫赛璐璐上色，工笔描线配水墨晕染。县衙东院灵根测试高台，白日。仰视中景，苏禾黑色长发盘髻插银色发簪，白色罗裙青色披帛，绣花鞋腰间玉佩，白净皮肤眉目如画，轻步上台玉手按上测灵玉，一道纯净青色光芒冲天而起，全场鸦雀无声；苏远山青衣白发长须捋须而笑。主簿：<d>[Chinese]单属性天灵根！水灵根，纯度一百！百年难遇！</d>苏禾收回手神色平静走下台，经过林渺时脚步微顿。苏禾：<d>[Chinese]五灵根也不是一无是处。</d>\\n[Shot 2] At 00:00:08.000, 古风国产动漫赛璐璐上色，工笔描线配水墨晕染，白日转黄昏暖黄光。县衙东院灵根测试高台，平视中景，林渺一步步走上高台双手按上测灵玉，一息两息三息毫无反应，台下嗤笑四起，王天霸抱着胳膊等看笑话；忽然玉石深处金光先亮，青光蓝光红光黄光接连冲出，五色光环在玉上缓慢旋转，全场死寂。主簿：<d>[Chinese]五灵根！五行俱全！修炼速度是单灵根的百分之一，终身无法筑基！</d>\\n\\noverall_soundscape:\\n清晨小院井绳吱呀与倒水哗啦声、堂屋木门开合声、青石街市挑担脚步与低语哄笑、县衙东院乡民嘈杂与测灵玉亮起时的低沉嗡鸣、人群骤然的死寂与哗笑、卧房纸窗风声与葫芦极淡的震颤轻鸣。整体环境声随日转夜由明亮渐沉，收束于夜风拂槐枝的沙沙声。\\n\\nnon_diegetic_music:\\nN/A\", \"seed\": 22261123, \"refs\": [], \"video_refs\": [], \"duration\": 14, \"enabled\": true, \"inherit_shared\": true}, {\"prompt\": \"integrated_multimodal_description:\\n[Shot 1] 古风国产动漫赛璐璐上色，工笔描线配水墨晕染，黄昏金红夕光。县衙东院灵根测试场，中近景，人群哄笑，王天霸笑得前仰后合挡到林渺面前，锦袍晃动；林渺从他身边绕过去，头也不回走出院门，夕阳把灰蓝短衫染成金色，背影渐远。王天霸：<d>[Chinese]五灵根废物！我王家不与五灵根为伍！</d>\\n[Shot 2] At 00:00:06.000, 古风国产动漫赛璐璐上色，工笔描线配水墨晕染，黄昏夕光斜入。林渺卧房，窄小土屋木板床，纸窗漏进一道夕阳，桌上粗瓷碗旧木箱。侧面中近景，林渺坐在床沿解下青色小葫芦放在掌心，低头发呆，暮色在他侧脸投下柔和阴影。林渺：<d>[Chinese]老家伙，你在吗？在的话，亮一下。</d>\\n[Shot 3] At 00:00:11.000, 古风国产动漫赛璐璐上色，工笔描线配水墨晕染，黄昏转暮色。林渺卧房，近景俯拍掌心，一息两息三息，青色小葫芦里一道极淡青光一闪而过，葫芦表面微亮，林渺眼睛在暮色中亮起来，掌心发烫，指尖轻颤。\\n\\noverall_soundscape:\\n清晨小院井绳吱呀与倒水哗啦声、堂屋木门开合声、青石街市挑担脚步与低语哄笑、县衙东院乡民嘈杂与测灵玉亮起时的低沉嗡鸣、人群骤然的死寂与哗笑、卧房纸窗风声与葫芦极淡的震颤轻鸣。整体环境声随日转夜由明亮渐沉，收束于夜风拂槐枝的沙沙声。\\n\\nnon_diegetic_music:\\nN/A\", \"seed\": 23261126, \"refs\": [], \"video_refs\": [], \"duration\": 14, \"enabled\": true, \"inherit_shared\": true}, {\"prompt\": \"integrated_multimodal_description:\\n[Shot 1] 古风国产动漫赛璐璐上色，工笔描线配水墨晕染，黄昏转夜屋内渐暗，只有葫芦青光映在林渺脸上，窗外槐树枝影摇动。近景平视，林渺握紧青色小葫芦，掌心发烫，压低声音，嘴角带一丝压抑许久的笑。林渺：<d>[Chinese]老家伙，你跟了我十三年，今天才肯露光。</d>\\n[Shot 2] At 00:00:05.000, 古风国产动漫赛璐璐上色，工笔描线配水墨晕染，夜色。林渺卧房，特写掌心青色小葫芦轻微震动，一道青光在掌中缓慢旋转，画面中不出现任何人影，青光映亮林渺下颌与眼睛。青葫道人：<d>[Chinese]小娃娃，十三年来老夫一直在等你的灵根觉醒。</d>青葫道人：<d>[Chinese]五灵根在别人眼里是废柴，在老夫眼里却是千年难遇的混沌道体。</d>\\n\\noverall_soundscape:\\n清晨小院井绳吱呀与倒水哗啦声、堂屋木门开合声、青石街市挑担脚步与低语哄笑、县衙东院乡民嘈杂与测灵玉亮起时的低沉嗡鸣、人群骤然的死寂与哗笑、卧房纸窗风声与葫芦极淡的震颤轻鸣。整体环境声随日转夜由明亮渐沉，收束于夜风拂槐枝的沙沙声。\\n\\nnon_diegetic_music:\\nN/A\", \"seed\": 24261129, \"refs\": [], \"video_refs\": [], \"duration\": 11, \"enabled\": true, \"inherit_shared\": true}, {\"prompt\": \"integrated_multimodal_description:\\n[Shot 1] 古风国产动漫赛璐璐上色，工笔描线配水墨晕染，夜色。林渺卧房，中近景，青光在葫芦与林渺掌心间旋转映照，林渺神情由惊转定，重重点头。青葫道人：<d>[Chinese]今夜子时，后山老槐树下，老夫传你引气入体之法。</d>青葫道人：<d>[Chinese]记住，老夫有仇家，在你有实力之前不可让任何人知道老夫存在。</d>\\n[Shot 2] At 00:00:06.000, 古风国产动漫赛璐璐上色，工笔描线配水墨晕染，夜色。林渺卧房门口，中景，林渺把青色小葫芦挂回腰间，推门望向院角老槐树方向，暮色中眼神沉稳清亮，槐树枝影在夜色里轻摇。林渺：<d>[Chinese]我明白。</d>\\n\\noverall_soundscape:\\n清晨小院井绳吱呀与倒水哗啦声、堂屋木门开合声、青石街市挑担脚步与低语哄笑、县衙东院乡民嘈杂与测灵玉亮起时的低沉嗡鸣、人群骤然的死寂与哗笑、卧房纸窗风声与葫芦极淡的震颤轻鸣。整体环境声随日转夜由明亮渐沉，收束于夜风拂槐枝的沙沙声。\\n\\nnon_diegetic_music:\\nN/A\", \"seed\": 25261132, \"refs\": [], \"video_refs\": [], \"duration\": 10, \"enabled\": true, \"inherit_shared\": true}]",
+    "vsegments_json": "[{\"prompt\":\"\",\"seed\":516102431936688,\"refs\":[],\"video_refs\":[],\"duration\":7,\"inherit_shared\":true,\"use_tail\":false,\"enabled\":true,\"force\":false,\"video_labels\":{},\"video_fps\":8,\"first_frame_mode\":\"none\",\"first_frame\":\"\",\"last_frame\":\"\",\"video_ref_modes\":{},\"continuity_mode\":\"off\",\"second_sample\":{\"mode\":\"off\"},\"second_sample_auto\":false,\"sample_stage\":\"full\",\"prompt_asset_bindings\":[],\"use_global_prompt\":true,\"prompt_picture_order\":\"segment\"}]",
+    "tsegments_json": "[{\"prompt\":\"integrated_multimodal_description:\\n写实科普短剧，正常速度，白天的现代中国天文实验室。只有一名约三十五岁的中国男性科学家：短黑发、细框眼镜、深蓝色衬衫。木桌上有太阳和地球机械模型；右侧窗户透入稳定日光。两段使用同一人物、同一实验室、同一套服装和道具，面貌、桌面布局与光线保持连续。自然的中近景，细微手部动作和真实的观察停顿。不出现其他人物、字幕或画面文字。\\n[Shot 1] 镜头从科学家的左前方拍摄。他看向镜头，带一点好奇，像向身旁的人提出问题，自然地说：<d>[Chinese]如果太阳现在消失，我们会立刻知道吗？</d> 说完按下桌上模型的开关，模型太阳熄灭。他抬眼看向仍被阳光照亮的窗户，手指暂时停在开关上。窗外真实日光始终不变。\\n\\noverall_soundscape:\\n整片保持同一间实验室的轻微通风声和规律而不抢对白的钟表滴答声。模型开关只在实际按下时发出一次短促轻响。科学家始终使用同一中低音、自然标准普通话和相同的近距离收音；提问轻微上扬，回答前有短暂停顿。两段的环境声节奏与说话音色一致，没有旁白或第二个人的声音。\\n\\nnon_diegetic_music:\\nN/A\",\"seed\":238170178406909,\"refs\":[],\"duration\":5,\"inherit_shared\":true,\"use_tail\":false,\"continuity_mode\":\"off\",\"enabled\":true,\"force\":true,\"first_frame_mode\":\"none\",\"tail_plan\":\"off\",\"tail_reason\":\"\",\"source_total_duration_seconds\":10,\"source_duration_authoritative\":true,\"source_format\":\"official-base\",\"source_duration_policy\":\"preserve\",\"source_contract_id\":\"h3src-8c7f6bc9-963a-4327-8773-37e3e49859f2\",\"source_contract\":{\"contract_id\":\"h3src-8c7f6bc9-963a-4327-8773-37e3e49859f2\",\"total_duration_seconds\":10,\"duration_authoritative\":true,\"format\":\"official-base\",\"duration_policy\":\"preserve\",\"segment_start_seconds\":0,\"segment_end_seconds\":5,\"segment_duration_seconds\":5},\"second_sample\":{\"mode\":\"off\"},\"second_sample_auto\":false,\"first_frame\":\"\",\"last_frame\":\"\",\"use_global_prompt\":false,\"prompt_asset_bindings\":[],\"prompt_picture_order\":\"segment\",\"sample_stage\":\"full\",\"continuity_output_stale\":true},{\"prompt\":\"integrated_multimodal_description:\\n写实科普短剧，正常速度，白天的现代中国天文实验室。只有一名约三十五岁的中国男性科学家：短黑发、细框眼镜、深蓝色衬衫。木桌上有太阳和地球机械模型；右侧窗户透入稳定日光。两段使用同一人物、同一实验室、同一套服装和道具，面貌、桌面布局与光线保持连续。自然的中近景，细微手部动作和真实的观察停顿。不出现其他人物、字幕或画面文字。\\n[Shot 1] HARD CUT to 同一机位方向、略近的中近景。开场延续上一个动作：他的手指仍停在开关上，模型太阳已经熄灭，右侧窗户仍有稳定日光。他自然收回手，短暂看向窗户，再看回镜头，平静地回答：<d>[Chinese]不会。眼前的阳光，是八分多钟前出发的。</d> 说完指尖轻触地球模型，停在准备继续演示的动作上。镜头不突然改变观察方向，人物外貌和空间位置不跳变。\\n\\noverall_soundscape:\\n整片保持同一间实验室的轻微通风声和规律而不抢对白的钟表滴答声。模型开关只在实际按下时发出一次短促轻响。科学家始终使用同一中低音、自然标准普通话和相同的近距离收音；提问轻微上扬，回答前有短暂停顿。两段的环境声节奏与说话音色一致，没有旁白或第二个人的声音。\\n\\nnon_diegetic_music:\\nN/A\",\"seed\":304899652260767,\"refs\":[],\"duration\":5,\"inherit_shared\":true,\"use_tail\":true,\"continuity_mode\":\"plugin_latent\",\"continuity_source_segment\":1,\"enabled\":false,\"force\":false,\"first_frame_mode\":\"none\",\"tail_plan\":\"on\",\"tail_reason\":\"\",\"source_total_duration_seconds\":10,\"source_duration_authoritative\":true,\"source_format\":\"official-base\",\"source_duration_policy\":\"preserve\",\"source_contract_id\":\"h3src-8c7f6bc9-963a-4327-8773-37e3e49859f2\",\"source_contract\":{\"contract_id\":\"h3src-8c7f6bc9-963a-4327-8773-37e3e49859f2\",\"total_duration_seconds\":10,\"duration_authoritative\":true,\"format\":\"official-base\",\"duration_policy\":\"preserve\",\"segment_start_seconds\":5,\"segment_end_seconds\":10,\"segment_duration_seconds\":5},\"first_frame\":\"\",\"last_frame\":\"\",\"second_sample\":{\"mode\":\"off\"},\"second_sample_auto\":false,\"use_global_prompt\":false,\"prompt_asset_bindings\":[],\"prompt_picture_order\":\"segment\",\"sample_stage\":\"full\",\"continuity_tail_stale\":true}]",
+    "ui_mode": "create",
+    "global_prompt": "古风国产动漫风格：赛璐璐动画上色，工笔描线配水墨晕染，柔和光影，电影感构图，暖黄复古色调，老电影质感。二维国漫动画绘制，人物与场景均为古代中国，不出现任何现代物品与科技元素。",
+    "续接方式": "软参考Ref2VA(保人物)",
+    "每段后卸载模型": false,
+    "汇总输出": "仅预览帧(推荐)",
+    "project_id": "h3_450041c5-10f7-449b-8b09-6e1088e1f0d8",
+    "text_shared_refs_json": "[]",
+    "clip": [
+     "14",
+     0
+    ],
+    "vae": [
+     "15",
+     0
+    ],
+    "audio_vae": [
+     "16",
+     0
+    ],
+    "model": [
+     "39",
+     0
+    ]
+   }
+  }
+ }
+}

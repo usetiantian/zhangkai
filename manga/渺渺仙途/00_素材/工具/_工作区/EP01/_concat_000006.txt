@@ -1,0 +1,6 @@
+file 'D:/ComfyUI_windows_portable/ComfyUI/output/video/h3director/h3_450041c5-10f7-449b-8b09-6e1088e1f0d8/漫剧_seg1_00006_一次采样.mp4'
+file 'D:/ComfyUI_windows_portable/ComfyUI/output/video/h3director/h3_450041c5-10f7-449b-8b09-6e1088e1f0d8/漫剧_seg2_00003_一次采样.mp4'
+file 'D:/ComfyUI_windows_portable/ComfyUI/output/video/h3director/h3_450041c5-10f7-449b-8b09-6e1088e1f0d8/漫剧_seg3_00003_一次采样.mp4'
+file 'D:/ComfyUI_windows_portable/ComfyUI/output/video/h3director/h3_450041c5-10f7-449b-8b09-6e1088e1f0d8/漫剧_seg4_00003_一次采样.mp4'
+file 'D:/ComfyUI_windows_portable/ComfyUI/output/video/h3director/h3_450041c5-10f7-449b-8b09-6e1088e1f0d8/漫剧_seg5_00003_一次采样.mp4'
+file 'D:/ComfyUI_windows_portable/ComfyUI/output/video/h3director/h3_450041c5-10f7-449b-8b09-6e1088e1f0d8/漫剧_seg6_00003_一次采样.mp4'
