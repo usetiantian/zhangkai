@@ -82,6 +82,25 @@ TIER2_WORDS = [
 ]
 TIER2_MAX_PER_K = 8.0
 
+# ── 内容层红线（门禁只管文风层，管不住「人物说话像不像人」）──────────────
+# 口号/格言式台词：人物不喊金句，真人靠动作和沉默表达决心
+SLOGAN_WORDS = [
+    "宁可站着死", "宁死不屈", "固有一死", "重于泰山", "我命由我不由天",
+    "血性男儿", "好男儿", "大丈夫有所为", "生当作人杰", "死亦为鬼雄",
+    "人不为己", "天诛地灭", "我命休矣",
+]
+# 百科式解说：设定靠百科词硬讲（规范 §2.3 明令禁止）
+ENCY_RE = re.compile(
+    r"(修真界公认|修炼界公认|众所周知|按修真界的说法|在修真界有句话|"
+    r"据说[，,]?在修真界|修真界有句老话|江湖上有句老话|俗话说的)")
+# 总结陈词式对白：人物替作者做总结
+SUMMARY_PHRASES = [
+    "路还长着呢", "总有一天", "会有那么一天", "还有很长的路",
+    "一切都会好的", "会好起来的", "总归会", "迟早有一天",
+]
+# 反派模板腔（同一章内重复出现即判）
+VILLAIN_PHRASES = ["穷酸", "就凭你", "算什么东西", "什么东西", "废物一个"]
+
 # ── AI 文本检测核心指标（番茄/七猫公开口径：困惑度 + 突发性）──────────────
 # 低困惑度 = 用词可预测；低突发性 = 句长/节奏变化小。
 # 阈值由参照书原文实测反推（《仙逆》《凡人修仙传》《百炼成仙》各抽 12 章）：
@@ -240,11 +259,23 @@ def check_chapter(path: str, ai_findings: list[dict], deg_findings: list[dict]) 
         v = bst[name]
         add("ai", name, lo <= v <= hi, round(v, 4), f"{lo}-{hi}")
 
+    # 内容层：口号 / 百科解说 / 总结陈词 / 反派模板腔
+    slog_hits = [w for w in SLOGAN_WORDS if w in text]
+    add("content", "无口号式格言台词", not slog_hits, slog_hits[:2], "0")
+    enc_hits = ENCY_RE.findall(text)
+    add("content", "无百科式设定解说", not enc_hits, Counter(enc_hits).most_common(2), "0")
+    sum_hits = [w for w in SUMMARY_PHRASES if w in text]
+    add("content", "无总结陈词式对白", not sum_hits, sum_hits[:2], "0")
+    vil_hits = [w for w in VILLAIN_PHRASES if text.count(w) >= 2]
+    add("content", "反派模板腔不重复", not vil_hits,
+        [(w, text.count(w)) for w in vil_hits[:2]], "同词<2次")
+
     hard_fail = [i for i in items if i["kind"] == "hard" and not i["ok"]]
     style_fail = [i for i in items if i["kind"] == "style" and not i["ok"]]
     ai_fail = [i for i in items if i["kind"] == "ai" and not i["ok"]]
-    verdict = "PASS" if not (hard_fail or style_fail or ai_fail) else (
-        "FAIL" if hard_fail or ai_fail else "WARN"
+    content_fail = [i for i in items if i["kind"] == "content" and not i["ok"]]
+    verdict = "PASS" if not (hard_fail or style_fail or ai_fail or content_fail) else (
+        "FAIL" if hard_fail or ai_fail or content_fail else "WARN"
     )
 
     return {
@@ -255,6 +286,7 @@ def check_chapter(path: str, ai_findings: list[dict], deg_findings: list[dict]) 
         "hard_fail": len(hard_fail),
         "style_fail": len(style_fail),
         "ai_fail": len(ai_fail),
+        "content_fail": len(content_fail),
         "fp": {k: v for k, v in fp.items() if k != "_text"},
         "ai_types": Counter(x.get("type") for x in mine_ai).most_common(),
         "deg_types": Counter(x.get("type") for x in mine_deg).most_common(),
@@ -336,7 +368,8 @@ def main() -> int:
         print("%s  [%s]  字数%d 句长%.1f 段长%.1f 对白%.1f%% 他%d/她%d"
               % (r["file"], r["verdict"], r["fp"]["字数"], r["fp"]["平均句长"],
                  r["fp"]["平均段长"], r["fp"]["对白段率"], r["fp"]["他"], r["fp"]["她"]))
-        for kind, label in (("hard", "硬红线"), ("style", "文风档"), ("ai", "AI腔")):
+        for kind, label in (("hard", "硬红线"), ("style", "文风档"),
+                            ("ai", "AI腔"), ("content", "内容层")):
             grp = [i for i in r["items"] if i["kind"] == kind]
             bad = [i for i in grp if not i["ok"]]
             if not quiet or bad:
