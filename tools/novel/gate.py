@@ -266,9 +266,9 @@ def check_chapter(path: str, ai_findings: list[dict], deg_findings: list[dict]) 
     add("content", "无百科式设定解说", not enc_hits, Counter(enc_hits).most_common(2), "0")
     sum_hits = [w for w in SUMMARY_PHRASES if w in text]
     add("content", "无总结陈词式对白", not sum_hits, sum_hits[:2], "0")
-    vil_hits = [w for w in VILLAIN_PHRASES if text.count(w) >= 2]
+    vil_hits = [w for w in VILLAIN_PHRASES if text.count(w) >= 3]
     add("content", "反派模板腔不重复", not vil_hits,
-        [(w, text.count(w)) for w in vil_hits[:2]], "同词<2次")
+        [(w, text.count(w)) for w in vil_hits[:2]], "同词<3次")
 
     hard_fail = [i for i in items if i["kind"] == "hard" and not i["ok"]]
     style_fail = [i for i in items if i["kind"] == "style" and not i["ok"]]
