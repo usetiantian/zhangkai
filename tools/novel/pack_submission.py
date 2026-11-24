@@ -92,8 +92,18 @@ def main() -> int:
 
     print("%s 共 %d 章：PASS %d / WARN %d / FAIL %d"
           % (vol, len(reps), len(ok), len(warn), len(bad)))
-    chosen = (ok + warn)[:n]
-    print("打包取前 %d 章（PASS 优先）" % len(chosen))
+    # 按章号连续取前 n 章 —— 不能跳章，否则读者看到章号断档
+    chosen = []
+    for num, p, r in reps:
+        chosen.append((num, p, r))
+        if len(chosen) >= n:
+            break
+    bad_in = [c for c in chosen if c[2]["verdict"] == "FAIL"]
+    print("打包取前 %d 章（按章号连续）" % len(chosen))
+    if bad_in:
+        print("⚠️ 其中 %d 章未达 PASS，上传前建议先改：" % len(bad_in))
+        for num, p, r in bad_in:
+            print("   第%02d章 %s [%s]" % (num, os.path.basename(p)[6:-3][:30], r["verdict"]))
     for num, p, r in chosen:
         print("   第%02d章 %-32s %s 字%d" % (num, os.path.basename(p)[6:-3][:32],
                                           r["verdict"], r["fp"].get("字数", 0)))
