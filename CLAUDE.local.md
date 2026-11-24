@@ -56,10 +56,38 @@ recall_suggestions: off  # off | low (set to "low" to enable nudges)
   `Auto mode is unavailable: its safety check does not run for this session` 并拒绝调用。
   张凯重度依赖派子 agent，auto 会直接废掉这个能力。
 - `permissions.deny` 11 条红线在 auto 和 bypass 下**都生效**（实测）。deny 不会因 bypass 失效。
+
+### oh-story 脚本层已装入 tools/novel/oh-story/（2026-11-24）
+
+- 来源 AtomGit 镜像 `gh_mirrors/oh/oh-story-claudecode`（上游 zenstory-ai/oh-story-claudecode，MIT）。
+  克隆在 `D:/node/CC/tmp/oh-story-claudecode`。
+- **只取脚本层 + 标尺层，没装 skill 本体、没跑 /story-setup**：
+  - 脚本：`check-ai-patterns.js`（20+ 类 AI 腔句式）、`check-degeneration.js`（复读/截断/占位符）、
+    `normalize-punctuation.js`、`build_chapter_index.js`、`style-whitelist.js`
+  - 标尺：`references/` 下 18 维审稿 rubric + 番茄门槛 + 黄金三章 8 项体检 + 短篇五维
+- **为什么不装全量**：`web-novel` 与 oh-story 的 `story-long-write` 描述词高度重叠会二选一；
+  oh-story 的文风参照值是硬编码行业区间，比自建 `refs.py` 的「从目标书实测指纹」弱。
+- 自建工具量「像不像目标书」，oh-story 量「有没有 AI 腔病句」——互补，接进 `style_check.py`/`review_chapter.py`。
+- **`悬疑推理新书/` 里已经装过这套 oh-story**（14 skill + 拆文库/ + 扫榜/ + `追踪/_tracking-state.json`），
+  说明它真跑起来过 —— 可参考它的实际产出。
+- **扫旧稿前必读 `tools/novel/oh-story/README.md` 的「已知误报」三条**（行号前缀/章节标记/汇总字段 bug），
+  不排除会把数字带偏一个数量级。
+
+### 旧稿质量体检结论（2026-11-24，13 个项目 ~700 万字）
+
+- AI 腔三大病灶（渺渺仙途 798 条 review_required）：`not-is-comparison`「不是X而是Y」151、
+  `em-dash` 破折号 110、`negation-parade` 否定排比 36 —— 三样占 94%，最好批量修。
+- **段长/句长分层**：卷8/卷9（重写区）段长 13-15、句长 7-9；卷1/卷3（未重写）段长 28-34、句长 11-13；
+  卷10 段长 36。参照书仙逆/凡人句长 40。**张凯当年退回《拙火》的「每段就几个字」在数据上被证实**。
+- **实锤问题**：卷9/10/11 是机器批量重写产物 —— 同一句「金光深处，那两道光影——青光与白光——相互依偎着，
+  静静地看着这一切」跨 4 卷多章各出现 3-4 次；`正文_第01章_万道圆满新的开始.md` 末尾混进
+  `## 【钩子列表·补】` 写作笔记 + 「未完待续」占位符。**这批需要人工重做。**
+- 根目录 8 个 `正文_第NN章_*.txt` 是卷一早期版（章名「灵根测试」），
+  与 `总纲/05_正文/卷1_凡界崛起/`（章名「五灵根惊现」）**是两版并存**，不重复。
+
 - 结论：Bash/Read/Write/Edit 层面两模式体感一样，差别全在 allow 外的工具能否用 → 选 bypass 无损失。
 
 ### ECC hook 刷屏的根因与修法（2026-11-24）
-
 - **现象**：每次工具调用刷一长段 `Cannot find module 'C:\Users\87999\.claude\scripts\hooks\plugin-hook-bootstrap.js'`。
 - **根因**：ECC 的 hook 命令用内联 resolver 定位 ECC root，候选只有
   `~/.claude/`、`~/.claude/plugins/{ecc,everything-claude-code}`、插件缓存 —— **唯独没有项目级 `.claude/`**。
