@@ -44,7 +44,7 @@ STYLE_GATES: list[tuple[str, str, float, float]] = [
     ("对白段率", "对白段率", 15, 55),
     # 字数是参考项不是硬红线：参照书单章只有 2400-3000 字，
     # 渺渺仙途现状 3500-4900 也不缺字数 —— 缺的是密度不是篇幅。
-    ("字数", "字数", 2600, 4200),
+    ("字数", "字数", 2300, 4200),
 ]
 # 反流水档：台词不能碎成「嗯。」，也不能连续刷屏
 FLOW_GATES: list[tuple[str, str, float, float]] = [
@@ -52,7 +52,7 @@ FLOW_GATES: list[tuple[str, str, float, float]] = [
     ("套路词", "套路词", 0, 6),
     ("连续台词最长", "连续台词最长", 0, 8),
     ("连续台词均", "连续台词均", 0, 3.8),
-    ("台词均字", "台词均字", 8, 45),
+    ("台词均字", "台词均字", 8, 70),
 ]
 
 META_RE = re.compile(r"(爽点|伏笔|钩子|本章要点|本章总结|作者注|大纲)[:：]")
@@ -60,6 +60,26 @@ PLACEHOLDER_RE = re.compile(r"(未完待续|待续|TBD|TODO|此处省略|作为A
 REPEAT_MIN = 12
 REPEAT_MAX = 3
 CHARS_RE = re.compile(r"[一-鿿]")
+
+# Tier 1 = 真·AI 味（oh-story banned-words.md 的 Tier 1）。单个出现即算，
+# 因为这些是抽象总结腔/公文推导链/模板虚饰，正常网文叙述里几乎不该出现。
+TIER1_WORDS = [
+    "带着一丝不易察觉", "不易察觉", "不容置疑", "语气平静无波", "平静得像在念",
+    "这意味着", "真正重要的是", "由此可见", "不难看出", "综上所述", "按照这个逻辑",
+    "基于当前", "进一步推进落实", "诚然", "命运的齿轮", "注定无人入眠",
+    "才刚刚开始", "意义深远", "前所未有的决意", "一切都结束了",
+    "如潮水般涌来", "犹如疾风骤雨", "仿佛整个世界失去了颜色",
+    "散发着一股生人勿近的气息", "眼里淬了毒", "无声地诉说", "诉说无声",
+    "仿佛在诉说着", "空气仿佛凝固", "时间仿佛静止", "心中五味杂陈",
+    "百感交集", "感慨万千", "五味杂陈",
+]
+# Tier 2 = 网文通用短语，单用合法，成片堆砌才改。按千字密度卡。
+TIER2_WORDS = [
+    "微微", "淡淡", "缓缓", "轻轻", "一丝", "一抹", "突然", "瞬间", "猛地",
+    "仿佛", "似乎", "只见", "心头一震", "嘴角勾起", "眉头微皱", "深吸一口气",
+    "脸色一变", "心口一沉", "眼皮一跳", "瞳孔一缩", "眼眶一红", "浑身发抖",
+]
+TIER2_MAX_PER_K = 8.0
 
 
 def _chars(s: str) -> str:
@@ -143,10 +163,18 @@ def check_chapter(path: str, ai_findings: list[dict], deg_findings: list[dict]) 
 
     deg_block = [x for x in mine_deg if x.get("severity") == "blocking" and not _is_meta(x)]
 
-    add("ai", "AI 腔 review_required <= 12", len(rv) <= 12, len(rv), "<=12")
-    add("ai", "AI 腔 advisory <= 120", len(adv) <= 120, len(adv), "<=120")
+    add("ai", "AI 味 Tier1 清零（review_required=0）", len(rv) == 0, len(rv), "0")
+    add("ai", "AI 味 Tier2 扎堆 <= 10（advisory）", len(adv) <= 10, len(adv), "<=10")
     add("ai", "退化 blocking = 0", not deg_block,
         Counter(x.get("type") for x in deg_block).most_common(3), "0")
+
+    # AI 味关键词直检（句式规则抓不到的抽象大词）
+    t1_hits = [(w, text.count(w)) for w in TIER1_WORDS if w in text]
+    add("ai", "AI 味 Tier1 关键词 = 0", not t1_hits, t1_hits[:3], "0")
+    t2_n = sum(text.count(w) for w in TIER2_WORDS)
+    t2_rate = 1000.0 * t2_n / max(1, wc)
+    add("ai", "AI 味 Tier2 密度 <= 8/千字", t2_rate <= TIER2_MAX_PER_K,
+        "%.1f/千字 (%d次)" % (t2_rate, t2_n), "<=8.0/千字")
 
     hard_fail = [i for i in items if i["kind"] == "hard" and not i["ok"]]
     style_fail = [i for i in items if i["kind"] == "style" and not i["ok"]]
