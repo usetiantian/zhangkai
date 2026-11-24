@@ -37,8 +37,14 @@ def collect() -> dict[tuple[str, str], list[str]]:
             if not f.endswith(".md") or "bak" in f:
                 continue
             p = os.path.join(vd, f)
+            # 伏笔信息要从**原稿备份**取 —— 改写会删掉元数据行，从改后文件提取会丢伏笔
+            src = p
+            for suffix in (".pre_rewrite_bak", ".pre_indent_bak"):
+                if os.path.exists(p + suffix):
+                    src = p + suffix
+                    break
             try:
-                txt = io.open(p, encoding="utf-8", errors="replace").read()
+                txt = io.open(src, encoding="utf-8", errors="replace").read()
             except Exception:
                 continue
             m = CHAP_RE.search(f)
