@@ -2,7 +2,7 @@
 
 > This is your working memory. Auto-loaded every session via CLAUDE.local.md.
 > ~1500 word limit. Only behavior-changing facts earn a place here.
-> Last updated: 2026-11-16
+> Last updated: 2026-11-24
 
 ## Total Recall Settings
 
@@ -10,11 +10,42 @@ recall_suggestions: off  # off | low (set to "low" to enable nudges)
 
 ## Active Context
 
-**Current Focus**: 《渺渺仙途》AI 漫剧（古风仙侠国漫），EP01 已出片，正在按用户反馈重做画风与人物
+**Current Focus**: 记忆层已复活（MCP 全绿）+ 工作区资产已入库。下一件事等张凯派。
 **Key Deadline**: [none]
 **Blockers**: [none]
 
+## ⚠️ 2026-11-24 新增（重启后先看这块）
+
+### 记忆层：MCP 已装好，工具本次重启后才会出现在工具表里
+
+- `memory` MCP → 存储在 `C:/Users/87999/.claude/memory/cc-memory.jsonl`
+  （**重启后用 `mcp__memory__search_nodes` 直接查**，已写入 4 条实体：
+  CC-记忆层-2026-11-24 / 工作区提交-2026-11-24 / 密钥移出源码-2026-11-24 / 张凯-授权偏好）
+- `codebase-memory` MCP（`codebase-memory-mcp` v0.12.1）→ 代码知识图谱，
+  已索引 project `C-Users-87999-claude-workspace`（含 866 个跟踪文件）
+  - 查函数：`mcp__codebase-memory-mcp__search_graph`
+  - 查调用链：`trace_path`；查架构：`get_architecture`
+  - **daemon 需常驻**：`codebase-memory-mcp daemon start`（否则索引会被腰斩）
+- 两个坑（Windows）：
+  1. **索引器不认 .gitignore**（扫全盘 136265 个文件），`.gitignore` 只对 git 生效
+  2. **`nul` 文件会让索引直接失败**（Windows 保留设备名，open 即被吞）。
+     已把 workspace 根和 `nexus/` 的两个 nul 移到 `D:/node/CC/backup/nul_files/`
+
+### 工作区已入库，别再重复提交
+
+- 2026-11-24 把 11543 个游离文件分 8 批提交并推送（`a03d5a3..29d5986`，866 文件）
+- `.gitignore` 已扩边（+40 行），挡住 10693 个文件
+- 新增日记：`CC_DIARY_2026-11-24.md`（**启动序列会读最新一篇日记 = 这篇**）
+- 批量 git add 中文路径要用 `git -c core.quotepath=false status --porcelain` 取真实路径
+
+### 授权偏好（张凯 2026-11-24 明确要求）
+
+「我不希望每次都要我来确认 yes，我希望你自己决策。」
+可逆的本地操作（读写文件、跑脚本测试、装依赖、git add/commit/push）**直接做**；
+不可逆或影响他人的（删分支、删文件、force push、改 CI/CD、对外发消息）才先说一声。
+
 ### 漫剧制作（重启后直接接着干，全部状态都在磁盘上）
+
 
 - 工程目录：`manga/渺渺仙途/`（`01_第01-10集/EP01_五灵根惊现/05_成片.mp4` 是已出的片子）
 - **开工前必读四份**（唯一事实源，都在 `manga/渺渺仙途/00_素材/`）：
@@ -221,6 +252,13 @@ ode\阅读笔记\七猫免费小说\蓝莓原创\拙火\`（**和《渺渺仙途
 
 ## Session Continuity
 
+- **2026-11-24 完成（本次重启后先读 `CC_DIARY_2026-11-24.md`）**：
+  MCP 记忆层复活（memory + codebase-memory 全绿，图谱已索引 workspace）；
+  工作区 11543 个游离文件分 8 批入库并推送（`a03d5a3..29d5986`，866 文件）；
+  `nul` 文件导致索引失败的坑已定位并移走；
+  密钥移出源码（`~/.claude/cc_keys.json` + 环境变量）；
+  autoMode.environment 按真实环境重写（仓库是 public，原模板「假定私有」导致反复弹确认）。
+  **记忆条目已写入 `~/.claude/memory/cc-memory.jsonl`，重启后用 `mcp__memory__search_nodes` 可查。**
 - 2026-11-17 完成：导演台 int8 文本编码器崩溃修好（换 nvfp4_awq）；写 `tools/wf2api.py`
   把 7 个工作流全转成 API prompt（0 校验错误）；写 `tools/guofeng_manga.py` 小说→出片一条命令；
   建技能 `.claude/skills/guofeng-manga/SKILL.md`；实测导演台 API 出片成功（含对白）
@@ -229,7 +267,7 @@ ode\阅读笔记\七猫免费小说\蓝莓原创\拙火\`（**和《渺渺仙途
   禁用 4 个无用插件
 - 2026-11-15 完成：换脸/去水印/角色替换三条线；换脸从 21 分钟降到 5.6 分钟
 - 错误复盘全文见 `.claude/learnings/comfyui_workflow_mistakes_2026-11-15.md`（17 条）
-- 日记见 `CC_DIARY_2026-11-17.md`（今天）/ `CC_DIARY_2026-11-16.md`（昨天）
+- 日记见 `CC_DIARY_2026-11-24.md`（最新）/ `CC_DIARY_2026-11-17.md`
 
 ---
 *For detailed history, see memory/registers/*

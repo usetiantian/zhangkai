@@ -43,6 +43,15 @@ mcp__memory__create_relations([{
 }])
 ```
 
+> **2026-11-24 起 MCP 已就绪**（此前从未配置过）：
+> - `memory` → 存储 `C:/Users/87999/.claude/memory/cc-memory.jsonl`
+>   （`MEMORY_FILE_PATH` 显式指定；不加则默认落在 npm 包目录里，npx 重装即丢）
+> - `codebase-memory` → 代码知识图谱，project `C-Users-87999-claude-workspace`
+>   （索引器**不认 .gitignore**；**`nul` 文件会让索引直接失败**；
+>   daemon 需常驻：`codebase-memory-mcp daemon start`）
+> - 已在 cc-memory.jsonl 写入 2026-11-24 的四条实体，**启动时用
+>   `mcp__memory__search_nodes(query="2026-11-24")` 直接取回**
+
 ## Layer 3: Long-Term (Code Knowledge Graph)
 
 Scope: Cross-project, code-level
