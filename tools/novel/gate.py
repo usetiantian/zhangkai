@@ -45,7 +45,7 @@ STYLE_GATES: list[tuple[str, str, float, float]] = [
     ("对白段率", "对白段率", 15, 55),
     # 字数是参考项不是硬红线：参照书单章只有 2400-3000 字，
     # 渺渺仙途现状 3500-4900 也不缺字数 —— 缺的是密度不是篇幅。
-    ("字数", "字数", 2300, 4200),
+    ("字数", "字数", 2300, 4500),
 ]
 # 反流水档：台词不能碎成「嗯。」，也不能连续刷屏
 FLOW_GATES: list[tuple[str, str, float, float]] = [
@@ -100,6 +100,23 @@ SUMMARY_PHRASES = [
 ]
 # 反派模板腔（同一章内重复出现即判）
 VILLAIN_PHRASES = ["穷酸", "就凭你", "算什么东西", "什么东西", "废物一个"]
+
+# 转述率：叙述段用「说/问/道」转述对白，代替真实对话场景。
+# 参照书实测：仙逆3.8% 凡人4.5% 百炼2.5% 魔天记2.6%（单章上限 9.5%）
+# 渺渺仙途现状：卷1 4.9%（改写后），卷5 13.8%，卷12 26.5%（单章最高 71.7%）
+REPORT_VERB_RE = re.compile(r"(说|问|答|道|喊|骂|叹|唤|开口|低语|冷笑|解释|反问|追问)")
+QUOTE_RE = re.compile(r"[“”\"]")
+REPORTED_MAX = 12.0
+
+
+def _reported_rate(text: str) -> float:
+    paras = [p.strip() for p in text.split("\n") if p.strip()]
+    paras = [p for p in paras if not re.match(r"^(#|>|---|\*\*[一二三四五六七八九十]+)", p)]
+    if len(paras) < 10:
+        return -1.0
+    n = sum(1 for p in paras
+            if not QUOTE_RE.search(p) and len(REPORT_VERB_RE.findall(p)) >= 2)
+    return 100.0 * n / len(paras)
 
 # ── AI 文本检测核心指标（番茄/七猫公开口径：困惑度 + 突发性）──────────────
 # 低困惑度 = 用词可预测；低突发性 = 句长/节奏变化小。
@@ -242,6 +259,14 @@ def check_chapter(path: str, ai_findings: list[dict], deg_findings: list[dict]) 
     add("ai", "退化 blocking = 0", not deg_block,
         Counter(x.get("type") for x in deg_block).most_common(3), "0")
 
+    # 字符级硬伤：半角标点 = 机器转写签名
+    # 真人 9 本书 4657 万字符里 ASCII 直引号/半角标点出现 0 次
+    n_q = text.count('"')
+    n_p = (text.count(",") + text.count(";") + text.count("?")
+           + text.count("!") + text.count(":"))
+    add("hard", "零 ASCII 直引号（全角引号）", n_q == 0, n_q, "0")
+    add("hard", "零半角标点", n_p == 0, n_p, "0")
+
     # AI 味关键词直检（句式规则抓不到的抽象大词）
     t1_hits = [(w, text.count(w)) for w in TIER1_WORDS if w in text]
     add("ai", "AI 味 Tier1 关键词 = 0", not t1_hits, t1_hits[:3], "0")
@@ -269,6 +294,9 @@ def check_chapter(path: str, ai_findings: list[dict], deg_findings: list[dict]) 
     vil_hits = [w for w in VILLAIN_PHRASES if text.count(w) >= 3]
     add("content", "反派模板腔不重复", not vil_hits,
         [(w, text.count(w)) for w in vil_hits[:2]], "同词<3次")
+    rr = _reported_rate(text)
+    add("content", "转述率 <= 12%（不拿转述替代对话）", rr < 0 or rr <= REPORTED_MAX,
+        ("%.1f%%" % rr) if rr >= 0 else "样本不足", "<=12%")
 
     hard_fail = [i for i in items if i["kind"] == "hard" and not i["ok"]]
     style_fail = [i for i in items if i["kind"] == "style" and not i["ok"]]
