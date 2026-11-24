@@ -58,3 +58,26 @@ qiankun-uzi/adata/
 qiankun-uzi/output/
 qiankun-uzi/config.json
 qiankun-uzi/__pycache__/
+
+# ===== 2026-11-24 工作区卫生 =====
+# 根目录调试残留（下划线开头：_ab_*.json / _inspect*.py / _e6c_/ _edge_profile/ 等）
+/_*
+
+# 大体积依赖与缓存
+/ortgpu_x/
+/.codegraph/
+/tmp/
+/backup/
+/.claude.cc.backup/
+/CLAUDE.md.cc.backup
+/music3/build*/
+/music3/dist*/
+
+# 子仓库：game/（《果子》）有独立 git 历史 a89f42a，无远程，单独管理
+/game/
+
+# 外部克隆仓库（各自独立 git 管理；CLI-Anything 的 .git/config 内嵌 GitHub PAT，禁止入库）
+/CLI-Anything/
+/nucleo-local/
+/SAM3.1_Multiplex_fp16/
+/wigolo/
