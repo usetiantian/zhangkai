@@ -15,6 +15,7 @@ import io
 import json
 import os
 import re
+import statistics
 import subprocess
 import sys
 from collections import Counter
@@ -80,6 +81,52 @@ TIER2_WORDS = [
     "脸色一变", "心口一沉", "眼皮一跳", "瞳孔一缩", "眼眶一红", "浑身发抖",
 ]
 TIER2_MAX_PER_K = 8.0
+
+# ── AI 文本检测核心指标（番茄/七猫公开口径：困惑度 + 突发性）──────────────
+# 低困惑度 = 用词可预测；低突发性 = 句长/节奏变化小。
+# 阈值由参照书原文实测反推（《仙逆》《凡人修仙传》《百炼成仙》各抽 12 章）：
+#   仙逆   句长均36.9 SD21.1 熵2.345 TTR0.715 高频搭配0.0080
+#   凡人   句长均28.4 SD16.2 熵2.383 TTR0.774 高频搭配0.0049
+#   百炼   句长均31.0 SD18.7 熵2.365 TTR0.792 高频搭配0.0033
+# 现状《渺渺仙途》全卷：TTR 0.42-0.65、高频搭配 0.014-0.061、SD 8.4-10.2、熵 1.67-1.94
+#   → 用词复用率高出参照书 3-10 倍，这就是被判「AI 味」的直接原因。
+BURST_GATES: list[tuple[str, float, float]] = [
+    ("二字组TTR(用词多样性)", 0.63, 1.01),
+    ("高频搭配集中度", 0.0, 0.012),
+    ("句长SD(绝对离散度)", 13.0, 999.0),
+    ("句长分布熵", 2.15, 99.0),
+]
+
+
+def _burstiness(text: str) -> dict[str, float]:
+    """句长离散度 / 分布熵 / 用词多样性 / 高频搭配集中度。"""
+    import math
+    from collections import Counter as _C
+
+    text = re.sub(r"(?m)^[>#]+.*$", "", text)
+    text = re.sub(r"\*\*(.+?)\*\*", r"\1", text)
+    paras = [l.strip(" \t　") for l in text.split("\n") if l.strip()]
+    sents: list[str] = []
+    for p in paras:
+        sents += [s.strip() for s in re.split(r"[。！？!?…]+", p) if s.strip()]
+    slen = [len(CHARS_RE.findall(s)) for s in sents]
+    slen = [x for x in slen if x > 0]
+    words = CHARS_RE.findall(text)
+    bi = ["".join(words[i:i + 2]) for i in range(len(words) - 1)]
+    if len(slen) < 20 or len(bi) < 100:
+        return {}
+    buckets = _C(min(x // 5, 12) for x in slen)
+    tot = sum(buckets.values())
+    ent = -sum((c / tot) * math.log(c / tot) for c in buckets.values() if c)
+    ttr = len(set(bi)) / len(bi)
+    uniq = set(bi)
+    rep = sum(1 for w, c in _C(bi).items() if c >= 8)
+    return {
+        "二字组TTR(用词多样性)": ttr,
+        "高频搭配集中度": rep / max(1, len(uniq)),
+        "句长SD(绝对离散度)": float(statistics.pstdev(slen)),
+        "句长分布熵": ent,
+    }
 
 
 def _chars(s: str) -> str:
@@ -156,8 +203,16 @@ def check_chapter(path: str, ai_findings: list[dict], deg_findings: list[dict]) 
     mine_deg = [x for x in deg_findings if x.get("file") == path]
     rv = [x for x in mine_ai if x.get("severity") == "review_required"]
     adv = [x for x in mine_ai if x.get("severity") == "advisory"]
-    # 元数据行本身没有句末标点，会被判 truncated —— 那是元数据账，不重复计为退化
+    # 元数据行本身没有句末标点，会被判 truncated —— 那是元数据账，不重复计为退化。
+    # 元数据常是多行（>伏笔:A/B/C 后续行不带「伏笔:」字样），所以按行号排除。
+    meta_lines = set()
+    for i, line in enumerate(raw.split("\n"), 1):
+        if META_RE.search(line) or re.match(r"^\s*>\s*", line):
+            meta_lines.add(i)
+
     def _is_meta(f: dict) -> bool:
+        if f.get("line") in meta_lines:
+            return True
         ex = (f.get("excerpt") or "").strip()
         return bool(META_RE.search(ex)) or ex.startswith((">", "#", "|"))
 
@@ -175,6 +230,15 @@ def check_chapter(path: str, ai_findings: list[dict], deg_findings: list[dict]) 
     t2_rate = 1000.0 * t2_n / max(1, wc)
     add("ai", "AI 味 Tier2 密度 <= 8/千字", t2_rate <= TIER2_MAX_PER_K,
         "%.1f/千字 (%d次)" % (t2_rate, t2_n), "<=8.0/千字")
+
+    # 突发性 / 用词多样性（平台检测器的核心口径）
+    bst = _burstiness(text)
+    for name, lo, hi in BURST_GATES:
+        if not bst:
+            add("ai", name, True, "样本不足", "跳过")
+            continue
+        v = bst[name]
+        add("ai", name, lo <= v <= hi, round(v, 4), f"{lo}-{hi}")
 
     hard_fail = [i for i in items if i["kind"] == "hard" and not i["ok"]]
     style_fail = [i for i in items if i["kind"] == "style" and not i["ok"]]
