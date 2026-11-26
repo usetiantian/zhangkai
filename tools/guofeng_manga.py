@@ -20,6 +20,7 @@
 import io
 import json
 import os
+import re
 import subprocess
 import sys
 import time
@@ -40,6 +41,37 @@ GUOFENG_STYLE = (
     "禁止平涂赛璐璐、暖黄复古色调、老电影质感、水墨晕染、颗粒感、复古滤镜、"
     "80年代动画感、Q版幼态、真人实拍、3D写实，以及任何现代物品。"
 )
+
+# 分镜规范（2026-11-26 定稿）
+# 来源：short-drama-director/references/visual-grammar.md + 本地 A/B/C/D 对照实验的结论。
+#
+# ⚠️ 实验结论（同一段素材、只换分镜、出片肉眼评比）：
+#    胜出的不是"镜头最多/最电影"的那版，而是**镜头数不变 + 台词镜时长够 + 运镜写具体**的那版。
+#    镜头更多的那两版（加顶视全景、加门缝空镜）反而被判"画面逻辑有瑕疵"。
+#    所以这里明确禁止为了电影感插入空镜或跳轴线。
+SHOT_RULES = """
+【分镜规范 — 严格照做】
+1. 运镜写成完整句法：初始构图 + 触发 + 路径/幅度/速度 + 终止构图 + 戏剧结果。
+   例：木桶完全离开井口时，摄影机以极缓慢的速度向前推进约半米，终止构图是林渺侧脸与井口同框，让观众先认出院落，再认出人。
+   禁止只写"镜头缓慢推进"这种没有触发、没有落点的运镜标签。
+2. 景别按**叙事功能**选，不按尺寸标签：建立环境用全景，表演与关系用中景/中近景，
+   不可忽视的微表情或关键证据用近景/特写。景别要有层级：建立常态之后，
+   只有信息或权力升级才靠近，高潮后退远表达代价。
+3. 写明机位与焦段，并说明角度变化改变了什么观看关系：
+   平视 eye（观察、不预判）/ 俯视 high（受制、暴露）/ 仰视 low（支配、决心）/
+   顶视 overhead（图案、困局、疏离）/ 倾斜 dutch（秩序失衡）/ 贴地 ground（脚步、逼近）。
+   焦段倾向：18-24mm 扩空间与速度，28-35mm 兼顾人物与竖屏纵深，40-50mm 自然克制，
+   65-85mm 压缩空间突出微表情，100mm+ 窥视或细节。
+4. **一个 Shot 只承担一个主要动作**。不要把眨眼、起步、落地、开门拆成亚秒镜头，
+   也不要在一个 Shot 里塞两个以上互不相干的主要动作。
+5. **镜头连贯优先于镜头数量**。不要插入与叙事无关的空镜（只有门缝、只有地面、只有特写），
+   不要突然换轴线或跳视角，不要改变观众已经建立的空间关系。宁可少一个镜头，
+   也不要让观众看不懂人在哪。
+6. **台词时长自检**：每个 <d> 台词的汉字数（含标点）必须 ≤ 该 Shot 秒数 × 4；
+   同时按不超过 3.5 字/秒 预留余量（一个 21 字的句子至少要 6 秒）。
+   台词放不下时**加长这个 Shot**，不要塞进别的 Shot 里。
+7. 绝对时间戳严格递增，最后一个 Shot 的结束点正好等于目标总时长。
+"""
 
 # 导演台节点在 API prompt 里的 id（wf2api 保留 UI 节点 id）
 STUDIO_NODE = "13"
@@ -92,13 +124,192 @@ def make_script(novel, duration=0, asset_context="（参考资产库为空）", 
     return ai_call(sys_prompt("create_script", asset_context), user)
 
 
-def make_storyboard(script, asset_context="（参考资产库为空）", context=""):
-    """剧本 -> 官方 H3 分镜。"""
+
+# ---------------- 分镜时间重排与自检（2026-11-26） ----------------
+# 病根：导演台规则「台词字数 ≤ 该 Shot 秒数 × 4」，但 LLM 常给台词镜只留 3 秒
+# → H3 念不完，后半段画面停住（实测相邻帧差异掉到 12/255，静止）。
+# 这里做**确定性**修正，不依赖 LLM 自觉：按台词字数给每个 Shot 算出最小时长，
+# 再把富余时间按原比例摊回去，总时长守恒（导演台的守恒门禁不能破）。
+_SHOT_AT = re.compile(r'At\s+(\d+):(\d+):(\d+(?:\.\d+)?)')
+_SHOT_HEAD = re.compile(r'\[Shot\s+(\d+)\]')
+_DIALOG = re.compile(r'<d>\[Chinese\](.*?)</d>', re.S)
+
+
+def _sec(h, m, s):
+    return int(h) * 3600 + int(m) * 60 + float(s)
+
+
+def _fmt(t):
+    t = round(t, 3)
+    h = int(t // 3600)
+    m = int((t % 3600) // 60)
+    return "%02d:%02d:%06.3f" % (h, m, t % 60)
+
+
+def split_shots(board):
+    """把官方分镜正文切成 [(序号, 整块文本)]。只处理 integrated_multimodal_description 段。"""
+    i = board.find("integrated_multimodal_description:")
+    if i < 0:
+        return board, []
+    j = board.find("overall_soundscape:", i)
+    if j < 0:
+        j = len(board)
+    head, desc, tail = board[:i], board[i:j], board[j:]
+    starts = [(int(m.group(1)), m.start()) for m in _SHOT_HEAD.finditer(desc)]
+    if not starts:
+        return head, [], tail
+    shots = []
+    for k, (num, st) in enumerate(starts):
+        end = starts[k + 1][1] if k + 1 < len(starts) else len(desc)
+        body = desc[st:end]
+        if k == 0 and st > 0:
+            body = desc[:st] + body      # 第一个 Shot 之前的内容别丢
+        shots.append([num, body])
+    return head, shots, tail
+
+
+def shot_chars(body):
+    return sum(len(x) for x in _DIALOG.findall(body))
+
+
+def rebalance_shots(board, rate=3.5, floor=1.5, total=None):
+    """按台词字数重排各 Shot 时长，总时长守恒。返回 (新分镜, 报告)。"""
+    head, shots, tail = split_shots(board)
+    if not shots:
+        return board, {"ok": False, "msg": "没解析到 Shot"}
+    # 当前时长：第 1 个从 0 开始，其余按 At 差值
+    cur = []
+    for idx, (num, body) in enumerate(shots):
+        m = _SHOT_AT.search(body)
+        cur.append(_sec(*m.groups()) if m else 0.0)
+    if not total:
+        total = storyboard_total(board)
+    durs = []
+    for idx in range(len(shots)):
+        start = cur[idx]
+        end = cur[idx + 1] if idx + 1 < len(shots) else total
+        durs.append(max(0.0, end - start))
+    mins = []
+    for idx, (num, body) in enumerate(shots):
+        c = shot_chars(body)
+        need = c / rate if c else 0.0
+        mins.append(max(durs[idx], need, floor if durs[idx] > 0 else 0.0))
+    sum_min = sum(mins)
+    report = {"ok": True, "shots": len(shots), "total": total, "sum_min": round(sum_min, 2),
+              "over": [], "moved": []}
+    if sum_min > total + 1e-6:
+        # 装不下 → 不是分镜能修的，得回剧本层拆场次/减台词
+        report["ok"] = False
+        report["msg"] = "台词总需求 %.1f 秒 > 总时长 %.1f 秒，需回剧本层拆场次" % (sum_min, total)
+        for idx, (num, body) in enumerate(shots):
+            if mins[idx] > durs[idx] + 1e-6:
+                report["over"].append({"shot": num, "need": round(mins[idx], 2),
+                                       "have": round(durs[idx], 2)})
+        return board, report
+    # 富余时间按原比例摊回去
+    slack = total - sum_min
+    new_durs = []
+    for idx in range(len(shots)):
+        share = (durs[idx] / total) if total > 0 else (1.0 / len(shots))
+        new_durs.append(mins[idx] + slack * share)
+    # 修正累计误差
+    acc = 0.0
+    for idx in range(len(new_durs) - 1):
+        new_durs[idx] = round(new_durs[idx], 3)
+        acc += new_durs[idx]
+    new_durs[-1] = round(total - acc, 3)
+    # 写回 At 时间戳
+    out = []
+    t = 0.0
+    for idx, (num, body) in enumerate(shots):
+        nb = body
+        if idx > 0:
+            nb = _SHOT_AT.sub("At " + _fmt(t) + ",", nb, count=1)
+        out.append(nb)
+        if abs(new_durs[idx] - durs[idx]) > 0.05:
+            report["moved"].append({"shot": num, "from": round(durs[idx], 2), "to": round(new_durs[idx], 2)})
+        t += new_durs[idx]
+    new_desc = "".join(out)
+    return head + new_desc + tail, report
+
+
+def _shot_span_last(body):
+    """最后一个 Shot 的默认跨度（没有下一个 At 时用）。"""
+    return 6.0
+
+
+def storyboard_total(board):
+    """分镜声明的总时长：优先 manifest，其次最后一个 At + 默认跨度。"""
+    m = re.search(r"source_total_duration_seconds:\s*([\d.]+)", board)
+    if m:
+        return float(m.group(1))
+    head, shots, tail = split_shots(board)
+    if not shots:
+        return 0.0
+    last = shots[-1][1]
+    mm = _SHOT_AT.search(last)
+    return (_sec(*mm.groups()) if mm else 0.0) + _shot_span_last(last)
+
+
+def audit_storyboard(board):
+    """检查台词时长是否合规（不修改，只报告）。"""
+    head, shots, tail = split_shots(board)
+    if not shots:
+        return []
+    cur = []
+    for num, body in shots:
+        m = _SHOT_AT.search(body)
+        cur.append(_sec(*m.groups()) if m else 0.0)
+    total = storyboard_total(board)
+    bad = []
+    for idx in range(len(shots)):
+        start = cur[idx]
+        end = cur[idx + 1] if idx + 1 < len(shots) else total
+        d = end - start
+        c = shot_chars(shots[idx][1])
+        if c and c > d * 4:
+            bad.append({"shot": shots[idx][0], "chars": c, "sec": round(d, 2), "limit": round(d * 4, 2)})
+    return bad
+
+
+def audit_segments(segments):
+    """检查导演台段表里每条台词的时长（出片前自检用）。"""
+    bad = []
+    for si, seg in enumerate(segments or []):
+        t = seg.get("prompt", "") or ""
+        dur = float(seg.get("duration") or 0)
+        ats = [float(x) for x in re.findall(r"At\s+\d+:\d+:([\d.]+)", t)]
+        bounds = [0.0] + ats + [dur]
+        parts = re.split(r"\[Shot\s+\d+\]", t)[1:]
+        for j, body in enumerate(parts):
+            if j + 1 >= len(bounds):
+                break
+            d = bounds[j + 1] - bounds[j]
+            for line in body.split("\n"):
+                for m in re.finditer(r"<d>\[Chinese\](.*?)</d>", line):
+                    n = len(m.group(1))
+                    if n > d * 4:
+                        bad.append({"seg": si + 1, "shot": j + 1, "chars": n,
+                                    "sec": round(d, 2), "limit": round(d * 4, 2)})
+    return bad
+
+def make_storyboard(script, asset_context="（参考资产库为空）", context="", rebalance=True):
+    """剧本 -> 官方 H3 分镜（带运镜规范 + 确定性时间重排）。"""
     user = script.strip()
     if context:
         user = context.strip() + NL2 + NL2 + user
     user = user + NL2 + NL2 + "风格要求：" + GUOFENG_STYLE
-    return ai_call(sys_prompt("create_storyboard", asset_context), user)
+    user = user + NL2 + NL2 + SHOT_RULES
+    board = ai_call(sys_prompt("create_storyboard", asset_context), user)
+    if rebalance:
+        fixed, rep = rebalance_shots(board)
+        if rep.get("moved"):
+            print("  时间重排:", rep["moved"])
+        if not rep.get("ok"):
+            print("  ⚠️ 时间重排装不下:", rep.get("msg"), rep.get("over"))
+        elif fixed != board:
+            board = fixed
+    return board
 
 
 BEAT_RULES = """
