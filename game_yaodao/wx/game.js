@@ -711,7 +711,7 @@ window.DATA = (function () {
       S.autoOn = true;
       if (!S.save.tipAuto) {
         S.save.tipAuto = 1;
-        S.hint = { txt: '10 秒不动会自动战斗，点右上 ✕ 可取消', t: 4.5 };
+        S.hint = { txt: '10 秒不动会自动战斗|点右上角 ✕ 可取消', t: 4.5 };
       }
     }
     if (!idle && S.autoOn && S.autoManual) { S.autoOn = false; }
@@ -788,7 +788,8 @@ window.DATA = (function () {
         /* 面向目标 + 起手挥砍 */
         h.face = tg.x >= h.x ? 1 : -1;
         h.swing = skinOf(S.save.wskin).swing ? skinOf(S.save.wskin).swing.dur : 0.24;
-        deal(tg, wpn.atk * wpn.dmgMul * (1 + (st.crit - 5) * 0.004) * rnd(0.92, 1.08), st, true);
+        var cboost = S.comboBuff > 0 ? 1.1 : 1;
+        deal(tg, wpn.atk * wpn.dmgMul * (1 + (st.crit - 5) * 0.004) * rnd(0.92, 1.08) * cboost, st, true);
       }
     }
 
@@ -978,7 +979,19 @@ window.DATA = (function () {
   function deal(m, dmg, st, isBasic) {
     var crit = Math.random() * 100 < st.crit;
     if (crit) dmg *= (1 + st.critDmg / 100);
-    if (isBasic && G.sfx) G.sfx.play(crit ? 'crit' : 'hit');
+    if (isBasic) {
+      if (G.sfx) G.sfx.play(crit ? 'crit' : 'hit');
+      /* 连击：2 秒内连续命中就累加 —— 这类游戏最经典的爽点机制 */
+      S.combo = (S.combo || 0) + 1;
+      S.comboT = 2.0;
+      if (S.combo > (S.comboBest || 0)) S.comboBest = S.combo;
+      if (S.combo > 0 && S.combo % 10 === 0) {
+        /* 每 10 连击：伤害 +10% 持续 5 秒 */
+        S.comboBuff = 5.0;
+        toast(S.combo + ' 连击！伤害 +10%');
+        if (G.sfx) G.sfx.play('rare');
+      }
+    }
     m.hp -= dmg; m.hit = 0.14;
     S.nums.push({ x: m.x + rnd(-10, 10), y: m.y - 18, v: -34, t: 0.85, txt: (crit ? '暴 ' : '') + Math.round(dmg), col: crit ? '#ffd23a' : '#fff' });
     if (st.vamp > 0) S.hero.hp = Math.min(S.hero.maxhp, S.hero.hp + dmg * st.vamp / 100 * 0.4);
@@ -1396,6 +1409,34 @@ window.DATA = (function () {
       ctx.restore();
     }
 
+    /* 连击数：右侧大字，越大越显眼 */
+    if (S.combo > 1) {
+      var cs2 = 1 + Math.min(0.6, S.combo / 60);
+      ctx.save();
+      ctx.translate(G.W - 100, G.H * 0.34);
+      ctx.scale(cs2, cs2);
+      ctx.globalAlpha = Math.min(1, S.comboT);
+      G.shadowText(S.combo + ' 连击', 0, 0, 22, S.combo >= 20 ? '#ffd23a' : '#ffe2b0', 'rgba(0,0,0,.85)');
+      ctx.restore();
+    }
+    /* 连击加成还在时的提示 */
+    if (S.comboBuff > 0) {
+      ctx.globalAlpha = Math.min(1, S.comboBuff / 1.2);
+      G.shadowText('伤害 +10%', G.W - 100, G.H * 0.34 + 28, 13, '#ffd23a', 'rgba(0,0,0,.85)');
+      ctx.globalAlpha = 1;
+    }
+    /* 受击红闪 */
+    if (h.hurt > 0) {
+      ctx.save();
+      ctx.globalAlpha = Math.min(0.4, h.hurt * 1.6);
+      var hg = ctx.createRadialGradient(G.W / 2, G.H / 2, G.H * 0.3, G.W / 2, G.H / 2, G.H * 0.7);
+      hg.addColorStop(0, 'rgba(255,0,0,0)');
+      hg.addColorStop(1, '#ff2a2a');
+      ctx.fillStyle = hg;
+      ctx.fillRect(0, 0, G.W, G.H);
+      ctx.restore();
+    }
+
     /* 升级金光 */
     if (S.lvFx > 0) {
       var lf = S.lvFx;
@@ -1412,7 +1453,11 @@ window.DATA = (function () {
     /* 新手提示 */
     if (S.hint && S.hint.t > 0) {
       ctx.globalAlpha = Math.min(1, S.hint.t);
-      G.shadowText(S.hint.txt, G.W / 2, G.H - 172, 15.5, '#ffe2b0', 'rgba(0,0,0,.9)');
+      /* 提示可能有两行（用 | 分隔），一行太宽会出屏 */
+      var hlines = String(S.hint.txt).split('|');
+      for (var hi = 0; hi < hlines.length; hi++) {
+        G.shadowText(hlines[hi], G.W / 2, G.H - 186 + hi * 22, 15, '#ffe2b0', 'rgba(0,0,0,.9)');
+      }
       ctx.globalAlpha = 1;
     }
 
@@ -1457,15 +1502,16 @@ window.DATA = (function () {
 
     /* 自动战斗提示条（可取消） */
     if (S.autoOn) {
-      G.round(G.W / 2 - 130, 62, 260, 32, 8, 'rgba(20,40,25,.82)');
-      G.text('自动战斗中 · 触碰屏幕切回', G.W / 2 - 8, 78, 13.5, '#b8f5c4', 'center');
-      S.btnAutoX = { x: G.W / 2 + 116, y: 78, r: 13 };
+      /* 放在顶部第二行下面 —— 原来压着 XP 条和静音键 */
+      G.round(G.W / 2 - 130, 100, 260, 32, 8, 'rgba(20,40,25,.82)');
+      G.text('自动战斗中 · 触碰屏幕切回', G.W / 2 - 8, 116, 13.5, '#b8f5c4', 'center');
+      S.btnAutoX = { x: G.W / 2 + 116, y: 116, r: 13 };
       G.circle(S.btnAutoX.x, S.btnAutoX.y, 12, 'rgba(255,255,255,.14)');
       G.text('✕', S.btnAutoX.x, S.btnAutoX.y, 13, '#fff', 'center', true);
     }
 
     /* 静音开关 */
-    S.btnMute = { x: 300, y: 74, r: 15 };
+    S.btnMute = { x: 146, y: 74, r: 15 };
     G.circle(S.btnMute.x, S.btnMute.y, 14, 'rgba(0,0,0,.45)', 'rgba(255,255,255,.2)', 1);
     G.text(G.sfx && G.sfx.mute ? '🔇' : '🔊', S.btnMute.x, S.btnMute.y, 13, '#e6dcc6', 'center', true);
 
@@ -1477,11 +1523,9 @@ window.DATA = (function () {
       S['btnS' + i] = { x: bx, y: by, r: 27 };
       var ready = h.skCd[i] <= 0;
       G.circle(bx, by, 27, ready ? 'rgba(60,70,90,.86)' : 'rgba(40,42,50,.7)', ready ? sk2.col : 'rgba(255,255,255,.2)', 2);
-      G.text(sk2.name, bx, by, 13, ready ? '#fff' : '#8a8a90', 'center', true);
-      G.text('Lv' + ((S.save.skLv && S.save.skLv[i]) || 1), bx, by + 15, 9.5, ready ? '#c9bda4' : '#6a6a70', 'center');
+      /* 冷却扇形遮罩要先画，名字再画上去，不然字会被盖住 */
       if (!ready) {
         var cd = h.skCd[i] / sk2.cd;      /* 1 = 刚放完，0 = 转好了 */
-        /* 扇形遮罩：比一根细条清楚多了 */
         ctx.save();
         ctx.fillStyle = 'rgba(0,0,0,.58)';
         ctx.beginPath();
@@ -1490,8 +1534,10 @@ window.DATA = (function () {
         ctx.closePath();
         ctx.fill();
         ctx.restore();
-        G.text(Math.ceil(h.skCd[i]) + 's', bx, by, 12, '#fff', 'center', true);
       }
+      G.text('Lv' + ((S.save.skLv && S.save.skLv[i]) || 1), bx, by - 14, 8.5, ready ? '#9aa0a8' : '#6a6a70', 'center');
+      G.text(sk2.name, bx, by - 1, 12.5, ready ? '#fff' : '#a8a8b0', 'center', true);
+      if (!ready) G.text(Math.ceil(h.skCd[i]) + 's', bx, by + 13, 12, '#ffd23a', 'center', true);
     }
 
     /* 底部功能键 */
@@ -2416,6 +2462,8 @@ window.DATA = (function () {
     if (!S) return;
     if (S.shake > 0) S.shake = Math.max(0, S.shake - dt);
     if (S.hint && S.hint.t > 0) S.hint.t -= dt;
+    if (S.comboT > 0) { S.comboT -= dt; if (S.comboT <= 0) S.combo = 0; }
+    if (S.comboBuff > 0) S.comboBuff -= dt;
     if (S.lvFx > 0) S.lvFx -= dt;
     if (S.banner && S.banner.t > 0) S.banner.t -= dt;
     if (S.state === 'pull' && S.pullT !== undefined) S.pullT += dt;
@@ -2447,6 +2495,7 @@ window.DATA = (function () {
       hero: null, mobs: [], drops: [], nums: [], eff: [],
       wave: 0, waveT: 1.2, map: D.MAPS[s.map] || D.MAPS[0],
       stats: null, autoOn: false, autoManual: false, pickPrev: null,
+      combo: 0, comboT: 0, comboBest: 0,   /* 连击 */
       skillQueued: [0, 0, 0], toast: '', toastT: 0,
       anim: { power: 0, powerFrom: 0 }, pullRes: []
     };
