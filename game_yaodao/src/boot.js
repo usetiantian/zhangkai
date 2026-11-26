@@ -42,6 +42,22 @@
   var SCALE = W / 750;
   var VW = 750, VH = H / SCALE;
 
+  /* ---------- 安全区（果子乐园同款方案，运行时真值不写死）----------
+     刘海/状态栏 + 微信胶囊 + 底部 Home 条。顶部基准 = max(safeArea.top,
+     胶囊.bottom + 6)；读不到（H5/旧库）退 0，布局用 max(默认值, SAFE) 兜底。
+     ⚠️ 右上角 (W-40, 40) 那类位置在真机上被胶囊盖住点不到 —— 黑屏事故
+     里张凯被困在背包就是这个问题，别再犯 */
+  var SAFE = { dTop: 0, dBottom: 0 };
+  try {
+    var sa = SYS.safeArea || null;
+    var mb = null;
+    if (WX.getMenuButtonBoundingClientRect) { try { mb = WX.getMenuButtonBoundingClientRect(); } catch (e2) { } }
+    var topCss = Math.max(sa ? sa.top : 0, mb ? (mb.bottom + 6) : 0);
+    var botCss = sa ? Math.max(0, (SYS.screenHeight || H) - sa.bottom) : 0;
+    SAFE.dTop = Math.ceil(topCss / SCALE);
+    SAFE.dBottom = Math.ceil(botCss / SCALE);
+  } catch (e) { }
+
   var cv = WX.createCanvas();
   var ctx = cv.getContext('2d');
   if (cv.width !== Math.round(W * DPR) || cv.height !== Math.round(H * DPR)) {
@@ -111,7 +127,7 @@
 
   /* ---------- 画布辅助 ---------- */
   var G = {
-    ctx: ctx, W: W, H: H, SCALE: SCALE, VW: VW, VH: VH, DPR: DPR,
+    ctx: ctx, W: W, H: H, SCALE: SCALE, VW: VW, VH: VH, DPR: DPR, SAFE: SAFE,
     T: T, save: save, persist: persist, loadSave: loadSave,
     now: function () { return Date.now(); }
   };
