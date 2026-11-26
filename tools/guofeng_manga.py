@@ -1084,6 +1084,74 @@ def concat_segments(videos, out_path, work_dir=None):
         raise RuntimeError("拼接失败: " + (r.stderr or b"").decode("utf-8", "replace")[-500:])
     return out_path
 
+
+# 定妆图 → input 目录里的文件名。
+# ⚠️ 林渺有三张：_00001 是平头（违反「发型红线：禁止平头」），
+#    _00002 才是高马尾+深青发带+灰蓝劲装+青葫，_00003 是俯拍纹理图。
+CHAR_REF = {
+    "林渺": "dingzhuang_林渺_00002.png",
+    "苏禾": "dingzhuang_苏禾_00001.png",
+    "王天霸": "dingzhuang_王天霸_00001.png",
+    "林守田": "dingzhuang_林守田_00001.png",
+    "林小雨": "dingzhuang_林小雨_00001.png",
+}
+MAX_REFS = 3      # H3 的参考预算：最多三条音频、参考图同理
+
+
+def characters_in(prompt):
+    """段表 prompt 里出场的角色（按首次出现顺序）。"""
+    out = []
+    for name in CHAR_REF:
+        if name in (prompt or "") and name not in out:
+            out.append(name)
+    out.sort(key=lambda n: (prompt or "").find(n))
+    return out
+
+
+def attach_refs(segments, max_refs=MAX_REFS, prefer_speakers=True):
+    """给每段填 refs（该段出场角色的定妆图）。
+
+    优先级：先按**说话人**排（说话的更要露脸），再按出场顺序。
+    返回 (segments, 报告)。
+    """
+    out = []
+    rep = {"filled": 0, "empty": [], "detail": []}
+    for i, seg in enumerate(segments or []):
+        s2 = dict(seg)
+        prompt = s2.get("prompt", "") or ""
+        chars = characters_in(prompt)
+        if prefer_speakers:
+            # 说话多的角色优先（先存好原顺序，排序时列表在变，index() 会失效）
+            order = {n: k for k, n in enumerate(chars)}
+            weight = {}
+            for who in speakers_in(prompt):
+                weight[who] = weight.get(who, 0) + 1
+            chars = sorted(chars, key=lambda n: (-weight.get(n, 0), order.get(n, 99)))
+        picked = [CHAR_REF[c] for c in chars if c in CHAR_REF][:max_refs]
+        s2["refs"] = picked
+        out.append(s2)
+        if picked:
+            rep["filled"] += 1
+        else:
+            rep["empty"].append(i + 1)
+        rep["detail"].append({"seg": i + 1, "chars": chars, "refs": picked})
+    return out, rep
+
+
+def asset_context(names=None, root=None):
+    """给导演台的素材目录清单，格式必须是「@编号（完整名称）」。
+
+    导演台的分镜系统提示词明确要求：每个 Shot 用到某项资产时
+    **逐字重复 @编号（完整名称）**，然后它会在 Ref2VA 重写时
+    映射成 <Picture N> / <Subject N>。格式不对 → 绑定不上 → 零参考图。
+    """
+    root = root or os.path.join(ROOT, "..", "manga", "渺渺仙途", "00_素材")
+    names = names or list(CHAR_REF.keys())
+    lines = []
+    for i, n in enumerate(names, 1):
+        lines.append("@%d %s" % (i, n))
+    return "\n".join(lines)
+
 def parse_segments(board, original_input="", seed=0):
     """官方分镜 -> 导演台 segments_json 数组（复用插件解析器）。"""
     proc = subprocess.run(
