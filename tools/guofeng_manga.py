@@ -598,34 +598,70 @@ def voice_table(path=None):
     return {}
 
 
-def speakers_in(prompt):
-    """段表 prompt 里真正说话的角色（按出现顺序，去重）。"""
+def character_names(ctx=""):
+    """从素材上下文里抽角色名（「林渺（十六岁少年男性…）」这种形式）。"""
+    out = []
+    for m in re.finditer(r"([\u4e00-\u9fff]{2,4})\uff08", ctx or ""):
+        n = m.group(1)
+        if n not in out:
+            out.append(n)
+    return out
+
+
+def _clean_speaker(txt):
+    """去掉「低声开口」「扬声开口」这类表演描述，只留人名。"""
+    return re.sub(r"(\u4f4e\u58f0|\u626c\u58f0|\u9ad8\u58f0|\u6c89\u58f0|\u8f7b\u58f0)?(\u5f00\u53e3|\u8bf4\u9053|\u8bf4|\u9053)", "", txt).strip()
+
+
+def speakers_in(prompt, names=None):
+    """段表 prompt 里真正说话的角色（按出现顺序，去重）。
+
+    ⚠️ 不能用「取冒号前最后 N 个字」这种粗暴办法：模型常写成
+    「林渺低声开口：<d>…</d>」「老沙哑的嗓音开口：<d>…</d>」，
+    抓出来的是描述词而不是人名 → 音色就绑错了人。
+    所以优先**按已知角色名匹配**，匹配不到再退回启发式。
+    """
     out = []
     for m in _DIALOG_TAG.finditer(prompt or ""):
         head = prompt[:m.start()]
-        mm = _NAME_COLON.search(head)
-        who = mm.group(1).strip() if mm else None
+        who = None
+        if names:
+            tail = head[-24:]
+            best = None
+            for n in names:
+                idx = tail.rfind(n)
+                if idx >= 0 and (best is None or idx > best[0]):
+                    best = (idx, n)
+            if best:
+                who = best[1]
+        if who is None:
+            mm = _NAME_COLON.search(head)
+            if mm:
+                who = _clean_speaker(mm.group(1).strip())
         if who and who not in out:
             out.append(who)
     return out
 
 
-def bind_voices(segment, table=None, max_refs=3):
+def bind_voices(segment, table=None, max_refs=3, names=None):
     """给一段自动绑音色：说话人 -> 音色文件 -> <Audio N> 绑定。
 
     返回 (segment, 报告)。说话人超过 max_refs 时只绑前 max_refs 个（按台词字数优先），
     其余报告为「需拆镜头或用后期声音」。
     """
     table = table if table is not None else voice_table()
+    if names is None:
+        names = list(table.keys())
     prompt = segment.get("prompt", "") or ""
-    speak = speakers_in(prompt)
+    speak = speakers_in(prompt, names)
     # 按台词字数排序（说话多的优先绑）
     weight = {}
     for m in _DIALOG_TAG.finditer(prompt):
         head = prompt[:m.start()]
         mm = _NAME_COLON.search(head)
         if mm:
-            weight[mm.group(1).strip()] = weight.get(mm.group(1).strip(), 0) + len(m.group(1))
+            who = _clean_speaker(mm.group(1).strip())
+            weight[who] = weight.get(who, 0) + len(m.group(1))
     ranked = sorted(speak, key=lambda x: -weight.get(x, 0))
     bound = [x for x in ranked if x in table][:max_refs]
     miss = [x for x in ranked if x not in table]
@@ -662,13 +698,15 @@ def bind_voices(segment, table=None, max_refs=3):
     return seg, {"ok": True, "bound": bound, "miss": miss, "dropped": dropped, "msg": msg}
 
 
-def audit_voices(segments, table=None):
+def audit_voices(segments, table=None, names=None):
     """体检：每段实际说话的人 vs 挂上去的音色，对不上就报出来。"""
     table = table if table is not None else voice_table()
+    if names is None:
+        names = list(table.keys())
     bad = []
     for i, seg in enumerate(segments or []):
         prompt = seg.get("prompt", "") or ""
-        speak = set(speakers_in(prompt))
+        speak = set(speakers_in(prompt, names))
         refs = seg.get("voice_refs") or []
         attached = set()
         for fn in refs:
@@ -744,6 +782,76 @@ def _extract_desc(block):
     return block[i + len("integrated_multimodal_description:"):j].strip()
 
 
+
+def _at_sec(body):
+    m = _SHOT_AT.search(body)
+    return _sec(*m.groups()) if m else None
+
+
+def retime_batch(desc, start, end):
+    """把一批分镜的 At 时间戳重排：严格递增、覆盖 [start,end]、总时长守恒。
+
+    为什么不信 LLM 的 At：实测它在同一批里会给出倒退的时间戳
+    （导致负的镜头时长），守恒门禁直接判整段作废。自己算才稳。
+    """
+    span = max(0.001, end - start)
+    parts = re.split(r"(?=\[Shot\s+\d+\])", desc)
+    shots = [p for p in parts if p.lstrip().startswith("[Shot")]
+    if len(shots) < 2:
+        return desc
+    starts = []
+    cur = float(start)
+    for p in shots:
+        t = _at_sec(p)
+        if t is None or t < cur or t > end:
+            t = cur
+        starts.append(t)
+        cur = t
+    durs = []
+    for i in range(len(shots)):
+        nxt = starts[i + 1] if i + 1 < len(shots) else float(end)
+        durs.append(max(0.0, nxt - starts[i]))
+    tot = sum(durs)
+    if tot <= 0:
+        durs = [span / len(shots)] * len(shots)
+        tot = span
+    # 台词镜不能短到念不完：每镜最小时长 = 字数/4（有富余的镜让出时间）
+    durs = [d * span / tot for d in durs]
+    mins = []
+    for i, p in enumerate(shots):
+        c = shot_chars(p)
+        mins.append(c / 4.0 if c else 0.0)
+    need = sum(mins)
+    if need <= span:
+        deficit = sum(max(0.0, mins[i] - durs[i]) for i in range(len(shots)))
+        if deficit > 0:
+            spare = sum(max(0.0, durs[i] - mins[i]) for i in range(len(shots)))
+            take = min(deficit, spare)
+            for i in range(len(shots)):
+                if take <= 0:
+                    break
+                if durs[i] < mins[i]:
+                    add = min(mins[i] - durs[i], take)
+                    durs[i] += add
+                    take -= add
+                else:
+                    give = min(durs[i] - mins[i], take)
+                    durs[i] -= give
+                    take -= give
+    out = []
+    t = float(start)
+    for i, p in enumerate(shots):
+        nb = p
+        # 第一个 Shot 不写 At（官方格式要求），后续每个 Shot 必写且严格递增
+        if i > 0:
+            nb = _SHOT_AT.sub("At " + _fmt(t) + ",", nb, count=1)
+            if _at_sec(nb) is None:
+                nb = re.sub(r"(\[Shot\s+\d+\])", r"\1 At " + _fmt(t) + ",", nb, count=1)
+        out.append(nb)
+        t += durs[i]
+    prefix = parts[0] if not parts[0].lstrip().startswith("[Shot") else ""
+    return prefix + "".join(out)
+
 def make_storyboard_batched(task, asset_context="（参考资产库为空）", batch_sec=75.0,
                             context="", verbose=True):
     """场次表 -> 官方 H3 分镜（按场次分批生成后拼接）。
@@ -774,7 +882,7 @@ def make_storyboard_batched(task, asset_context="（参考资产库为空）", b
                       sub + NL2 + NL2 + SHOT_RULES + NL2 + NL2 + SOUND_RULES
                       + NL2 + NL2 + "风格要求：" + GUOFENG_STYLE,
                       max_tokens=7000)
-        descs.append(_extract_desc(raw))
+        descs.append(retime_batch(_extract_desc(raw), start, end))
         k = raw.find("overall_soundscape:")
         if k >= 0:
             e = raw.find("non_diegetic_music:", k)
