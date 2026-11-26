@@ -26,6 +26,7 @@
       sex: '', skin: 'cs1', wskin: 'ws_blade_1',
       map: 0, wave: 0, best: 0, maxWave: 0, kills: 0, pulls: 0, pity: 0,
       dry: 0, essence: 0,     /* dry=连续没出史诗的击杀数（保底用），essence=精粹 */
+      gems: {},               /* 宝石库存 {gem_atk: 2, ...} */
       bag: [],
       /* 开局送一把基础妖刀 —— 空手开场没有打击感，也没法试强化 */
       equip: { weapon: { uid: 'start_w', q: 'g', qn: '精良妖刀', col: '#5ec46a', slot: 'weapon',
@@ -113,6 +114,11 @@
       var sl = D.SLOTS.filter(function (x) { return x.id === k; })[0];
       var base = { atk: 3, def: 2, hp: 14, crit: 1 }[sl.main] || 0;
       st[sl.main] += Math.round(base * q.mul * lm);
+      /* 镶嵌的宝石 */
+      if (it.gem) {
+        var gd = D.GEMS.filter(function (x) { return x.id === it.gem; })[0];
+        if (gd) st[gd.main] += gd.v;
+      }
     });
     // 宠物
     if (s.pet) {
@@ -289,6 +295,14 @@
       /* 掉落保底链：连续太久没出史诗就必出（不然非酋会彻底放弃）
          —— 调研口径的保底链：5-8 / 10-15 / 50 / 100 / 150-200 次 */
       var pityHit = s.dry >= D.PITY_EPIC;
+      /* 精英和妖王掉宝石（比装备低得多） */
+      if (m.boss && Math.random() < (m.boss === 2 ? 0.85 : 0.35)) {
+        var gd2 = weightedPick(D.GEMS);
+        s.gems = s.gems || {};
+        s.gems[gd2.id] = (s.gems[gd2.id] || 0) + 1;
+        S.nums.push({ x: m.x, y: m.y - 40, v: -30, t: 1.4, txt: gd2.name + ' ×1', col: gd2.col, big: true });
+        toast('获得 ' + gd2.name + '！');
+      }
       if (pityHit || Math.random() < m.drop * (1 + st.luck * D.LUCK_PER)) {
         var it = rollItem(st.luck);
         if (pityHit) {
@@ -889,6 +903,25 @@
     G.text('金币 ' + Math.floor(S.save.coins), 24, G.H - 150, 13, '#ffd76a', 'left');
     G.text('精粹 ' + Math.floor(S.save.essence || 0), 24, G.H - 128, 13, '#b9a8ff', 'left');
 
+    /* 宝石槽 */
+    var gd3 = it.gem ? D.GEMS.filter(function (x) { return x.id === it.gem; })[0] : null;
+    var sl2 = D.SLOTS.filter(function (x) { return x.id === it.slot; })[0];
+    var want = D.GEMS.filter(function (x) { return x.main === (sl2 ? sl2.main : 'atk'); })[0];
+    var have = want ? (S.save.gems && S.save.gems[want.id] || 0) : 0;
+    S.btnGem = { x: 26, y: y + 118, r: 22 };
+    G.round(4, y + 96, 44, 44, 10, gd3 ? gd3.col : 'rgba(255,255,255,.05)', gd3 ? gd3.col : 'rgba(255,255,255,.2)', 1.5);
+    if (gd3) {
+      G.circle(26, y + 118, 13, gd3.col);
+      G.text(gd3.name, 26, y + 118, 9, 'rgba(0,0,0,.6)', 'center', true);
+    } else {
+      G.text('槽', 26, y + 118, 12, '#6d675c', 'center');
+    }
+    G.text(gd3 ? (gd3.name + '（点击卸下）') : (have > 0 ? ('可镶嵌 ' + want.name + ' ×' + have) : '暂无宝石'),
+      58, y + 112, 12, gd3 ? gd3.col : (have > 0 ? '#7dff9b' : '#6d675c'), 'left');
+    G.text(gd3 ? ('+' + gd3.v + ' ' + (gd3.main === 'hp' ? '生命' : gd3.main === 'crit' ? '暴击' : gd3.main === 'def' ? '防御' : '攻击'))
+      : (have > 0 ? '点击镶嵌' : '精英/妖王掉落'),
+      58, y + 130, 10.5, '#8a8272', 'left');
+
     /* 强化按钮 */
     var coin = D.ENH_COIN(lv), ess = D.ENH_ESS(lv);
     var can = lv < D.ENH_MAX && S.save.coins >= coin && (S.save.essence || 0) >= ess;
@@ -940,6 +973,33 @@
     G.persist();
   }
 
+  function toggleGem() {
+    var s = S.save, it = s.equip[S.upSlot];
+    if (!it) return;
+    if (it.gem) {                       /* 已镶 → 卸下 */
+      s.gems = s.gems || {};
+      s.gems[it.gem] = (s.gems[it.gem] || 0) + 1;
+      var gd = D.GEMS.filter(function (x) { return x.id === it.gem; })[0];
+      delete it.gem;
+      S.stats = stats();
+      toast('卸下 ' + (gd ? gd.name : '宝石'));
+      G.persist();
+      return;
+    }
+    /* 没镶 → 找和部位主属性匹配的宝石 */
+    var sl = D.SLOTS.filter(function (x) { return x.id === it.slot; })[0];
+    var want = D.GEMS.filter(function (x) { return x.main === (sl ? sl.main : 'atk'); })[0];
+    if (!want) { toast('这个部位不能镶宝石'); return; }
+    s.gems = s.gems || {};
+    if (!(s.gems[want.id] > 0)) { toast('没有 ' + want.name + ' 了'); return; }
+    s.gems[want.id]--;
+    if (s.gems[want.id] <= 0) delete s.gems[want.id];
+    it.gem = want.id;
+    S.stats = stats();
+    toast('镶嵌 ' + want.name + '！');
+    G.persist();
+  }
+
   function salvageJunk() {
     var s = S.save, n = 0, gain = 0;
     for (var i = s.bag.length - 1; i >= 0; i--) {
@@ -980,7 +1040,9 @@
 
     /* 背包列表 */
     var y = 168, n = 0;
-    G.text('持有 ' + S.save.bag.length + ' 件', 24, y, 13, '#9c9484');
+    var gemTot = 0;
+    if (S.save.gems) for (var gk in S.save.gems) gemTot += S.save.gems[gk];
+    G.text('持有 ' + S.save.bag.length + ' 件' + (gemTot ? ' · 宝石 ' + gemTot : ''), 24, y, 13, '#9c9484');
     y += 22;
     for (var j = S.save.bag.length - 1; j >= 0 && n < 40; j--) {
       var it2 = S.save.bag[j];
@@ -1163,6 +1225,7 @@
       if (S.btnBack && hit(x, y, S.btnBack)) { S.state = 'bag'; return; }
       if (S.btnEnh && hit(x, y, S.btnEnh)) { doEnhance(); return; }
       if (S.btnSell && hit(x, y, S.btnSell)) { sellEquipped(); return; }
+      if (S.btnGem && hit(x, y, S.btnGem)) { toggleGem(); return; }
       return;
     }
     if (S.state === 'pets') {

@@ -89,7 +89,17 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   console.log('   强化等级 =', await ev('GAME.S().save.equip.weapon.lv'), '| 武器攻击 =', await ev('GAME.S().save.equip.weapon.atk'));
   await shot('04_强化三级');
 
-  console.log('⑥ 分解');
+  console.log('⑥ 镶嵌宝石');
+  await ev('GAME.S().save.gems={gem_atk:2,gem_hp:1};');
+  await sleep(400);
+  const gb = JSON.parse(await ev('(function(){var b=GAME.S().btnGem;return b?JSON.stringify(b):"none";})()'));
+  console.log('   宝石槽 =', gb);
+  await tap(gb.x, gb.y);
+  await sleep(700);
+  console.log('   已镶 =', await ev('GAME.S().save.equip.weapon.gem'), '| 剩余宝石 =', await ev('JSON.stringify(GAME.S().save.gems)'));
+  await shot('06_镶嵌后');
+
+  console.log('⑦ 分解');
   const sb2 = JSON.parse(await ev('(function(){var b=GAME.S().btnSell;return b?JSON.stringify(b):"none";})()'));
   await tap(sb2.x, sb2.y);
   await sleep(700);

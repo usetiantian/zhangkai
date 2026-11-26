@@ -55,6 +55,15 @@ window.DATA = (function () {
     { id: 'b1', name: '妖王·黑煞', hp: 1500, atk: 38, spd: 34, xp: 240, coin: 190, r: 46, drop: 0.42, col: '#5a1f2e', boss: 2 }
   ];
 
+  /* ---------- 宝石（镶嵌用）----------
+     每件装备 1 个宝石槽。宝石从精英/妖王掉。 */
+  var GEMS = [
+    { id: 'gem_atk', name: '红宝石', col: '#e0483f', main: 'atk', v: 9, w: 40 },
+    { id: 'gem_def', name: '蓝宝石', col: '#4a9bff', main: 'def', v: 7, w: 30 },
+    { id: 'gem_hp', name: '绿宝石', col: '#5ec46a', main: 'hp', v: 55, w: 20 },
+    { id: 'gem_crit', name: '紫宝石', col: '#b45cff', main: 'crit', v: 4, w: 10 }
+  ];
+
   /* ---------- 技能（3 个主动 + 1 普攻）---------- */
   var SKILLS = [
     { id: 's1', name: '剑气', cd: 3.0, cost: 0, dmg: 1.6, range: 130, aoe: 0, col: '#8fe3ff' },
@@ -150,7 +159,7 @@ window.DATA = (function () {
   return {
     QUAL: QUAL, QUAL_RANK: QUAL_RANK, SALVAGE_VALUE: SALVAGE_VALUE,
     SLOTS: SLOTS, WEAPONS: WEAPONS, AFFIX: AFFIX, MONS: MONS, SKILLS: SKILLS,
-    PETS: PETS, MAPS: MAPS, WEAPON_SKIN: WEAPON_SKIN, CHAR_SKIN: CHAR_SKIN, DAGGER: DAGGER,
+    PETS: PETS, MAPS: MAPS, GEMS: GEMS, WEAPON_SKIN: WEAPON_SKIN, CHAR_SKIN: CHAR_SKIN, DAGGER: DAGGER,
     WS_MIGRATE: WS_MIGRATE,
     /* 主角贴图（按性别）。img 没加载出来就回退到程序化画的小人。 */
     HERO_IMG: { m: 'run/hero_m.png', f: 'run/hero_f.png' },
