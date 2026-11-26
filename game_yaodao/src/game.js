@@ -251,10 +251,12 @@
           if (S.skillQueued[i]) S.skillQueued[i] = false;
           if (sk.aoe) {
             S.mobs.forEach(function (m) { if (dist(m, h) <= sk.range) deal(m, sk.dmg * (st.atk * 0.22), st, false); });
-            S.eff.push({ x: h.x, y: h.y, r: sk.range, t: 0, col: sk.col, kind: 'ring' });
+            /* 旋风(1) = 风环扩散；妖火(2) = 火球爆开 */
+            S.eff.push({ x: h.x, y: h.y, r: 0, r2: sk.range, t: 0.5, dur: 0.5, col: sk.col, kind: i === 1 ? 'wind' : 'fire' });
           } else {
             deal(tgt, sk.dmg * (st.atk * 0.30), st, false);
-            S.eff.push({ x: tgt.x, y: tgt.y, r: 60, t: 0, col: sk.col, kind: 'boom' });
+            /* 剑气(0) = 从主角射出的一道光刃 */
+            S.eff.push({ x: h.x, y: h.y - 14, tx: tgt.x, ty: tgt.y - 10, t: 0.28, dur: 0.28, col: sk.col, kind: 'beam' });
           }
         }
       }
@@ -326,6 +328,8 @@
     S.nums.forEach(function (n) { n.t -= dt; n.y += n.v * dt; });
     S.nums = S.nums.filter(function (n) { return n.t > 0; });
     S.eff.forEach(function (e) { e.t -= dt; e.r += (e.kind === 'ring' ? 260 : 140) * dt; });
+    /* ⚠️ 过滤条件是 t > 0，所以 push 时 t 必须给正数（给 0 会被这一帧立刻删掉，
+       特效一帧都显示不出来 —— 这个坑让三个技能从上线起就没特效）。 */
     S.eff = S.eff.filter(function (e) { return e.t > 0; });
 
     /* —— 战力跳变动画 —— */
@@ -550,10 +554,40 @@
     ctx.save(); ctx.translate(sx, sy);
     drawGround(sx, sy);
 
-    /* 掉落物 */
+    /* 掉落物：品质光柱 + 图标 + 弹出动画 */
     S.drops.forEach(function (d) {
-      G.circle(d.x, d.y, 9, d.it.col);
-      G.text(d.it.qn, d.x, d.y - 18, 13, d.it.col, 'center', true);
+      var rk = D.QUAL_RANK[d.it.q] || 0;
+      var pop = Math.min(1, d.t / 0.25);      /* 弹出 */
+      var sc = 0.5 + pop * 0.5 + Math.max(0, 1 - d.t * 2) * 0.35;
+      /* 光柱：史诗以上才明显 */
+      if (rk >= 2) {
+        var gg = ctx.createLinearGradient(d.x, d.y - 46, d.x, d.y + 6);
+        gg.addColorStop(0, 'rgba(255,255,255,0)');
+        gg.addColorStop(1, d.it.col);
+        ctx.save();
+        ctx.globalAlpha = (rk >= 3 ? 0.55 : 0.3) * pop;
+        ctx.fillStyle = gg;
+        ctx.fillRect(d.x - 7 * sc, d.y - 46, 14 * sc, 52);
+        ctx.restore();
+      }
+      /* 图标 */
+      var img = null;
+      if (d.it.wtype) {
+        var sk = D.WEAPON_SKIN.filter(function (w) { return w.w === d.it.wtype; })[0];
+        if (sk && S.wskinImg) img = S.wskinImg[sk.id];
+      }
+      ctx.save();
+      ctx.globalAlpha = pop;
+      if (img) {
+        var ww = img.width / img.height * 30 * sc;
+        ctx.drawImage(img, d.x - ww / 2, d.y - 26 * sc, ww, 30 * sc);
+      } else {
+        G.circle(d.x, d.y - 9 * sc, 9 * sc, d.it.col, 'rgba(255,255,255,.5)', 1.5);
+        G.circle(d.x - 3 * sc, d.y - 12 * sc, 2.4 * sc, 'rgba(255,255,255,.75)');
+      }
+      ctx.restore();
+      /* 名字 */
+      G.text(d.it.qn, d.x, d.y - 32 * sc, 12 + (rk >= 3 ? 2 : 0), d.it.col, 'center', true);
     });
 
     /* 怪物 */
@@ -651,9 +685,64 @@
 
     /* 特效 */
     S.eff.forEach(function (e) {
-      ctx.globalAlpha = Math.max(0, e.t / 0.45);
-      G.circle(e.x, e.y, e.r, null, e.col, 3);
+      var dur = e.dur || 0.45;
+      var k = 1 - e.t / dur;                 /* 1 → 0 */
+      if (k <= 0) { ctx.globalAlpha = 1; return; }
+      ctx.save();
+      if (e.kind === 'beam') {
+        /* 剑气：一道从主角射向目标的光刃 */
+        ctx.globalAlpha = k;
+        var dx = e.tx - e.x, dy = e.ty - e.y, len = Math.sqrt(dx * dx + dy * dy);
+        var ux = dx / len, uy = dy / len;
+        ctx.strokeStyle = e.col;
+        ctx.lineWidth = 5 + 12 * k;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(e.x, e.y);
+        ctx.lineTo(e.x + ux * len * Math.min(1, (1 - k) * 3.2), e.y + uy * len * Math.min(1, (1 - k) * 3.2));
+        ctx.stroke();
+        ctx.globalAlpha = k * 0.85;
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 2.5;
+        ctx.stroke();
+      } else if (e.kind === 'wind') {
+        /* 旋风：一圈扩散的风弧 */
+        var rr = e.r2 * Math.min(1, (1 - k) * 2.6);
+        ctx.globalAlpha = Math.min(1, k * 1.15);
+        ctx.strokeStyle = e.col;
+        ctx.lineWidth = 4 + 6 * k;
+        for (var a = 0; a < 4; a++) {
+          ctx.beginPath();
+          ctx.arc(e.x, e.y, rr, a * 2.09 + (1 - k) * 1.6, a * 2.09 + (1 - k) * 1.6 + 1.1);
+          ctx.stroke();
+        }
+      } else if (e.kind === 'fire') {
+        /* 妖火：一团炸开的火 */
+        var fr = (e.r2 || 120) * 0.52 * (0.4 + k * 0.9);
+        ctx.globalAlpha = k * 0.85;
+        var fg = ctx.createRadialGradient(e.x, e.y, 2, e.x, e.y, fr);
+        fg.addColorStop(0, '#fff3c4');
+        fg.addColorStop(0.45, e.col);
+        fg.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = fg;
+        ctx.beginPath(); ctx.arc(e.x, e.y, fr, 0, 6.2832); ctx.fill();
+        /* 火星 */
+        ctx.globalAlpha = k;
+        ctx.fillStyle = e.col;
+        for (var f = 0; f < 7; f++) {
+          var fa = f * 0.897 + (1 - k) * 2;
+          var fd = fr * (0.7 + (f % 3) * 0.25);
+          ctx.beginPath();
+          ctx.arc(e.x + Math.cos(fa) * fd, e.y + Math.sin(fa) * fd * 0.6, 3 + (f % 3), 0, 6.2832);
+          ctx.fill();
+        }
+      } else {
+        /* 旧特效：t 从 dur 开始倒计时 */
+        ctx.globalAlpha = Math.max(0, e.t / dur);
+        G.circle(e.x, e.y, e.r, null, e.col, 3);
+      }
       ctx.globalAlpha = 1;
+      ctx.restore();
     });
 
     /* 飘字 */
