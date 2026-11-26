@@ -167,7 +167,25 @@ SKIN_TMPL = ('masterpiece, ' + STYLE + ', '
              'plain light gray background, '
              'crisp edges, no weapon, no text')
 
+# 宠物（3 只）
+PET_ART = [
+    ('beast', 'a cute fluffy white spirit tiger cub with blue flame wisps '
+              'around its paws and a small blue horn, big friendly eyes'),
+    ('mount', 'a sturdy dark gray qilin beast with a green mane, single horn '
+              'on its head, four hooves, calm proud expression'),
+    ('pal', 'a small crimson red panda spirit with fluffy striped tail '
+            'and a green leaf on its head, cheerful expression'),
+]
+
+PET_TMPL = ('masterpiece, ' + STYLE + ', '
+            'a chibi pet game character, ' + '{desc}, '
+            'whole creature fully visible, centered, '
+            'standing on the ground, top-down three-quarter view, '
+            'plain light gray background, '
+            'crisp edges, no human, no character')
+
 BATCHES = {
+    'pet': [(n + '.png', PET_TMPL.format(desc=d), 768, 768) for n, d in PET_ART],
     'skin': [(n + '.png', SKIN_TMPL.format(desc=d), 768, 768) for n, d in SKIN_ART],
     'mob': [(n + '.png', MOB_TMPL.format(desc=d), 768, 768) for n, d in MONS_ART],
     'map': [(n + '.png', MAP_TMPL.format(desc=d), 1024, 1024) for n, d in MAPS_ART],

@@ -55,7 +55,7 @@ def build_wx():
 
 
 # 只有处理过的成品目录进包（原始 768px 大图不进）
-SHIP_DIRS = ['run', 'weapon', 'mob', 'map', 'sfx']
+SHIP_DIRS = ['run', 'weapon', 'mob', 'map', 'sfx', 'pet']
 
 
 def copy_assets():

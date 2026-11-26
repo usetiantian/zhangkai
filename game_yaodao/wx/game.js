@@ -84,9 +84,9 @@ window.DATA = (function () {
 
   /* ---------- 宠物（3 位，词条轴）---------- */
   var PETS = [
-    { id: 'beast', name: '灵兽', slot: 'beast', main: 'atk', base: 0.9 },
-    { id: 'mount', name: '坐骑', slot: 'mount', main: 'aspd', base: 0.8 },
-    { id: 'pal', name: '伙伴', slot: 'pal', main: 'drop', base: 0.8 }
+    { id: 'beast', name: '灵兽', slot: 'beast', main: 'atk', base: 0.9, img: 'pet/beast.png' },
+    { id: 'mount', name: '坐骑', slot: 'mount', main: 'aspd', base: 0.8, img: 'pet/mount.png' },
+    { id: 'pal', name: '伙伴', slot: 'pal', main: 'drop', base: 0.8, img: 'pet/pal.png' }
   ];
 
   /* ---------- 地图 ---------- */
@@ -367,7 +367,25 @@ window.DATA = (function () {
       try {
         if (a.currentTime !== undefined) a.currentTime = 0;
         if (a.volume !== undefined) a.volume = vol === undefined ? 0.6 : vol;
-        a.play();
+        /* ⚠️ 浏览器 play() 返回 Promise，没经过用户手势时会 reject
+           （"the user didn't interact with the document first"）——
+           不接住就是一条未捕获异常。微信那边是同步的，没这个问题。 */
+        var pr = a.play();
+        if (pr && pr.catch) pr.catch(function () { });
+      } catch (e) { }
+    },
+    /* 浏览器要"用户手势"才允许出声：第一次点击时先偷偷播一个极轻的声音解锁 */
+    unlock: function () {
+      if (G.sfx._unlocked) return;
+      G.sfx._unlocked = true;
+      try {
+        var pool = SFX_POOL['click'];
+        if (!pool || !pool.length) return;
+        var a = pool[0];
+        if (a.volume !== undefined) a.volume = 0.01;
+        var pr = a.play();
+        if (pr && pr.catch) pr.catch(function () { });
+        if (a.volume !== undefined) a.volume = 0.6;
       } catch (e) { }
     }
   };
@@ -617,6 +635,11 @@ window.DATA = (function () {
     S.mobs = []; S.drops = []; S.nums = []; S.eff = [];
     S.waveT = 1.2; S.spawned = 0; S.map = D.MAPS[S.save.map] || D.MAPS[0];
     S.anim = { power: 0, powerFrom: 0 };
+    /* 新手提示：只提示一次 */
+    if (!S.save.tipMove) {
+      S.save.tipMove = 1;
+      S.hint = { txt: '拖动屏幕移动角色', t: 4 };
+    }
   }
 
   function spawnMob(id) {
@@ -653,7 +676,13 @@ window.DATA = (function () {
 
     /* —— 自动战斗：10 秒无操作接管 —— */
     var idle = (Date.now() - G.T.lastInput) > 10000;
-    if (idle && !S.autoOn) { S.autoOn = true; }
+    if (idle && !S.autoOn) {
+      S.autoOn = true;
+      if (!S.save.tipAuto) {
+        S.save.tipAuto = 1;
+        S.hint = { txt: '10 秒不动会自动战斗，点右上 ✕ 可取消', t: 4.5 };
+      }
+    }
     if (!idle && S.autoOn && S.autoManual) { S.autoOn = false; }
 
     /* —— 移动 —— */
@@ -871,6 +900,12 @@ window.DATA = (function () {
         if (cs.img) list.push({ key: cs.id, path: 'assets/' + cs.img });
       }
     }
+    if (D.PETS) {
+      for (var pk in D.PETS) {
+        var ps = D.PETS[pk];
+        if (ps.img) list.push({ key: 'pet_' + ps.id, path: 'assets/' + ps.img });
+      }
+    }
     if (D.MONS_IMG) {
       for (var mk in D.MONS_IMG) list.push({ key: mk, path: 'assets/' + D.MONS_IMG[mk] });
     }
@@ -883,6 +918,9 @@ window.DATA = (function () {
       /* 人物皮肤贴图（cs1~cs4），跟武器贴图分开存 */
       S.charImg = {};
       if (D.CHAR_SKIN) for (var ck2 in D.CHAR_SKIN) S.charImg[D.CHAR_SKIN[ck2].id] = out[D.CHAR_SKIN[ck2].id] || null;
+      /* 宠物贴图 */
+      S.petImg = {};
+      if (D.PETS) for (var pk2 in D.PETS) S.petImg[D.PETS[pk2].id] = out['pet_' + D.PETS[pk2].id] || null;
       /* 怪物和地图底单独拎出来，避免和武器的 key 混在一起 */
       S.mobImg = {}; S.mapImg = {};
       for (var k in out) {
@@ -1295,6 +1333,13 @@ window.DATA = (function () {
       ctx.scale(sc, sc);
       G.shadowText(S.banner.txt, 0, 0, 30, S.banner.col, 'rgba(0,0,0,.9)');
       ctx.restore();
+    }
+
+    /* 新手提示 */
+    if (S.hint && S.hint.t > 0) {
+      ctx.globalAlpha = Math.min(1, S.hint.t);
+      G.shadowText(S.hint.txt, G.W / 2, G.H - 172, 15.5, '#ffe2b0', 'rgba(0,0,0,.9)');
+      ctx.globalAlpha = 1;
     }
 
     /* 屏幕暗角：把注意力收到中间的角色上 */
@@ -1871,7 +1916,13 @@ window.DATA = (function () {
     }
     var p = D.PETS.filter(function (x) { return x.id === s.pet.slot; })[0];
     G.round(20, 80, G.W - 40, 120, 10, 'rgba(255,255,255,.05)', 'rgba(255,255,255,.12)');
-    G.circle(G.W / 2, 128, 34, '#6a7f9a');
+    var pimg = S.petImg && S.petImg[s.pet.slot];
+    if (pimg) {
+      var ph = 96, pw = pimg.width / pimg.height * ph;
+      ctx.drawImage(pimg, G.W / 2 - pw / 2, 88, pw, ph);
+    } else {
+      G.circle(G.W / 2, 128, 34, '#6a7f9a');
+    }
     G.text(p.name, G.W / 2, 128, 17, '#fff', 'center', true);
     G.text('Lv ' + s.petLv + ' / ' + D.PET_MAX_LV, G.W / 2, 172, 14, '#c9bda4', 'center');
     /* 心情条 */
@@ -1946,7 +1997,7 @@ window.DATA = (function () {
   /* ============ 输入分发 ============ */
   function onDown(x, y) {
     S.lastTap = { x: x, y: y };      /* 埋点：看收到的实际坐标 */
-    if (G.sfx) G.sfx.play('click', 0.35);
+    if (G.sfx) { G.sfx.unlock(); G.sfx.play('click', 0.35); }
     S.autoManual = true;           // 一操作就交还控制权
     if (S.autoOn) { S.autoOn = false; S.autoManual = false; }
     if (S.state === 'pick') {
@@ -2199,6 +2250,7 @@ window.DATA = (function () {
   function update(dt) {
     if (!S) return;
     if (S.shake > 0) S.shake = Math.max(0, S.shake - dt);
+    if (S.hint && S.hint.t > 0) S.hint.t -= dt;
     if (S.banner && S.banner.t > 0) S.banner.t -= dt;
     if (S.state === 'pull' && S.pullT !== undefined) S.pullT += dt;
     if (S.state === 'battle') {

@@ -84,9 +84,9 @@ window.DATA = (function () {
 
   /* ---------- 宠物（3 位，词条轴）---------- */
   var PETS = [
-    { id: 'beast', name: '灵兽', slot: 'beast', main: 'atk', base: 0.9 },
-    { id: 'mount', name: '坐骑', slot: 'mount', main: 'aspd', base: 0.8 },
-    { id: 'pal', name: '伙伴', slot: 'pal', main: 'drop', base: 0.8 }
+    { id: 'beast', name: '灵兽', slot: 'beast', main: 'atk', base: 0.9, img: 'pet/beast.png' },
+    { id: 'mount', name: '坐骑', slot: 'mount', main: 'aspd', base: 0.8, img: 'pet/mount.png' },
+    { id: 'pal', name: '伙伴', slot: 'pal', main: 'drop', base: 0.8, img: 'pet/pal.png' }
   ];
 
   /* ---------- 地图 ---------- */

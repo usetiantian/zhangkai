@@ -31,6 +31,7 @@ TARGETS = {
     'weapon': ('weapon', 128, True, 'png'),
     'mob': ('mob', 192, True, 'png'),
     'skin': ('run', 256, False, 'png'),
+    'pet': ('pet', 192, True, 'png'),
     'map': ('map', 512, True, 'jpg'),
 }
 

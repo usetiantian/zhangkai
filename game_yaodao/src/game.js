@@ -159,6 +159,11 @@
     S.mobs = []; S.drops = []; S.nums = []; S.eff = [];
     S.waveT = 1.2; S.spawned = 0; S.map = D.MAPS[S.save.map] || D.MAPS[0];
     S.anim = { power: 0, powerFrom: 0 };
+    /* 新手提示：只提示一次 */
+    if (!S.save.tipMove) {
+      S.save.tipMove = 1;
+      S.hint = { txt: '拖动屏幕移动角色', t: 4 };
+    }
   }
 
   function spawnMob(id) {
@@ -195,7 +200,13 @@
 
     /* —— 自动战斗：10 秒无操作接管 —— */
     var idle = (Date.now() - G.T.lastInput) > 10000;
-    if (idle && !S.autoOn) { S.autoOn = true; }
+    if (idle && !S.autoOn) {
+      S.autoOn = true;
+      if (!S.save.tipAuto) {
+        S.save.tipAuto = 1;
+        S.hint = { txt: '10 秒不动会自动战斗，点右上 ✕ 可取消', t: 4.5 };
+      }
+    }
     if (!idle && S.autoOn && S.autoManual) { S.autoOn = false; }
 
     /* —— 移动 —— */
@@ -413,6 +424,12 @@
         if (cs.img) list.push({ key: cs.id, path: 'assets/' + cs.img });
       }
     }
+    if (D.PETS) {
+      for (var pk in D.PETS) {
+        var ps = D.PETS[pk];
+        if (ps.img) list.push({ key: 'pet_' + ps.id, path: 'assets/' + ps.img });
+      }
+    }
     if (D.MONS_IMG) {
       for (var mk in D.MONS_IMG) list.push({ key: mk, path: 'assets/' + D.MONS_IMG[mk] });
     }
@@ -425,6 +442,9 @@
       /* 人物皮肤贴图（cs1~cs4），跟武器贴图分开存 */
       S.charImg = {};
       if (D.CHAR_SKIN) for (var ck2 in D.CHAR_SKIN) S.charImg[D.CHAR_SKIN[ck2].id] = out[D.CHAR_SKIN[ck2].id] || null;
+      /* 宠物贴图 */
+      S.petImg = {};
+      if (D.PETS) for (var pk2 in D.PETS) S.petImg[D.PETS[pk2].id] = out['pet_' + D.PETS[pk2].id] || null;
       /* 怪物和地图底单独拎出来，避免和武器的 key 混在一起 */
       S.mobImg = {}; S.mapImg = {};
       for (var k in out) {
@@ -837,6 +857,13 @@
       ctx.scale(sc, sc);
       G.shadowText(S.banner.txt, 0, 0, 30, S.banner.col, 'rgba(0,0,0,.9)');
       ctx.restore();
+    }
+
+    /* 新手提示 */
+    if (S.hint && S.hint.t > 0) {
+      ctx.globalAlpha = Math.min(1, S.hint.t);
+      G.shadowText(S.hint.txt, G.W / 2, G.H - 172, 15.5, '#ffe2b0', 'rgba(0,0,0,.9)');
+      ctx.globalAlpha = 1;
     }
 
     /* 屏幕暗角：把注意力收到中间的角色上 */
@@ -1413,7 +1440,13 @@
     }
     var p = D.PETS.filter(function (x) { return x.id === s.pet.slot; })[0];
     G.round(20, 80, G.W - 40, 120, 10, 'rgba(255,255,255,.05)', 'rgba(255,255,255,.12)');
-    G.circle(G.W / 2, 128, 34, '#6a7f9a');
+    var pimg = S.petImg && S.petImg[s.pet.slot];
+    if (pimg) {
+      var ph = 96, pw = pimg.width / pimg.height * ph;
+      ctx.drawImage(pimg, G.W / 2 - pw / 2, 88, pw, ph);
+    } else {
+      G.circle(G.W / 2, 128, 34, '#6a7f9a');
+    }
     G.text(p.name, G.W / 2, 128, 17, '#fff', 'center', true);
     G.text('Lv ' + s.petLv + ' / ' + D.PET_MAX_LV, G.W / 2, 172, 14, '#c9bda4', 'center');
     /* 心情条 */
@@ -1741,6 +1774,7 @@
   function update(dt) {
     if (!S) return;
     if (S.shake > 0) S.shake = Math.max(0, S.shake - dt);
+    if (S.hint && S.hint.t > 0) S.hint.t -= dt;
     if (S.banner && S.banner.t > 0) S.banner.t -= dt;
     if (S.state === 'pull' && S.pullT !== undefined) S.pullT += dt;
     if (S.state === 'battle') {
