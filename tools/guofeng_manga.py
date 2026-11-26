@@ -1051,6 +1051,39 @@ def audit_at_monotonic(board):
                    else ("❌ %d 处问题：%s" % (len(bad), "；".join(
                        "Shot%d %s" % (b["shot"], b["why"]) for b in bad[:5])))}
 
+
+def concat_segments(videos, out_path, work_dir=None):
+    """导演台是**每段出一个 mp4** → 拼成整集。
+
+    ⚠️ 之前 make5min 把所有段存成同一个文件名 → 最后一个把前面的全盖了，
+    成片只剩 5.67 秒（实际渲了 24 段 / 300 秒）。
+    用法：concat_segments([(src_path,), ...], out_path)
+    """
+    import shutil
+    import tempfile
+    FFMPEG = os.environ.get("FFMPEG_BIN", "C:/Users/87999/AppData/Roaming/bilibili/ffmpeg/ffmpeg.exe")
+    if not videos:
+        return None
+    tmp = work_dir or tempfile.mkdtemp(prefix="manga_concat_")
+    if not os.path.isdir(tmp):
+        os.makedirs(tmp)
+    parts = []
+    for i, src in enumerate(videos, 1):
+        dst = os.path.join(tmp, "seg%03d.mp4" % i)
+        shutil.copy2(src, dst)
+        parts.append(dst)
+    lst = os.path.join(tmp, "list.txt")
+    nl = chr(10)
+    with io.open(lst, "w", encoding="utf-8", newline=nl) as f:
+        for i in range(1, len(parts) + 1):
+            f.write("file 'seg%03d.mp4'" % i + nl)
+    cmd = [FFMPEG, "-y", "-f", "concat", "-safe", "0", "-i", "list.txt",
+           "-c", "copy", out_path]
+    r = subprocess.run(cmd, cwd=tmp, capture_output=True, timeout=1800)
+    if r.returncode != 0:
+        raise RuntimeError("拼接失败: " + (r.stderr or b"").decode("utf-8", "replace")[-500:])
+    return out_path
+
 def parse_segments(board, original_input="", seed=0):
     """官方分镜 -> 导演台 segments_json 数组（复用插件解析器）。"""
     proc = subprocess.run(
