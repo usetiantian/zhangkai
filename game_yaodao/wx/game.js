@@ -1004,6 +1004,13 @@ window.DATA = (function () {
   /* ============ 界面 ============ */
   function toast(t) { S.toast = t; S.toastT = 2.0; }
 
+  /* 假榜单的数据（固定，跨存档不变） */
+  var FAKE_NAMES = ['剑无痕', '逍遥客', '叶良辰', '一剑霜寒', '墨白', '孤星', '云中君',
+    '半盏茶', '无名氏', '风起时', '青衫客', '落九霄', '不归人', '长安月',
+    '白露', '断浪', '孤舟', '拾光', '南风过境', '小酌'];
+  var FAKE_LADDER = [9600, 8200, 7000, 6000, 5200, 4500, 3900, 3400, 3000, 2650,
+    2350, 2100, 1850, 1650, 1450, 1280, 1120, 980, 850, 720];
+
   /* ---- 按钮系统 ---- */
   /* hit(x, y, b)：b 是**按钮对象**（含 x/y/r），不是半径数字。
      ⚠️ 之前写成 hit(x,y,r) 却用 r.x → NaN 比较恒为 false → 所有按钮都点不动。 */
@@ -1949,26 +1956,54 @@ window.DATA = (function () {
   /* ============ 排行 ============ */
   function drawRank() {
     G.round(0, 0, G.W, G.H, 0, 'rgba(12,12,14,.96)');
-    G.text('本机排行', 24, 40, 24, '#ffd88e', 'left', true);
+    G.text('排行榜', 24, 40, 24, '#ffd88e', 'left', true);
     S.btnBack = { x: G.W - 40, y: 40, r: 17 };
     G.circle(S.btnBack.x, S.btnBack.y, 16, 'rgba(255,255,255,.12)');
     G.text('✕', S.btnBack.x, S.btnBack.y, 14, '#fff', 'center', true);
-    var s = S.save, y = 96;
+    var s = S.save, y = 78;
+
+    /* 假榜单：固定阶梯战力 + 玩家按自己的战力插进去。
+       单机游戏没有真排行，但一个空空的"本机记录"面板很没劲 ——
+       给个像样的榜单，玩家才有"我要爬上去"的目标。 */
+    var list = [];
+    for (var i = 0; i < FAKE_NAMES.length; i++) list.push({ n: FAKE_NAMES[i], p: FAKE_LADDER[i], me: false });
+    var myP = power();
+    list.push({ n: '我', p: myP, me: true });
+    list.sort(function (a, b) { return b.p - a.p; });
+    var myRank = 0;
+    for (var j = 0; j < list.length; j++) { if (list[j].me) { myRank = j + 1; break; } }
+    var from = Math.max(0, Math.min(myRank - 6, list.length - 10));
+    for (var k = from; k < Math.min(list.length, from + 10); k++) {
+      var e = list[k], rk = k + 1;
+      var medal = rk === 1 ? '#ffd23a' : rk === 2 ? '#d8d8d8' : rk === 3 ? '#d08a4a' : '#8a8272';
+      G.round(20, y, G.W - 40, 40, 8, e.me ? 'rgba(255,220,150,.14)' : 'rgba(255,255,255,.04)',
+        e.me ? 'rgba(255,220,150,.4)' : 'rgba(255,255,255,.08)');
+      G.text(String(rk), 42, y + 20, 14, medal, 'center', true);
+      G.text(e.n, 62, y + 20, 14, e.me ? '#ffd88e' : '#cfc6b0', 'left', e.me);
+      G.text(fmt(e.p), G.W - 38, y + 20, 14, e.me ? '#ffd23a' : '#a89f8c', 'right');
+      y += 44;
+    }
+    /* 我的名次 */
+    G.round(20, y + 6, G.W - 40, 40, 8, 'rgba(255,220,150,.12)', 'rgba(255,220,150,.35)');
+    G.text('我的名次', 36, y + 26, 14, '#ffd88e', 'left', true);
+    G.text('第 ' + myRank + ' 名', G.W - 38, y + 26, 15, '#ffd23a', 'right', true);
+    y += 56;
+
+    /* 本机记录 */
+    G.text('本机记录', 24, y, 13, '#8a8272', 'left');
+    y += 18;
     var rows = [
       ['最高战力', fmt(s.best)],
       ['最远地图', (s.maxWave + 1) + ' 图'],
       ['累计击杀', s.kills + ' 只'],
       ['累计抽卡', s.pulls + ' 次'],
-      ['爆装总数', s.items + ' 件'],
-      ['当前灵果', s.coins]
+      ['爆装总数', s.items + ' 件']
     ];
-    rows.forEach(function (r) {
-      G.round(24, y, G.W - 48, 44, 8, 'rgba(255,255,255,.045)');
-      G.text(r[0], 40, y + 22, 14, '#c9bda4');
-      G.text(r[1], G.W - 40, y + 22, 16, '#ffd23a', 'right', true);
-      y += 52;
-    });
-    G.text('（单机版：记录只存在本机）', G.W / 2, y + 20, 12, '#6d675c', 'center');
+    for (var r = 0; r < rows.length; r++) {
+      G.text(rows[r][0], 28, y + r * 24, 12.5, '#9c9484');
+      G.text(rows[r][1], G.W - 36, y + r * 24, 13, '#c9bda4', 'right');
+    }
+    G.text('（单机版：榜单为模拟数据，记录只存在本机）', G.W / 2, G.H - 30, 11, '#5c574d', 'center');
   }
 
   /* ============ 性别/皮肤选择 ============ */
