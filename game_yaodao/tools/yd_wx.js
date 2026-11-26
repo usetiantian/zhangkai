@@ -81,7 +81,7 @@ async function main() {
     const r = await c.send('Runtime.evaluate', {
       expression: `(function(){
           var els=[].slice.call(document.querySelectorAll('.simulator-toolbar-item'));
-          var hit=els.filter(function(e){return (e.textContent||'').indexOf('编译')>=0;})[0];
+          var hit=document.querySelector('.ui-icon-refresh')||els.filter(function(e){return (e.textContent||'').indexOf('编译')>=0;})[0];
           if(!hit) return 'NOT FOUND';
           hit.click(); return 'CLICKED '+(hit.textContent||'').trim();
         })()`, returnByValue: true

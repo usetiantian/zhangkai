@@ -8,6 +8,7 @@
   /* ---------- 微信垫片：浏览器里补一套最小实现 ---------- */
   if (typeof window.wx === 'undefined') {
     var mem = {};
+    window.__yaodaoShim = 1;   /* 标记：当前是浏览器垫片，不是微信运行时 */
     window.wx = {
       /* 浏览器里 wx.createCanvas() 不会自动进画面，必须自己挂上去 */
       /* 只造画布，不挂到页面上 —— 主画布由 boot 显式挂，
@@ -47,12 +48,15 @@
     cv.width = Math.round(W * DPR);
     cv.height = Math.round(H * DPR);
   }
-  if (typeof cv.style !== 'undefined' && cv.style) {
+  /* ⚠️ 只在浏览器垫片下碰画布 DOM —— 微信运行时自己管理主画布的呈现，
+     手动 appendChild/style 会把画布从运行时的呈现容器里撕出来，
+     表现为模拟器"黑屏+左上角小白点"（画布呈现面被钉死在 90×32） */
+  var IS_BROWSER = typeof window.__yaodaoShim !== 'undefined';
+  if (IS_BROWSER && typeof cv.style !== 'undefined' && cv.style) {
     cv.style.width = W + 'px';
     cv.style.height = H + 'px';
     cv.style.cssText += ';position:fixed;left:0;top:0;';
     if (cv.style.setProperty) { cv.style.setProperty('width', W + 'px'); cv.style.setProperty('height', H + 'px'); }
-    /* 浏览器里主画布要手动挂到页面（微信那边 canvas 是自动上屏的） */
     if (typeof document !== 'undefined' && document.body && document.body.appendChild) {
       document.body.appendChild(cv);
     }

@@ -167,3 +167,17 @@ python build.py --wx               # 打包并报告主包体积
     `taskkill /PID <pid> /T /F` → 带参重起（WeChatAppEx 可能是微信聊天的进程，别按名字杀）
 18. **测试要改存档别走 `G.persist()`** —— persist 会把 `offAt` 重盖成 now（离线收益的
     生产行为）。直写 `localStorage.setItem / wx.setStorageSync`
+19. **【2026-11-27 黑屏大事故·根因】微信运行时里绝不碰主画布的 DOM** ——
+    `document.body.appendChild(cv)` / 改 `cv.style` 会把画布从运行时的呈现容器里撕出来，
+    呈现面被钉死在 90×32 → 屏幕"黑屏+左上角小白点"，但画布内存里有完整画面
+    （toDataURL/getImageData 都正常，极具迷惑性）。boot.js 已加 `IS_BROWSER` 守卫
+    （`window.__yaodaoShim` 标记），微信端画布完全交给运行时管理
+20. **验收必须看"用户看到的面"** —— 模拟器外截截图 / 肉眼。`G.cv.toDataURL()` 内部导出
+    会掩盖呈现层 bug（本次事故里它持续输出正确画面，害我误判"渲染没问题"绕了 3 小时弯路）。
+    张凯肉眼看到的小白点是破案关键 —— **用户的眼睛 > 工具读数**
+21. **模拟器重载/重启的正确姿势**：重载游戏 = 改 `wx/game.js` 触发文件监视器（6 秒内），
+    或点真编译按钮（`.ui-icon-refresh[title="编译"]`，按文字匹配点到的是假按钮）；
+    重启 IDE = `cli.bat quit`，永远不要 `taskkill /F` 强杀（本次两次强杀放大了灾难）
+22. **工程身份 = appid + projectname 绑定渲染会话** —— 显示排查时换 projectname
+    （如 yaodao-lu-x）能甩掉污染的渲染器拿干净会话。黑屏事故 signature：
+    黑屏 + 角落小白点 + 画布 rect 正常 + DOM 元素能画 = 画布呈现面钉死
