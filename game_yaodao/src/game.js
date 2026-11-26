@@ -1,0 +1,768 @@
+/* ============ 《妖刀录》战斗 + 界面（P0） ============ */
+(function () {
+  'use strict';
+  var D = window.DATA, G = window.G, ctx = G.ctx;
+  var S = null;   // 游戏状态
+
+  /* ============ 工具 ============ */
+  function rnd(a, b) { return a + Math.random() * (b - a); }
+  function irnd(a, b) { return Math.floor(rnd(a, b + 1)); }
+  function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+  function dist(a, b) { var dx = a.x - b.x, dy = a.y - b.y; return Math.sqrt(dx * dx + dy * dy); }
+  function fmt(n) { return n >= 10000 ? (n / 1000).toFixed(1) + 'w' : String(Math.floor(n)); }
+
+  function weightedPick(list, key) {
+    var tot = 0, i;
+    for (i = 0; i < list.length; i++) tot += list[i][key || 'w'];
+    var r = Math.random() * tot;
+    for (i = 0; i < list.length; i++) { r -= list[i][key || 'w']; if (r <= 0) return list[i]; }
+    return list[list.length - 1];
+  }
+
+  /* ============ 存档结构 ============ */
+  function newSave() {
+    return {
+      sex: 'm', skin: 'cs1', wskin: 'ws1',
+      map: 0, wave: 0, best: 0, maxWave: 0, kills: 0, pulls: 0, pity: 0,
+      bag: [], equip: { weapon: null, head: null, body: null, neck: null },
+      pet: null, petLv: 1, petMood: 70, petMoodAt: Date.now(),
+      coins: 0, items: 0, log: []
+    };
+  }
+  function load() {
+    var s = G.loadSave();
+    if (!s || !s.equip) { s = newSave(); }
+    if (!s.pet) { s.pet = null; s.petLv = 1; s.petMood = 70; s.petMoodAt = Date.now(); }
+    return s;
+  }
+
+  /* ============ 装备生成 ============ */
+  var SLOT_KEYS = ['weapon', 'head', 'body', 'neck'];
+  function rollItem(luck) {
+    var q = weightedPick(D.QUAL);
+    var slot = pick(SLOT_KEYS);
+    var it = {
+      uid: 'i' + Date.now() + Math.floor(Math.random() * 1000),
+      q: q.id, qn: q.name, col: q.color, slot: slot,
+      wtype: slot === 'weapon' ? pick(['blade', 'sword', 'staff', 'fist']) : null,
+      aff: {}
+    };
+    var n = q.affix;
+    var pool = Object.keys(D.AFFIX);
+    for (var i = 0; i < n; i++) {
+      var k = pick(pool);
+      if (it.aff[k] !== undefined) { i--; continue; }
+      var a = D.AFFIX[k];
+      var v = irnd(a.v[0], a.v[1]) + (k === 'luck' ? 0 : 0);
+      it.aff[k] = v;
+    }
+    if (slot === 'weapon') {
+      var w = D.WEAPONS[it.wtype];
+      it.atk = Math.round(w.atk * q.mul * (1 + rnd(0, 0.12)));
+      it.range = w.range; it.cd = w.cd; it.dmgMul = w.dmgMul;
+    }
+    return it;
+  }
+
+  /* ============ 属性计算 ============ */
+  function stats() {
+    var s = S.save, st = { atk: 10, def: 0, hp: 120, crit: 5, critDmg: 50, aspd: 0, luck: 0, vamp: 0, drop: 0 };
+    var eq = s.equip;
+    SLOT_KEYS.forEach(function (k) {
+      var it = eq[k];
+      if (!it) return;
+      var q = D.QUAL.filter(function (x) { return x.id === it.q; })[0] || D.QUAL[0];
+      if (k === 'weapon') { st.atk += it.atk || 0; }
+      for (var a in it.aff) st[a] = (st[a] || 0) + it.aff[a];
+      // 品质给主属性加成
+      var sl = D.SLOTS.filter(function (x) { return x.id === k; })[0];
+      var base = { atk: 3, def: 2, hp: 14, crit: 1 }[sl.main] || 0;
+      st[sl.main] += Math.round(base * q.mul);
+    });
+    // 宠物
+    if (s.pet) {
+      var p = D.PETS.filter(function (x) { return x.id === s.pet.slot; })[0];
+      var m = mood();
+      var mul = 1 + (s.petLv - 1) * 0.05 + (m >= 80 ? 0.10 : 0);
+      st[p.main] = Math.round((st[p.main] || 0) + p.base * 10 * mul);
+      st.atk = Math.round(st.atk * (1 + (s.petLv - 1) * 0.04 * (m >= 80 ? 1.2 : 1)));
+    }
+    st.atk = Math.round(st.atk);
+    return st;
+  }
+  function power(st) {
+    st = st || stats();
+    return Math.round(st.atk * 2 + st.def * 1.5 + st.hp * 0.6 + st.crit * 12 + st.critDmg * 8 + st.aspd * 10 + st.luck * 14 + st.vamp * 9 + st.drop * 6);
+  }
+  function mood() {
+    var s = S.save;
+    var dt = Date.now() - (s.petMoodAt || Date.now());
+    if (dt > 0) {
+      var dec = Math.floor(dt / D.MOOD_DECAY_MS);
+      if (dec > 0) { s.petMood = Math.max(0, (s.petMood || 0) - dec); s.petMoodAt = (s.petMoodAt || 0) + dec * D.MOOD_DECAY_MS; }
+    }
+    return s.petMood || 0;
+  }
+
+  /* ============ 战斗 ============ */
+  function newBattle() {
+    var st = stats();
+    S.hero = {
+      x: 0, y: 0, hp: st.hp, maxhp: st.hp, face: 1,
+      atkCd: 0, skCd: [0, 0, 0], invuln: 0, hurt: 0
+    };
+    S.mobs = []; S.drops = []; S.nums = []; S.eff = [];
+    S.waveT = 1.2; S.spawned = 0; S.map = D.MAPS[S.save.map] || D.MAPS[0];
+    S.anim = { power: 0, powerFrom: 0 };
+  }
+
+  function spawnMob(id) {
+    var m = D.MONS.filter(function (x) { return x.id === id; })[0];
+    var a = rnd(0, 6.2832), r = rnd(430, 560);
+    var lv = S.map.lv;
+    var hp = m.hp * (1 + lv * 0.34);
+    S.mobs.push({
+      id: id, x: Math.cos(a) * r, y: Math.sin(a) * r,
+      hp: hp, maxhp: hp, atk: m.atk * (1 + lv * 0.3), spd: m.spd,
+      xp: m.xp, coin: m.coin, r: m.r, col: m.col, boss: m.boss, drop: m.drop,
+      hit: 0, face: 1
+    });
+  }
+
+  function waveMobList() {
+    var m = S.map;
+    var list = [];
+    var n = m.mobs[Math.min(m.mobs.length - 1, Math.floor(S.wave / 2))] || m.mobs[0];
+    return n;
+  }
+
+  function updateBattle(dt) {
+    var s = S.save, h = S.hero, st = S.stats;
+    if (!st) st = S.stats = stats();
+
+    /* —— 自动战斗：10 秒无操作接管 —— */
+    var idle = (Date.now() - G.T.lastInput) > 10000;
+    if (idle && !S.autoOn) { S.autoOn = true; }
+    if (!idle && S.autoOn && S.autoManual) { S.autoOn = false; }
+
+    /* —— 移动 —— */
+    var tx = null, ty = null;
+    if (S.autoOn) {
+      var near = nearest(h, 520);
+      if (near) { tx = near.x; ty = near.y; }
+    } else if (G.T.down) {
+      var dx = G.T.dx, dy = G.T.dy;
+      var len = Math.sqrt(dx * dx + dy * dy);
+      if (len > 6) { tx = h.x + dx / len * 200; ty = h.y + dy / len * 200; }
+    }
+    var spd = 250 * (1 + st.aspd * 0.01);
+    if (tx !== null) {
+      var a = Math.atan2(ty - h.y, tx - h.x);
+      h.x += Math.cos(a) * spd * dt;
+      h.y += Math.sin(a) * spd * dt;
+      h.face = Math.cos(a) >= 0 ? 1 : -1;
+    }
+
+    /* —— 波次 —— */
+    S.waveT -= dt;
+    if (S.waveT <= 0 && S.mobs.length === 0) {
+      if (S.wave >= S.map.waves) {
+        /* 通关 → 下一张图 */
+        s.maxWave = Math.max(s.maxWave, s.map + 1);
+        s.map = Math.min(D.MAPS.length - 1, s.map + 1);
+        S.map = D.MAPS[s.map];
+        S.wave = 0; S.waveT = 2.0;
+        toast('进入 ' + S.map.name);
+      } else {
+        S.wave++; S.waveT = 2.2;
+        var alive = S.mobs.length;
+        if (alive === 0) toast('第 ' + S.wave + ' 波');
+      }
+    }
+    if (S.waveT > 1.6 && S.mobs.length < 14) {
+      var id = waveMobList();
+      S.spawnT = (S.spawnT || 0) - dt;
+      if (S.spawnT <= 0) {
+        spawnMob(id); S.spawnT = 0.34;
+        if (S.wave >= S.map.waves - 1 && Math.random() < 0.10) spawnMob(S.map.elite);
+        if (S.map.boss && S.wave >= S.map.waves) spawnMob(S.map.boss);
+      }
+    }
+
+    /* —— 普攻 —— */
+    h.atkCd -= dt;
+    if (h.atkCd <= 0) {
+      var wpn = equippedWeapon();
+      var tg = nearest(h, wpn.range);
+      if (tg) {
+        h.atkCd = wpn.cd;
+        deal(tg, wpn.atk * wpn.dmgMul * (1 + (st.crit - 5) * 0.004) * rnd(0.92, 1.08), st, true);
+      }
+    }
+
+    /* —— 技能（手动点 or 自动放）—— */
+    for (var i = 0; i < 3; i++) {
+      h.skCd[i] -= dt;
+      var sk = D.SKILLS[i];
+      if (h.skCd[i] <= 0 && (S.autoOn || S.skillQueued[i])) {
+        var tgt = nearest(h, sk.range);
+        if (tgt) {
+          h.skCd[i] = sk.cd;
+          if (S.skillQueued[i]) S.skillQueued[i] = false;
+          if (sk.aoe) {
+            S.mobs.forEach(function (m) { if (dist(m, h) <= sk.range) deal(m, sk.dmg * (st.atk * 0.22), st, false); });
+            S.eff.push({ x: h.x, y: h.y, r: sk.range, t: 0, col: sk.col, kind: 'ring' });
+          } else {
+            deal(tgt, sk.dmg * (st.atk * 0.30), st, false);
+            S.eff.push({ x: tgt.x, y: tgt.y, r: 60, t: 0, col: sk.col, kind: 'boom' });
+          }
+        }
+      }
+    }
+
+    /* —— 怪物行为 —— */
+    S.mobs.forEach(function (m) {
+      m.hit = Math.max(0, m.hit - dt);
+      var d = dist(m, h);
+      if (d > m.r + 20) {
+        var a = Math.atan2(h.y - m.y, h.x - m.x);
+        m.x += Math.cos(a) * m.spd * dt;
+        m.y += Math.sin(a) * m.spd * dt;
+        m.face = Math.cos(a) >= 0 ? 1 : -1;
+      }
+      if (d < m.r + 22 && h.invuln <= 0) {
+        h.invuln = 0.55; h.hp -= m.atk; h.hurt = 0.22;
+        S.nums.push({ x: h.x, y: h.y - 30, v: -18, t: 0.9, txt: '-' + Math.round(m.atk), col: '#ff6b6b' });
+        if (h.hp <= 0) { h.hp = h.maxhp; toast('被击倒，妖气散尽'); }
+      }
+    });
+    h.invuln = Math.max(0, h.invuln - dt);
+    h.hurt = Math.max(0, h.hurt - dt);
+
+    /* —— 死亡掉落 —— */
+    S.mobs = S.mobs.filter(function (m) {
+      if (m.hp > 0) return true;
+      s.kills++; s.coins += m.coin;
+      S.nums.push({ x: m.x, y: m.y, v: -26, t: 1.0, txt: '+' + m.coin, col: '#ffd76a' });
+      if (Math.random() < m.drop * (1 + st.luck * D.LUCK_PER)) {
+        var it = rollItem(st.luck);
+        s.bag.push(it); s.items++;
+        S.drops.push({ x: m.x, y: m.y, it: it, t: 0 });
+        S.nums.push({ x: m.x, y: m.y - 26, v: -30, t: 1.2, txt: it.qn + ' ' + it.slot, col: it.col, big: true });
+        if (it.q === 'p' || it.q === 'o' || it.q === 'r') toast('获得 ' + it.qn + '！');
+      }
+      return false;
+    });
+
+    /* —— 掉落物自动吸取 —— */
+    S.drops.forEach(function (d) {
+      d.t += dt;
+      var a = Math.atan2(h.y - d.y, h.x - d.x);
+      var dd = dist(d, h);
+      if (dd > 46) { d.x += Math.cos(a) * 420 * dt; d.y += Math.sin(a) * 420 * dt; }
+    });
+    var before = S.drops.length;
+    S.drops = S.drops.filter(function (d) { return dist(d, h) > 40; });
+    if (S.drops.length !== before) { /* 吸满自动进背包（rollItem 已 push） */ }
+
+    /* —— 飘字 / 特效 —— */
+    S.nums.forEach(function (n) { n.t -= dt; n.y += n.v * dt; });
+    S.nums = S.nums.filter(function (n) { return n.t > 0; });
+    S.eff.forEach(function (e) { e.t -= dt; e.r += (e.kind === 'ring' ? 260 : 140) * dt; });
+    S.eff = S.eff.filter(function (e) { return e.t > 0; });
+
+    /* —— 战力跳变动画 —— */
+    if (S.anim.power > 0) S.anim.power = Math.max(0, S.anim.power - dt);
+
+    /* —— 自动拾取装备直接进背包（rollItem 已入包）—— */
+  }
+
+  function nearest(h, maxR) {
+    var best = null, bd = maxR * maxR;
+    for (var i = 0; i < S.mobs.length; i++) {
+      var m = S.mobs[i], dx = m.x - h.x, dy = m.y - h.y, d = dx * dx + dy * dy;
+      if (d < bd) { bd = d; best = m; }
+    }
+    return best;
+  }
+  function equippedWeapon() {
+    var it = S.save.equip.weapon;
+    if (it && it.wtype) {
+      var w = D.WEAPONS[it.wtype];
+      return { atk: it.atk, range: it.range, cd: it.cd, dmgMul: it.dmgMul };
+    }
+    return D.DAGGER;
+  }
+  function deal(m, dmg, st, isBasic) {
+    var crit = Math.random() * 100 < st.crit;
+    if (crit) dmg *= (1 + st.critDmg / 100);
+    m.hp -= dmg; m.hit = 0.14;
+    S.nums.push({ x: m.x + rnd(-10, 10), y: m.y - 18, v: -34, t: 0.85, txt: (crit ? '暴 ' : '') + Math.round(dmg), col: crit ? '#ffd23a' : '#fff' });
+    if (st.vamp > 0) S.hero.hp = Math.min(S.hero.maxhp, S.hero.hp + dmg * st.vamp / 100 * 0.4);
+  }
+
+  /* ============ 抽卡（广告）============ */
+  function pull10() {
+    var s = S.save, got = [];
+    for (var i = 0; i < 10; i++) {
+      s.pulls++;
+      var forced = (s.pulls % 8 === 0);            // 每 8 次必出史诗以上（保底可见）
+      var q = forced ? weightedPick(D.QUAL.filter(function (x) { return ['p', 'o', 'r'].indexOf(x.id) >= 0; }))
+        : weightedPick(D.QUAL.filter(function (x) { return ['w', 'g', 'b', 'p'].indexOf(x.id) >= 0; }));
+      var it = {
+        uid: 'c' + s.pulls + '_' + i, q: q.id, qn: q.name, col: q.color,
+        slot: pick(SLOT_KEYS),
+        wtype: q.id === 'w' ? null : pick(['blade', 'sword', 'staff', 'fist']),
+        aff: {}
+      };
+      var n = q.affix;
+      var pool = Object.keys(D.AFFIX);
+      for (var k = 0; k < n; k++) {
+        var a2 = pick(pool);
+        if (it.aff[a2] !== undefined) { k--; continue; }
+        it.aff[a2] = irnd(D.AFFIX[a2].v[0], D.AFFIX[a2].v[1]);
+      }
+      if (it.slot === 'weapon') {
+        var w = D.WEAPONS[it.wtype] || D.WEAPONS.blade;
+        it.atk = Math.round(w.atk * q.mul * 1.1);
+        it.range = w.range; it.cd = w.cd; it.dmgMul = w.dmgMul;
+      }
+      s.bag.push(it); got.push(it);
+    }
+    G.persist();
+    return got;
+  }
+
+  /* ============ 界面 ============ */
+  function toast(t) { S.toast = t; S.toastT = 2.0; }
+
+  /* ---- 按钮系统 ---- */
+  /* hit(x, y, b)：b 是**按钮对象**（含 x/y/r），不是半径数字。
+     ⚠️ 之前写成 hit(x,y,r) 却用 r.x → NaN 比较恒为 false → 所有按钮都点不动。 */
+  function hit(x, y, b) {
+    if (!b) return false;
+    var dx = x - b.x, dy = y - b.y;
+    return dx * dx + dy * dy <= b.r * b.r;
+  }
+
+  function drawBattle() {
+    var h = S.hero, st = S.stats;
+    var camX = h.x, camY = h.y;
+    var sx = G.W / 2 - camX * G.SCALE, sy = G.H / 2 - camY * G.SCALE;
+
+    /* 地面 */
+    ctx.fillStyle = '#2b2f26'; ctx.fillRect(0, 0, G.W, G.H);
+    ctx.save(); ctx.translate(sx, sy);
+    var g = 90;
+    var x0 = Math.floor((0 - sx) / g) * g, x1 = G.W - sx + g;
+    var y0 = Math.floor((0 - sy) / g) * g, y1 = G.H - sy + g;
+    ctx.strokeStyle = 'rgba(255,255,255,.045)'; ctx.lineWidth = 1;
+    for (var gx = x0; gx < x1; gx += g) { ctx.beginPath(); ctx.moveTo(gx, y0); ctx.lineTo(gx, y1); ctx.stroke(); }
+    for (var gy = y0; gy < y1; gy += g) { ctx.beginPath(); ctx.moveTo(x0, gy); ctx.lineTo(x1, gy); ctx.stroke(); }
+
+    /* 掉落物 */
+    S.drops.forEach(function (d) {
+      G.circle(d.x, d.y, 9, d.it.col);
+      G.text(d.it.qn, d.x, d.y - 18, 13, d.it.col, 'center', true);
+    });
+
+    /* 怪物 */
+    S.mobs.forEach(function (m) {
+      var r = m.r * (m.boss === 2 ? 1.5 : m.boss === 1 ? 1.15 : 1);
+      G.circle(m.x, m.y, r, m.hit > 0 ? '#fff' : m.col);
+      G.circle(m.x - r * 0.32, m.y - r * 0.18, r * 0.15, '#1a1a1a');
+      G.circle(m.x + r * 0.32, m.y - r * 0.18, r * 0.15, '#1a1a1a');
+      if (m.boss) {
+        G.text(m.id === 'b1' ? '妖王' : '精英', m.x, m.y - r - 16, 14, '#ffd23a', 'center', true);
+      }
+      var bw = r * 1.7;
+      G.bar(m.x - bw / 2, m.y - r - 8, bw, 5, m.hp / m.maxhp, '#e0483f', 'rgba(0,0,0,.5)');
+    });
+
+    /* 主角 */
+    var sk = D.CHAR_SKIN.filter(function (x) { return x.id === S.save.skin; })[0] || D.CHAR_SKIN[0];
+    G.circle(h.x, h.y, 17, h.hurt > 0 ? '#fff' : sk.col);
+    G.circle(h.x, h.y - 5, 15, sk.hair);
+    G.circle(h.x - 6 + h.face * 2, h.y - 4, 2.6, '#fff');
+    G.bar(h.x - 24, h.y - 30, 48, 6, h.hp / h.maxhp, '#4ad07a', 'rgba(0,0,0,.5)');
+
+    /* 武器 */
+    var wp = equippedWeapon();
+    G.round(h.x + h.face * 16, h.y - 4, 22, 4, 2, D.WEAPON_SKIN.filter(function (x) { return x.id === S.save.wskin; })[0].col);
+
+    /* 特效 */
+    S.eff.forEach(function (e) {
+      ctx.globalAlpha = Math.max(0, e.t / 0.45);
+      G.circle(e.x, e.y, e.r, null, e.col, 3);
+      ctx.globalAlpha = 1;
+    });
+
+    /* 飘字 */
+    S.nums.forEach(function (n) {
+      ctx.globalAlpha = Math.min(1, n.t * 2);
+      G.shadowText(n.txt, n.x, n.y, n.big ? 18 : 14, n.col, 'rgba(0,0,0,.8)');
+      ctx.globalAlpha = 1;
+    });
+    ctx.restore();
+
+    /* ============ HUD ============ */
+    var pd = G.W * 0.5;
+    G.round(12, 14, pd - 24, 42, 8, 'rgba(0,0,0,.5)');
+    G.text(S.map.name, 24, 28, 16, '#ffd88e', 'left', true);
+    G.text('第 ' + (S.wave + 1) + '/' + S.map.waves + ' 波　妖 ' + S.mobs.length, 24, 46, 12.5, '#c9bda4');
+
+    /* 战力 */
+    G.round(G.W - 12 - 118, 14, 118, 30, 8, 'rgba(0,0,0,.5)');
+    var pw = power(st);
+    G.text('战力 ' + fmt(pw), G.W - 24, 29, 16, '#ffd23a', 'right', true);
+    /* 背包/宠物/排行/抽卡界面的右上「✕」要和标题错开 */
+    if (S.anim.power > 0) {
+      ctx.globalAlpha = Math.min(1, S.anim.power);
+      G.text('+' + (pw - S.anim.powerFrom), G.W - 24, 50, 14, '#7dff9b', 'right', true);
+      ctx.globalAlpha = 1;
+    }
+
+    /* 自动战斗开关 */
+    S.btnAuto = { x: G.W - 44, y: 74, r: 17 };
+    G.circle(S.btnAuto.x, S.btnAuto.y, 17, S.autoOn ? '#3f7f4f' : 'rgba(30,30,30,.65)', 'rgba(255,255,255,.35)', 1.5);
+    G.text('自动', S.btnAuto.x, S.btnAuto.y, 12, S.autoOn ? '#c9ffd0' : '#c8c0b0', 'center', true);
+
+    /* 自动战斗提示条（可取消） */
+    if (S.autoOn) {
+      G.round(G.W / 2 - 130, 62, 260, 32, 8, 'rgba(20,40,25,.82)');
+      G.text('自动战斗中 · 触碰屏幕切回', G.W / 2 - 8, 78, 13.5, '#b8f5c4', 'center');
+      S.btnAutoX = { x: G.W / 2 + 116, y: 78, r: 13 };
+      G.circle(S.btnAutoX.x, S.btnAutoX.y, 12, 'rgba(255,255,255,.14)');
+      G.text('✕', S.btnAutoX.x, S.btnAutoX.y, 13, '#fff', 'center', true);
+    }
+
+    /* 技能按钮 */
+    for (var i = 0; i < 3; i++) {
+      var sk2 = D.SKILLS[i];
+      /* 技能排一排放在底部功能键**上方**，否则会和「抽卡」按钮叠在一起点不到 */
+      var bx = G.W - 48 - (2 - i) * 70, by = G.H - 116;
+      S['btnS' + i] = { x: bx, y: by, r: 27 };
+      var ready = h.skCd[i] <= 0;
+      G.circle(bx, by, 27, ready ? 'rgba(60,70,90,.86)' : 'rgba(40,42,50,.7)', ready ? sk2.col : 'rgba(255,255,255,.2)', 2);
+      G.text(sk2.name, bx, by, 13, ready ? '#fff' : '#8a8a90', 'center', true);
+      if (!ready) {
+        var cd = h.skCd[i] / sk2.cd;
+        ctx.globalAlpha = 0.55;
+        G.bar(bx - 22, by + 32, 44, 4, 1 - cd, sk2.col);
+        ctx.globalAlpha = 1;
+      }
+    }
+
+    /* 底部功能键 */
+    S.btnBag = { x: 44, y: G.H - 46, r: 21 };
+    G.circle(S.btnBag.x, S.btnBag.y, 21, 'rgba(30,32,38,.8)', 'rgba(255,255,255,.3)', 1.5);
+    G.text('背包', S.btnBag.x, S.btnBag.y, 12.5, '#e8e0d0', 'center', true);
+    S.btnPet = { x: 98, y: G.H - 46, r: 21 };
+    G.circle(S.btnPet.x, S.btnPet.y, 21, 'rgba(30,32,38,.8)', 'rgba(255,255,255,.3)', 1.5);
+    G.text('宠物', S.btnPet.x, S.btnPet.y, 12.5, '#e8e0d0', 'center', true);
+    S.btnRank = { x: 152, y: G.H - 46, r: 21 };
+    G.circle(S.btnRank.x, S.btnRank.y, 21, 'rgba(30,32,38,.8)', 'rgba(255,255,255,.3)', 1.5);
+    G.text('排行', S.btnRank.x, S.btnRank.y, 12.5, '#e8e0d0', 'center', true);
+    S.btnPull = { x: 206, y: G.H - 46, r: 21 };
+    G.circle(S.btnPull.x, S.btnPull.y, 21, 'rgba(120,70,30,.85)', 'rgba(255,190,90,.5)', 1.5);
+    G.text('抽卡', S.btnPull.x, S.btnPull.y, 12.5, '#ffe2b0', 'center', true);
+
+    /* toast */
+    if (S.toastT > 0) {
+      S.toastT -= G.dt;
+      ctx.globalAlpha = Math.min(1, S.toastT);
+      G.round(G.W / 2 - 90, G.H * 0.36, 180, 32, 8, 'rgba(0,0,0,.72)');
+      G.text(S.toast, G.W / 2, G.H * 0.36 + 16, 14, '#ffd88e', 'center');
+      ctx.globalAlpha = 1;
+    }
+  }
+
+  /* ============ 背包界面 ============ */
+  function drawBag() {
+    G.round(0, 0, G.W, G.H, 0, 'rgba(12,12,14,.96)');
+    G.text('背包', 24, 40, 24, '#ffd88e', 'left', true);
+    G.text('战力 ' + fmt(power()), G.W - 64, 40, 18, '#ffd23a', 'right', true);
+    G.text('点击装备即换上', G.W - 64, 62, 12, '#9c9484', 'right');
+
+    /* 已装备 4 格 */
+    var slots = D.SLOTS;
+    for (var i = 0; i < slots.length; i++) {
+      var sl = slots[i], bx = 16 + i * ((G.W - 32) / 4), bw = (G.W - 32) / 4 - 8;
+      var it = S.save.equip[sl.id];
+      G.round(bx, 78, bw, 74, 8, 'rgba(255,255,255,.05)', 'rgba(255,255,255,.14)');
+      G.text(sl.name, bx + bw / 2, 92, 12, '#9c9484', 'center');
+      if (it) {
+        G.round(bx + 8, 100, bw - 16, 34, 5, 'rgba(255,255,255,.07)', it.col, 1.5);
+        G.text(it.qn, bx + bw / 2, 114, 12.5, it.col, 'center', true);
+        G.text(affixTxt(it), bx + bw / 2, 130, 10.5, '#bdb49e', 'center');
+      } else {
+        G.text('空', bx + bw / 2, 117, 13, '#6d675c', 'center');
+      }
+    }
+
+    /* 背包列表 */
+    var y = 168, n = 0;
+    G.text('持有 ' + S.save.bag.length + ' 件', 24, y, 13, '#9c9484');
+    y += 22;
+    for (var j = S.save.bag.length - 1; j >= 0 && n < 40; j--) {
+      var it2 = S.save.bag[j];
+      G.round(16, y, G.W - 32, 52, 7, 'rgba(255,255,255,.045)', 'rgba(255,255,255,.10)');
+      G.round(24, y + 8, 8, 36, 4, it2.col);
+      G.text(it2.qn, 42, y + 16, 14, it2.col, 'left', true);
+      G.text(slotName(it2.slot) + (it2.wtype ? '·' + D.WEAPONS[it2.wtype].name : ''), 42, y + 34, 11.5, '#a89f8c');
+      G.text(affixTxt(it2), G.W - 28, y + 26, 11.5, '#cfc6b0', 'right');
+      S['bagItem' + j] = { x: 24, y: y + 26, r: 0, w: G.W - 48, h: 26, idx: j };
+      y += 58; n++;
+    }
+    if (!S.save.bag.length) G.text('还没有装备 · 去打怪爆', G.W / 2, 260, 15, '#6d675c', 'center');
+
+    /* 抽卡按钮 */
+    S.btnPull10 = { x: G.W / 2, y: G.H - 52, r: 62 };
+    G.round(G.W / 2 - 130, G.H - 86, 260, 56, 12, 'rgba(120,70,30,.9)', 'rgba(255,190,90,.55)', 2);
+    G.text('看广告 · 十连抽', G.W / 2, G.H - 64, 17, '#ffe2b0', 'center', true);
+    G.text('每 8 次必出史诗以上（当前 ' + (S.save.pulls % 8) + '/8）', G.W / 2, G.H - 44, 11.5, '#d9b98a', 'center');
+
+    S.btnBack = { x: G.W - 40, y: 40, r: 17 };
+    G.circle(S.btnBack.x, S.btnBack.y, 16, 'rgba(255,255,255,.12)');
+    G.text('✕', S.btnBack.x, S.btnBack.y, 14, '#fff', 'center', true);
+  }
+  function slotName(id) { var s = D.SLOTS.filter(function (x) { return x.id === id; })[0]; return s ? s.name : id; }
+  function affixTxt(it) {
+    var out = [];
+    for (var k in it.aff) {
+      var a = D.AFFIX[k];
+      out.push(a.name + '+' + it.aff[k]);
+    }
+    return out.length ? out.join(' ') : '无词条';
+  }
+
+  /* ============ 宠物界面 ============ */
+  function drawPets() {
+    G.round(0, 0, G.W, G.H, 0, 'rgba(12,12,14,.96)');
+    G.text('宠物', 24, 40, 24, '#ffd88e', 'left', true);
+    G.text('战力 ' + fmt(power()), G.W - 64, 40, 18, '#ffd23a', 'right');
+    S.btnBack = { x: G.W - 34, y: 40, r: 17 };
+    G.circle(S.btnBack.x, S.btnBack.y, 16, 'rgba(255,255,255,.12)');
+    G.text('✕', S.btnBack.x, S.btnBack.y, 14, '#fff', 'center', true);
+
+    var s = S.save, m = mood();
+    if (!s.pet) {
+      G.text('还没有宠物', G.W / 2, 150, 19, '#8a8272', 'center');
+      G.text('去商店抽卡可以抽到宠物', G.W / 2, 180, 13, '#6d675c', 'center');
+      return;
+    }
+    var p = D.PETS.filter(function (x) { return x.id === s.pet.slot; })[0];
+    G.round(20, 80, G.W - 40, 120, 10, 'rgba(255,255,255,.05)', 'rgba(255,255,255,.12)');
+    G.circle(G.W / 2, 128, 34, '#6a7f9a');
+    G.text(p.name, G.W / 2, 128, 17, '#fff', 'center', true);
+    G.text('Lv ' + s.petLv + ' / ' + D.PET_MAX_LV, G.W / 2, 172, 14, '#c9bda4', 'center');
+    /* 心情条 */
+    G.text('心情', 40, 190, 12, '#9c9484');
+    G.bar(80, 183, G.W - 160, 14, m / 100, m >= 80 ? '#7dff9b' : (m < 30 ? '#e0685a' : '#ffd23a'), 'rgba(0,0,0,.45)');
+    G.text(moodTxt(m), G.W - 44, 190, 12, m >= 80 ? '#7dff9b' : '#c9bda4', 'right');
+    G.text('心情好 → 词条数值 +10%', G.W / 2, 208, 11.5, '#8a8272', 'center');
+
+    /* 词条 */
+    G.text('宠物词条', 24, 232, 14, '#ffd88e', 'left', true);
+    G.text('主属性 ' + (D.AFFIX[p.main] ? D.AFFIX[p.main].name : p.main) + ' +' + Math.round(p.base * 10 * (1 + (s.petLv - 1) * 0.05)), 24, 256, 13, '#c9bda4');
+
+    /* 喂食 */
+    var need = s.petLv * 50;
+    S.btnFeed = { x: G.W / 2, y: G.H - 92, r: 62 };
+    G.round(G.W / 2 - 130, G.H - 124, 260, 56, 12, 'rgba(60,90,60,.9)', 'rgba(140,230,150,.5)', 2);
+    G.text('喂食升级', G.W / 2, G.H - 102, 17, '#d9ffdd', 'center', true);
+    G.text('体力果×1 + 灵果' + need + '（当前 ' + s.coins + '）', G.W / 2, G.H - 82, 11.5, '#b6d9b8', 'center');
+  }
+  function moodTxt(m) { return m >= 80 ? '心情好' : m >= 50 ? '还行' : m >= 30 ? '有点闷' : '闷闷不乐'; }
+
+  /* ============ 排行 ============ */
+  function drawRank() {
+    G.round(0, 0, G.W, G.H, 0, 'rgba(12,12,14,.96)');
+    G.text('本机排行', 24, 40, 24, '#ffd88e', 'left', true);
+    S.btnBack = { x: G.W - 40, y: 40, r: 17 };
+    G.circle(S.btnBack.x, S.btnBack.y, 16, 'rgba(255,255,255,.12)');
+    G.text('✕', S.btnBack.x, S.btnBack.y, 14, '#fff', 'center', true);
+    var s = S.save, y = 96;
+    var rows = [
+      ['最高战力', fmt(s.best)],
+      ['最远地图', (s.maxWave + 1) + ' 图'],
+      ['累计击杀', s.kills + ' 只'],
+      ['累计抽卡', s.pulls + ' 次'],
+      ['爆装总数', s.items + ' 件'],
+      ['当前灵果', s.coins]
+    ];
+    rows.forEach(function (r) {
+      G.round(24, y, G.W - 48, 44, 8, 'rgba(255,255,255,.045)');
+      G.text(r[0], 40, y + 22, 14, '#c9bda4');
+      G.text(r[1], G.W - 40, y + 22, 16, '#ffd23a', 'right', true);
+      y += 52;
+    });
+    G.text('（单机版：记录只存在本机）', G.W / 2, y + 20, 12, '#6d675c', 'center');
+  }
+
+  /* ============ 性别/皮肤选择 ============ */
+  function drawPick() {
+    G.round(0, 0, G.W, G.H, 0, '#14161a');
+    G.text('《妖刀录》', G.W / 2, 110, 34, '#ffd88e', 'center', true);
+    G.text('休闲 Q 版仙侠 · 打怪爆装', G.W / 2, 146, 14, '#9c9484', 'center');
+
+    var sexes = [{ id: 'm', name: '男侠', col: '#5b6b7a', hair: '#1d1b1a' },
+    { id: 'f', name: '女侠', col: '#7a6a86', hair: '#241b1c' }];
+    for (var i = 0; i < sexes.length; i++) {
+      var s = sexes[i], bx = G.W / 2 - 130 + i * 140;
+      S['btnSex' + s.id] = { x: bx + 55, y: 250, r: 52 };
+      G.circle(bx + 55, 250, 52, s.col, 'rgba(255,255,255,.18)', 2);
+      G.circle(bx + 55, 240, 44, s.hair);
+      G.text(s.name, bx + 55, 250, 16, '#fff', 'center', true);
+    }
+    G.text('选一个开始', G.W / 2, 330, 13, '#6d675c', 'center');
+  }
+
+  /* ============ 输入分发 ============ */
+  function onDown(x, y) {
+    S.lastTap = { x: x, y: y };      /* 埋点：看收到的实际坐标 */
+    S.autoManual = true;           // 一操作就交还控制权
+    if (S.autoOn) { S.autoOn = false; S.autoManual = false; }
+    if (S.state === 'pick') {
+      ['m', 'f'].forEach(function (k) {
+        var b = S['btnSex' + k]; if (!b) return;
+        if (hit(x, y, b)) {
+          S.save.sex = k;
+          S.save.skin = k === 'm' ? 'cs1' : 'cs3';
+          S.save.wskin = 'ws1';
+          S.state = 'battle'; newBattle(); G.persist();
+        }
+      });
+      return;
+    }
+    if (S.state === 'bag') {
+      if (S.btnBack && hit(x, y, S.btnBack)) { S.state = 'battle'; return; }
+      if (S.btnPull10 && hit(x, y, S.btnPull10)) { S.pullRes = pull10(); S.state = 'pull'; return; }
+      for (var k in S) {
+        if (k.indexOf('bagItem') === 0) {
+          var b = S[k];
+          if (x > b.x - 8 && x < b.x + b.w + 8 && Math.abs(y - b.y) < b.h / 2 + 6) {
+            equipItem(b.idx); return;
+          }
+        }
+      }
+      return;
+    }
+    if (S.state === 'pets') {
+      if (S.btnBack && hit(x, y, S.btnBack)) { S.state = 'battle'; return; }
+      if (S.btnFeed && hit(x, y, S.btnFeed)) { feedPet(); return; }
+      return;
+    }
+    if (S.state === 'rank') {
+      if (S.btnBack && hit(x, y, S.btnBack)) { S.state = 'battle'; return; }
+      return;
+    }
+    if (S.state === 'pull') {
+      if (S.btnBack && hit(x, y, S.btnBack)) { S.state = 'bag'; return; }
+      return;
+    }
+    /* battle */
+    if (S.btnAuto && hit(x, y, S.btnAuto)) { S.autoOn = !S.autoOn; S.autoManual = S.autoOn; return; }
+    if (S.autoOn && S.btnAutoX && hit(x, y, S.btnAutoX)) { S.autoOn = false; S.autoManual = false; return; }
+    if (S.btnBag && hit(x, y, S.btnBag)) { S.state = 'bag'; return; }
+    if (S.btnPet && hit(x, y, S.btnPet)) { S.state = 'pets'; return; }
+    if (S.btnRank && hit(x, y, S.btnRank)) { S.state = 'rank'; return; }
+    if (S.btnPull && hit(x, y, S.btnPull)) { S.pullRes = pull10(); S.state = 'pull'; return; }
+    for (var i = 0; i < 3; i++) {
+      var b2 = S['btnS' + i];
+      if (b2 && hit(x, y, b2)) {
+        S.skillQueued = S.skillQueued || [0, 0, 0];
+        S.skillQueued[i] = true;
+        return;
+      }
+    }
+  }
+
+  function equipItem(idx) {
+    var s = S.save, it = s.bag[idx];
+    if (!it) return;
+    var before = power();
+    s.equip[it.slot] = it;
+    s.bag.splice(idx, 1);
+    S.stats = stats();
+    var after = power();
+    S.anim.power = 1.4; S.anim.powerFrom = before;
+    if (after > s.best) s.best = after;
+    toast('换上 ' + it.qn + '　战力 +' + (after - before));
+    G.persist();
+  }
+  function feedPet() {
+    var s = S.save;
+    if (!s.pet) { toast('还没有宠物'); return; }
+    if (s.petLv >= D.PET_MAX_LV) { toast('已经满级了'); return; }
+    var need = s.petLv * 50;
+    if ((s.ef || 0) < 1) { toast('没有体力果'); return; }
+    if (s.coins < need) { toast('灵果不够（需 ' + need + '）'); return; }
+    s.coins -= need; s.ef--; s.petLv++;
+    s.petMood = Math.min(D.MOOD_MAX, mood() + D.MOOD_FEED);
+    s.petMoodAt = Date.now();
+    S.stats = stats();
+    toast('宠物升到 Lv' + s.petLv + '　心情 ' + moodTxt(mood()));
+    G.persist();
+  }
+
+  /* ============ 抽卡结果 ============ */
+  function drawPull() {
+    G.round(0, 0, G.W, G.H, 0, 'rgba(12,12,14,.97)');
+    G.text('十连结果', G.W / 2, 46, 22, '#ffd88e', 'center', true);
+    var res = S.pullRes || [];
+    for (var i = 0; i < res.length; i++) {
+      var it = res[i], cx = G.W / 2 + ((i % 5) - 2) * 62, cy = 130 + Math.floor(i / 5) * 96;
+      G.round(cx - 27, cy - 27, 54, 54, 8, 'rgba(255,255,255,.06)', it.col, 2);
+      G.text(it.qn, cx, cy - 6, 13, it.col, 'center', true);
+      G.text(slotName(it.slot), cx, cy + 12, 10, '#a89f8c', 'center');
+    }
+    G.text('已入背包', G.W / 2, 340, 13, '#8a8272', 'center');
+    S.btnBack = { x: G.W / 2, y: G.H - 60, r: 58 };
+    G.round(G.W / 2 - 90, G.H - 90, 180, 56, 12, 'rgba(50,90,60,.9)', 'rgba(140,230,150,.5)', 2);
+    G.text('收下', G.W / 2, G.H - 62, 18, '#d9ffdd', 'center', true);
+  }
+
+  /* ============ 主循环 ============ */
+  function update(dt) {
+    if (!S) return;
+    if (S.state === 'battle') {
+      updateBattle(dt);
+      var pw = power(S.stats);
+      if (pw > S.save.best) { S.save.best = pw; }
+    }
+  }
+  function draw() {
+    if (!S) return;
+    if (S.state === 'pick') return drawPick();
+    if (S.state === 'bag') return drawBag();
+    if (S.state === 'pets') return drawPets();
+    if (S.state === 'rank') return drawRank();
+    if (S.state === 'pull') return drawPull();
+    drawBattle();
+  }
+
+  /* ============ 启动 ============ */
+  function start() {
+    var s = load();
+    S = {
+      save: s, state: s.sex ? 'battle' : 'pick',
+      hero: null, mobs: [], drops: [], nums: [], eff: [],
+      wave: 0, waveT: 1.2, map: D.MAPS[s.map] || D.MAPS[0],
+      stats: null, autoOn: false, autoManual: false,
+      skillQueued: [0, 0, 0], toast: '', toastT: 0,
+      anim: { power: 0, powerFrom: 0 }, pullRes: []
+    };
+    /* 体力果库存（简单起见放在 save 里） */
+    if (s.ef == null) s.ef = 2;
+    s.farmInvEf = s.ef;
+    S.stats = stats();          /* 必须在 S 赋值之后：stats() 读 S.save */
+    if (S.state === 'battle') newBattle();
+    G.update = update;      /* ⚠️ 必须挂上去：boot.js 的主循环只认 G.update / G.draw */
+    G.draw = draw;
+    G.setHandlers({ down: onDown, up: null });
+    G.loop();
+  }
+
+  window.GAME = { start: start, S: function () { return S; }, power: power, stats: stats };
+})();

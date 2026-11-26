@@ -1,0 +1,20 @@
+{
+ "description": "妖刀录 - 休闲Q版仙侠单机",
+ "appid": "wxdb991cea3b78ea95",
+ "projectname": "yaodao-lu",
+ "setting": {
+  "urlCheck": false,
+  "es6": true,
+  "minified": false
+ },
+ "compileType": "game",
+ "libVersion": "3.7.0",
+ "packOptions": {
+  "ignore": [
+   {
+    "type": "file",
+    "value": "project.config.json"
+   }
+  ]
+ }
+}
