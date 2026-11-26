@@ -40,7 +40,7 @@
         wtype: 'blade', atk: 7, range: 96, cd: 0.55, dmgMul: 1.05, aff: { atk: 2 }, lv: 0 },
         head: null, body: null, neck: null },
       pet: null, petLv: 1, petMood: 70, petMoodAt: Date.now(),
-      coins: 0, items: 0, log: []
+      coins: 0, items: 0, log: [], offAt: Date.now()
     };
   }
   function load() {
@@ -53,7 +53,30 @@
         wtype: 'blade', atk: 7, range: 96, cd: 0.55, dmgMul: 1.05, aff: { atk: 2 }, lv: 0 };
     }
     if (!s.pet) { s.pet = null; s.petLv = 1; s.petMood = 70; s.petMoodAt = Date.now(); }
+    if (!s.offAt) s.offAt = Date.now();
     return s;
+  }
+
+  /* ============ 离线收益 ============
+     回来时按离开时长给金币+精粹，上限 4 小时，效率远低于在线（在线 ~2250 杀/时）。
+     门槛 3 分钟起算；offAt 由 boot.persist 每次存档时刷新。 */
+  function grantOffline() {
+    var s = S.save;
+    var now = Date.now();
+    var away = now - (s.offAt || now);
+    s.offAt = now;
+    if (away < 180000 || S.state === 'pick') return;
+    var hrs = Math.min(4, away / 3600000);
+    var mi = D.MAPS.indexOf(S.map || D.MAPS[0]);
+    if (mi < 0) mi = 0;
+    var coins = Math.floor(hrs * (90 + mi * 180));
+    var ess = Math.floor(hrs * (1 + Math.floor(mi / 2)));
+    s.coins += coins; s.items += ess;
+    var mins = Math.floor(away / 60000);
+    var dur = mins >= 60 ? (Math.floor(mins / 60) + ' 小时 ' + (mins % 60) + ' 分') : (mins + ' 分钟');
+    toast('欢迎回来！离线 ' + dur + '：金币 +' + fmt(coins) + '，精粹 +' + ess);
+    S.toastT = 5;
+    G.persist();
   }
 
   /* ============ 装备生成 ============ */
@@ -2268,6 +2291,9 @@
     };
     S.stats = stats();          /* 必须在 S 赋值之后：stats() 读 S.save */
     if (S.state === 'battle') newBattle();
+    grantOffline();
+    /* 微信切后台再回来时也结算一次（浏览器垫片里 onShow 是空实现，不会触发） */
+    try { if (window.wx && window.wx.onShow) window.wx.onShow(function () { grantOffline(); }); } catch (e) { }
     preloadArt();
     if (G.loadSfx) {
       G.loadSfx(['click', 'hit', 'crit', 'drop', 'rare', 'pull', 'upgrade', 'boss', 'gem', 'pet']);

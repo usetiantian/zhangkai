@@ -158,3 +158,9 @@ python build.py --wx               # 打包并报告主包体积
     用 `G.cv.toDataURL()` 从游戏内部导出（boot.js 已暴露 G.cv/G.ctx）
 16. **截图前先确认 state**：校准用的两次 tap 可能误触按钮改状态；英雄死亡覆盖层会吞点击。
     harness 里读 state + 必要时直接 `GAME.S().state="xxx"` 兜底
+17. **绝对不要对微信模拟器 gamePage 用 `location.reload()`** —— 会把运行时打断，
+    GAME 对象再也起不来，只能重启开发者工具。重载游戏只走工具栏「编译」；
+    编译按钮失灵（GAME 没重建）时：`netstat -ano | grep 9333` 找 PID →
+    `taskkill /PID <pid> /T /F` → 带参重起（WeChatAppEx 可能是微信聊天的进程，别按名字杀）
+18. **测试要改存档别走 `G.persist()`** —— persist 会把 `offAt` 重盖成 now（离线收益的
+    生产行为）。直写 `localStorage.setItem / wx.setStorageSync`

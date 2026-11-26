@@ -102,7 +102,8 @@
     if (!save || typeof save !== 'object') save = {};
     return save;
   }
-  function persist() { try { WX.setStorageSync(SAVE_KEY, save); } catch (e) { } }
+  /* persist 时盖离线时间戳：下次启动/onShow 按它与当前时刻的差算离线收益 */
+  function persist() { try { save.offAt = Date.now(); WX.setStorageSync(SAVE_KEY, save); } catch (e) { } }
 
   /* ---------- 画布辅助 ---------- */
   var G = {
