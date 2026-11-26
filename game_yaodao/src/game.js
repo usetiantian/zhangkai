@@ -884,10 +884,17 @@
       G.circle(bx, by, 27, ready ? 'rgba(60,70,90,.86)' : 'rgba(40,42,50,.7)', ready ? sk2.col : 'rgba(255,255,255,.2)', 2);
       G.text(sk2.name, bx, by, 13, ready ? '#fff' : '#8a8a90', 'center', true);
       if (!ready) {
-        var cd = h.skCd[i] / sk2.cd;
-        ctx.globalAlpha = 0.55;
-        G.bar(bx - 22, by + 32, 44, 4, 1 - cd, sk2.col);
-        ctx.globalAlpha = 1;
+        var cd = h.skCd[i] / sk2.cd;      /* 1 = 刚放完，0 = 转好了 */
+        /* 扇形遮罩：比一根细条清楚多了 */
+        ctx.save();
+        ctx.fillStyle = 'rgba(0,0,0,.58)';
+        ctx.beginPath();
+        ctx.moveTo(bx, by);
+        ctx.arc(bx, by, 26, -Math.PI / 2, -Math.PI / 2 + cd * Math.PI * 2, false);
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+        G.text(Math.ceil(h.skCd[i]) + 's', bx, by, 12, '#fff', 'center', true);
       }
     }
 
@@ -1603,6 +1610,7 @@
     for (var i = 0; i < 3; i++) {
       var b2 = S['btnS' + i];
       if (b2 && hit(x, y, b2)) {
+        if (S.hero.skCd[i] > 0) { toast(D.SKILLS[i].name + ' 冷却中'); return; }
         S.skillQueued = S.skillQueued || [0, 0, 0];
         S.skillQueued[i] = true;
         return;
