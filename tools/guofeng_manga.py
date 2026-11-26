@@ -81,6 +81,29 @@ SHOT_RULES = """
 7. 绝对时间戳严格递增，最后一个 Shot 的结束点正好等于目标总时长。
 """
 
+# 声音设计规范（2026-11-26 定稿）
+# 来源：short-drama-production/references/sound-production.md
+# ⚠️ H3 的硬限制：**最多 3 条音频参考** → 一段里最多稳定绑定 3 套音色，
+#    4 人以上对白场要拆成双人/三人镜头，或把次要角色放画外用后期声音。
+# ⚠️ 之前的段表每段只挂一个音色且 prompt 里一条 <Audio N> 绑定都没有
+#    → 父亲的台词用了别人的嗓子、老道士用了少年的声音（2026-11-26 查出）。
+SOUND_RULES = """
+【声音设计 — 严格照做】
+1. 分四层写，不要只写一句"同步声音"：
+   - 对白：谁在说话（必须写出说话人和音色绑定标记）
+   - 环境：空间底噪与持续环境（风、水、人声、远处）
+   - 拟音 foley：脚步、衣料、道具、冲击声——**每个 Shot 都要写具体到材质**：
+     例"粗麻井绳被攥紧的干涩吱嘎声，井绳在石槽里磨过的沙沙声，木桶铁圈刮过井沿的短促金属声"
+   - 配乐：默认 N/A（每段各自生成主题音乐会旋律/调性/速度跳变，统一配乐放后期）
+2. 音效要写**音场、质感、远近、节奏**：干涩的/沙哑的/短促的/低沉的；近处/远处/画外。
+3. **静默设计**：关键台词前留半秒静默，或用"某声突然停止"把下一句话托起来。
+   安静的留白比加音效更能让观众集中。
+4. **说话人必须带音色绑定标记**：写成"林守田（<Subject 2>，音色参考 <Audio 2>）开口：<d>…</d>"。
+   段表里挂的音色文件必须和实际说话人一一对应。
+5. 一段里超过 3 个说话人时：把次要角色放画外（画外音仍写清楚是谁），
+   或把这一段拆成两个镜头。
+"""
+
 # 导演台节点在 API prompt 里的 id（wf2api 保留 UI 节点 id）
 STUDIO_NODE = "13"
 NL2 = chr(10) + chr(10)
@@ -367,6 +390,7 @@ def make_storyboard(script, asset_context="（参考资产库为空）", context
         user = context.strip() + NL2 + NL2 + user
     user = user + NL2 + NL2 + "风格要求：" + GUOFENG_STYLE
     user = user + NL2 + NL2 + SHOT_RULES
+    user = user + NL2 + NL2 + SOUND_RULES
     board = ai_call(sys_prompt("create_storyboard", asset_context), user)
     if rebalance:
         fixed, rep = rebalance_shots(board)
@@ -522,6 +546,117 @@ def audit_beats(task):
         c = beat_dialogue_chars(block)
         if c and c > d * 4:
             bad.append({"beat": num, "chars": c, "sec": round(d, 2), "limit": round(d * 4, 2)})
+    return bad
+
+
+# ---------------- 音色绑定与体检（2026-11-26） ----------------
+_VOICE_TABLE_CANDIDATES = [
+    os.path.join(ROOT, "manga", "渺渺仙途", "00_素材", "音色", "音色表.json"),
+    os.path.join(ROOT, "..", "manga", "渺渺仙途", "00_素材", "音色", "音色表.json"),
+]
+_DIALOG_TAG = re.compile(r"<d>\[Chinese\](.*?)</d>", re.S)
+_NAME_COLON = re.compile(r"([^\s，。！？；：、,.!?;:\n（）()【】\[\]<>\"]{1,8})[：:]\s*$")
+
+
+def voice_table(path=None):
+    """角色 -> 音色文件名。没有音色表就返回空表。"""
+    cands = [path] if path else _VOICE_TABLE_CANDIDATES
+    for p in cands:
+        if not p or not os.path.exists(p):
+            continue
+        try:
+            d = json.load(io.open(p, encoding="utf-8"))
+            t = {k: v for k, v in d.items() if isinstance(v, str)}
+            if t:
+                return t
+        except Exception:
+            continue
+    return {}
+
+
+def speakers_in(prompt):
+    """段表 prompt 里真正说话的角色（按出现顺序，去重）。"""
+    out = []
+    for m in _DIALOG_TAG.finditer(prompt or ""):
+        head = prompt[:m.start()]
+        mm = _NAME_COLON.search(head)
+        who = mm.group(1).strip() if mm else None
+        if who and who not in out:
+            out.append(who)
+    return out
+
+
+def bind_voices(segment, table=None, max_refs=3):
+    """给一段自动绑音色：说话人 -> 音色文件 -> <Audio N> 绑定。
+
+    返回 (segment, 报告)。说话人超过 max_refs 时只绑前 max_refs 个（按台词字数优先），
+    其余报告为「需拆镜头或用后期声音」。
+    """
+    table = table if table is not None else voice_table()
+    prompt = segment.get("prompt", "") or ""
+    speak = speakers_in(prompt)
+    # 按台词字数排序（说话多的优先绑）
+    weight = {}
+    for m in _DIALOG_TAG.finditer(prompt):
+        head = prompt[:m.start()]
+        mm = _NAME_COLON.search(head)
+        if mm:
+            weight[mm.group(1).strip()] = weight.get(mm.group(1).strip(), 0) + len(m.group(1))
+    ranked = sorted(speak, key=lambda x: -weight.get(x, 0))
+    bound = [x for x in ranked if x in table][:max_refs]
+    miss = [x for x in ranked if x not in table]
+    dropped = [x for x in ranked if x in table and x not in bound]
+    if not bound:
+        return segment, {"ok": True, "bound": [], "miss": miss, "dropped": dropped,
+                         "msg": "没有可绑的说话人"}
+    # 写 <Audio N> 定义 + retention_analysis 的 reference 行
+    lines = []
+    for i, who in enumerate(bound):
+        lines.append("<Audio %d> is the voice-timbre reference for %s." % (i + 1, who))
+    defs = "\n".join(lines)
+    prompt = prompt.replace("subject_definitions:\n",
+                            "subject_definitions:\n" + defs + "\n", 1)
+    ref_lines = []
+    for i, who in enumerate(bound):
+        ref_lines.append("<Audio %d>: reference - %s follows <Audio %d>'s voice timbre "
+                         "and controlled delivery without copying the original signal."
+                         % (i + 1, who, i + 1))
+    marker = "\n\ndetailed_description:"
+    if marker in prompt:
+        prompt = prompt.replace(marker, "\n" + "\n".join(ref_lines) + marker, 1)
+    else:
+        prompt = prompt + "\n" + "\n".join(ref_lines)
+    seg = dict(segment)
+    seg["prompt"] = prompt
+    seg["voice_refs"] = [table[w] for w in bound]
+    seg["voice_modes"] = dict((table[w], "voice") for w in bound)
+    msg = "绑了 %d 个音色: %s" % (len(bound), "、".join("%s→%s" % (w, table[w]) for w in bound))
+    if dropped:
+        msg += "；超参考预算未绑: " + "、".join(dropped) + "（需拆镜头或用后期声音）"
+    if miss:
+        msg += "；没有音色文件: " + "、".join(miss)
+    return seg, {"ok": True, "bound": bound, "miss": miss, "dropped": dropped, "msg": msg}
+
+
+def audit_voices(segments, table=None):
+    """体检：每段实际说话的人 vs 挂上去的音色，对不上就报出来。"""
+    table = table if table is not None else voice_table()
+    bad = []
+    for i, seg in enumerate(segments or []):
+        prompt = seg.get("prompt", "") or ""
+        speak = set(speakers_in(prompt))
+        refs = seg.get("voice_refs") or []
+        attached = set()
+        for fn in refs:
+            for who, f2 in table.items():
+                if f2 == fn:
+                    attached.add(who)
+        no_voice = sorted(speak - attached)
+        unused = sorted(attached - speak)
+        if no_voice or unused:
+            bad.append({"seg": i + 1, "speakers": sorted(speak),
+                        "attached": sorted(attached),
+                        "no_voice": no_voice, "unused": unused})
     return bad
 
 def make_beat(chapter, duration, context="", asset_context="（参考资产库为空）", rebalance=True):
