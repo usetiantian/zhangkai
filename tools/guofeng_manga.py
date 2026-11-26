@@ -357,14 +357,129 @@ BEAT_RULES = """
 """
 
 
-def make_beat(chapter, duration, context="", asset_context="（参考资产库为空）"):
-    """章节原文 -> 分镜任务书（带严格时间轴和台词预算）。"""
+
+# ---------------- 场次（beat）时间重排（2026-11-26） ----------------
+# 病根：场次时长在分镜任务书里是**写死**的（"0.000–6.000秒"），
+# LLM 只能照抄，没有重分配的余地 → 台词装不下时必然念不完。
+# 这一层重排才真正能动时间；分镜层（rebalance_shots）只是兜底。
+_BEAT_HEAD = re.compile(r"(?m)^场次\s*(\d+)\s*$")
+_BEAT_TIME = re.compile(r"(?m)^(\d+(?:\.\d+)?)\s*[–\-—~至]\s*(\d+(?:\.\d+)?)\s*秒\s*$")
+_BEAT_LINE = re.compile(r"(?m)^([^\n：]{1,8})：([^\n]+)$")
+
+
+def beat_blocks(task):
+    """把分镜任务书切成 [(场次号, 整块文本)]，保留表头。"""
+    heads = [(int(m.group(1)), m.start()) for m in _BEAT_HEAD.finditer(task)]
+    if not heads:
+        return task, []
+    head = task[:heads[0][1]]
+    out = []
+    for k, (num, st) in enumerate(heads):
+        end = heads[k + 1][1] if k + 1 < len(heads) else len(task)
+        out.append([num, task[st:end]])
+    return head, out
+
+
+def beat_dialogue_chars(block):
+    """场次里的台词字数（排除「场景与时间：」「出场人物：」这类字段）。"""
+    n = 0
+    for m in _BEAT_LINE.finditer(block):
+        who, what = m.group(1).strip(), m.group(2).strip()
+        if who in ("场景与时间", "出场人物", "目标总时长"):
+            continue
+        n += len(what)
+    return n
+
+
+def rebalance_beats(task, total=None, rate=3.5):
+    """按台词字数重排各场次时长，总时长守恒。返回 (新任务书, 报告)。"""
+    head, blocks = beat_blocks(task)
+    if not blocks:
+        return task, {"ok": False, "msg": "没解析到场次"}
+    m = re.search(r"目标总时长：\s*(\d+(?:\.\d+)?)\s*秒", task)
+    if total is None:
+        total = float(m.group(1)) if m else None
+    durs, chars = [], []
+    for num, block in blocks:
+        tm = _BEAT_TIME.search(block)
+        durs.append(float(tm.group(2)) - float(tm.group(1)) if tm else 0.0)
+        chars.append(beat_dialogue_chars(block))
+    if total is None:
+        total = sum(durs)
+    mins = [max(durs[i], chars[i] / rate if chars[i] else 0.0) for i in range(len(blocks))]
+    sum_min = sum(mins)
+    rep = {"ok": True, "total": total, "sum_min": round(sum_min, 2),
+           "over": [], "moved": [], "beats": len(blocks)}
+    if sum_min > total + 1e-6:
+        rep["ok"] = False
+        rep["msg"] = ("台词总需求 %.1f 秒 > 目标总时长 %.1f 秒：要么加长整集，"
+                      "要么砍台词（青葫道人那两句占全片 30%%）" % (sum_min, total))
+        for i in range(len(blocks)):
+            if mins[i] > durs[i] + 1e-6:
+                rep["over"].append({"beat": blocks[i][0], "chars": chars[i],
+                                    "need": round(mins[i], 2), "have": round(durs[i], 2)})
+        return task, rep
+    slack = total - sum_min
+    new = []
+    for i in range(len(blocks)):
+        share = (durs[i] / total) if total > 0 else (1.0 / len(blocks))
+        new.append(mins[i] + slack * share)
+    acc = 0.0
+    for i in range(len(new) - 1):
+        new[i] = round(new[i], 3)
+        acc += new[i]
+    new[-1] = round(total - acc, 3)
+    t = 0.0
+    for i, (num, block) in enumerate(blocks):
+        nb = block
+        tm = _BEAT_TIME.search(nb)
+        if tm:
+            nb = nb[:tm.start()] + ("%.3f–%.3f秒" % (t, t + new[i])) + nb[tm.end():]
+        blocks[i][1] = nb
+        if abs(new[i] - durs[i]) > 0.05:
+            rep["moved"].append({"beat": num, "chars": chars[i],
+                                 "from": round(durs[i], 2), "to": round(new[i], 2)})
+        t += new[i]
+    return head + "".join(b[1] for b in blocks), rep
+
+
+def audit_beats(task):
+    """检查每个场次的台词是否装得下（只报告）。"""
+    head, blocks = beat_blocks(task)
+    bad = []
+    for num, block in blocks:
+        tm = _BEAT_TIME.search(block)
+        if not tm:
+            continue
+        d = float(tm.group(2)) - float(tm.group(1))
+        c = beat_dialogue_chars(block)
+        if c and c > d * 4:
+            bad.append({"beat": num, "chars": c, "sec": round(d, 2), "limit": round(d * 4, 2)})
+    return bad
+
+def make_beat(chapter, duration, context="", asset_context="（参考资产库为空）", rebalance=True):
+    """章节原文 -> 分镜任务书（带严格时间轴和台词预算）。
+
+    2026-11-26：加了**场次时间重排**。原来 LLM 把每个场次钉死在固定秒数上，
+    而场次里的台词常常装不下 → 分镜层怎么改都救不了（LLM 没有重分配的余地）。
+    """
     user = chapter.strip()
     if context:
         user = context.strip() + NL2 + NL2 + user
     user = user + NL2 + NL2 + "目标总时长：%d秒" % duration + NL2 + BEAT_RULES
     user = user + NL2 + NL2 + "风格要求：" + GUOFENG_STYLE
-    return ai_call(sys_prompt("create_script", asset_context), user, max_tokens=6000)
+    task = ai_call(sys_prompt("create_script", asset_context), user, max_tokens=6000)
+    if rebalance:
+        fixed, rep = rebalance_beats(task, total=duration)
+        if rep.get("moved"):
+            print("  场次时间重排:", rep["moved"])
+        if not rep.get("ok"):
+            print("  ⚠️ 场次时间装不下:", rep.get("msg"))
+            for o in rep.get("over", []):
+                print("     ", o)
+        elif fixed != task:
+            task = fixed
+    return task
 
 
 def parse_segments(board, original_input="", seed=0):
