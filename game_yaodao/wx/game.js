@@ -55,6 +55,17 @@ window.DATA = (function () {
     { id: 'b1', name: '妖王·黑煞', hp: 1500, atk: 38, spd: 34, xp: 240, coin: 190, r: 46, drop: 0.42, col: '#5a1f2e', boss: 2 }
   ];
 
+  /* ---------- 每日签到（7 天一轮）---------- */
+  var SIGN = [
+    { coin: 200, ess: 0, gem: null },
+    { coin: 0, ess: 5, gem: null },
+    { coin: 0, ess: 0, gem: 'gem_def' },
+    { coin: 500, ess: 0, gem: null },
+    { coin: 0, ess: 12, gem: null },
+    { coin: 0, ess: 0, gem: 'gem_atk' },
+    { coin: 2000, ess: 20, gem: 'gem_crit' }
+  ];
+
   /* ---------- 宝石（镶嵌用）----------
      每件装备 1 个宝石槽。宝石从精英/妖王掉。 */
   var GEMS = [
@@ -159,7 +170,7 @@ window.DATA = (function () {
   return {
     QUAL: QUAL, QUAL_RANK: QUAL_RANK, SALVAGE_VALUE: SALVAGE_VALUE,
     SLOTS: SLOTS, WEAPONS: WEAPONS, AFFIX: AFFIX, MONS: MONS, SKILLS: SKILLS,
-    PETS: PETS, MAPS: MAPS, GEMS: GEMS, WEAPON_SKIN: WEAPON_SKIN, CHAR_SKIN: CHAR_SKIN, DAGGER: DAGGER,
+    PETS: PETS, MAPS: MAPS, GEMS: GEMS, SIGN: SIGN, WEAPON_SKIN: WEAPON_SKIN, CHAR_SKIN: CHAR_SKIN, DAGGER: DAGGER,
     WS_MIGRATE: WS_MIGRATE,
     /* 主角贴图（按性别）。img 没加载出来就回退到程序化画的小人。 */
     HERO_IMG: { m: 'run/hero_m.png', f: 'run/hero_f.png' },
@@ -433,6 +444,7 @@ window.DATA = (function () {
       dry: 0, essence: 0,     /* dry=连续没出史诗的击杀数（保底用），essence=精粹 */
       gems: {},               /* 宝石库存 {gem_atk: 2, ...} */
       cleared: {},             /* 通关记录 {1:true, 2:true} */
+      signDay: 0, signDate: '',  /* 签到：累计天数 + 最后签到日期 */
       bag: [],
       /* 开局送一把基础妖刀 —— 空手开场没有打击感，也没法试强化 */
       equip: { weapon: { uid: 'start_w', q: 'g', qn: '精良妖刀', col: '#5ec46a', slot: 'weapon',
@@ -566,6 +578,13 @@ window.DATA = (function () {
 
   function spawnMob(id) {
     var m = D.MONS.filter(function (x) { return x.id === id; })[0];
+    if (!m) return;
+    /* 精英/妖王登场：横幅 + 震屏 */
+    if (m.boss) {
+      /* 妖王的名字本身就带"妖王"，别再拼一遍 */
+      S.banner = { txt: (m.boss === 2 ? m.name : '精英 · ' + m.name), t: 2.0, col: m.boss === 2 ? '#ff5a6e' : '#ffd23a' };
+      S.shake = 0.45;
+    }
     var a = rnd(0, 6.2832), r = rnd(430, 560);
     var lv = S.map.lv;
     var hp = m.hp * (1 + lv * 0.34);
@@ -981,7 +1000,13 @@ window.DATA = (function () {
 
     /* 地面 */
     ctx.fillStyle = '#2b2f26'; ctx.fillRect(0, 0, G.W, G.H);
-    ctx.save(); ctx.translate(sx, sy);
+    ctx.save();
+    if (S.shake > 0) {
+      var sh = S.shake * 9;
+      ctx.translate(sx + rnd(-sh, sh), sy + rnd(-sh, sh));
+    } else {
+      ctx.translate(sx, sy);
+    }
     drawGround(sx, sy);
 
     /* 掉落物：品质光柱 + 图标 + 弹出动画 */
@@ -1054,6 +1079,24 @@ window.DATA = (function () {
 
     /* 主角 */
     var sk = D.CHAR_SKIN.filter(function (x) { return x.id === S.save.skin; })[0] || D.CHAR_SKIN[0];
+    /* 装备品质光环：身上最高品质是什么色，身上就发什么光 */
+    var topQ = 0, topC = null;
+    for (var ek in S.save.equip) {
+      var ei = S.save.equip[ek];
+      if (!ei) continue;
+      var er = D.QUAL_RANK[ei.q] || 0;
+      if (er > topQ) { topQ = er; topC = ei.col; }
+    }
+    if (topC && topQ >= 2) {
+      var gq = ctx.createRadialGradient(h.x, h.y - 16, 4, h.x, h.y - 16, 34);
+      gq.addColorStop(0, topC);
+      gq.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.save();
+      ctx.globalAlpha = 0.16 + 0.05 * Math.sin(Date.now() / 420);
+      ctx.fillStyle = gq;
+      ctx.beginPath(); ctx.arc(h.x, h.y - 16, 34, 0, 6.2832); ctx.fill();
+      ctx.restore();
+    }
     var heroImg = S.heroImg && S.heroImg[S.save.sex];
     if (heroImg) {
       /* 贴图版：贴图是「脚底对齐」的，脚落在角色坐标上 */
@@ -1183,6 +1226,19 @@ window.DATA = (function () {
     });
     ctx.restore();
 
+    /* 登场横幅 */
+    if (S.banner && S.banner.t > 0) {
+      var bt = S.banner.t;
+      var ba = Math.min(1, bt / 0.4);
+      ctx.save();
+      ctx.globalAlpha = ba;
+      ctx.translate(G.W / 2, G.H * 0.36);
+      var sc = 1 + (1 - Math.min(1, (2.0 - bt) / 0.25)) * 0.6;
+      ctx.scale(sc, sc);
+      G.shadowText(S.banner.txt, 0, 0, 30, S.banner.col, 'rgba(0,0,0,.9)');
+      ctx.restore();
+    }
+
     /* 屏幕暗角：把注意力收到中间的角色上 */
     var vg = ctx.createRadialGradient(G.W / 2, G.H / 2, G.H * 0.34, G.W / 2, G.H / 2, G.H * 0.78);
     vg.addColorStop(0, 'rgba(0,0,0,0)');
@@ -1287,6 +1343,13 @@ window.DATA = (function () {
   function drawMaps() {
     G.round(0, 0, G.W, G.H, 0, 'rgba(12,12,14,.97)');
     G.text('选择地图', 24, 40, 24, '#ffd88e', 'left', true);
+    /* 每日签到入口（有红点提示） */
+    var canSign = canSignIn();
+    S.btnSign = { x: 118, y: 40, r: 17 };
+    G.round(92, 26, 52, 28, 14, canSign ? 'rgba(160,70,40,.9)' : 'rgba(255,255,255,.08)',
+      canSign ? 'rgba(255,190,90,.6)' : 'rgba(255,255,255,.15)', 1);
+    G.text('签到', 118, 40, 13, canSign ? '#ffe2b0' : '#6d675c', 'center', true);
+    if (canSign) G.circle(142, 24, 5, '#ff5a6e');
     S.btnBack = { x: G.W - 40, y: 40, r: 17 };
     G.circle(S.btnBack.x, S.btnBack.y, 16, 'rgba(255,255,255,.12)');
     G.text('✕', S.btnBack.x, S.btnBack.y, 14, '#fff', 'center', true);
@@ -1341,6 +1404,73 @@ window.DATA = (function () {
       y += 168;
     }
     G.text('低地图掉低级装备，高地图掉好东西 —— 自由切换', G.W / 2, G.H - 40, 11.5, '#6d675c', 'center');
+  }
+
+  /* ============ 每日签到面板 ============ */
+  function todayKey() {
+    var d = new Date();
+    return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
+  }
+  function canSignIn() { return S.save.signDate !== todayKey(); }
+
+  function drawSign() {
+    G.round(0, 0, G.W, G.H, 0, 'rgba(12,12,14,.97)');
+    G.text('每日签到', 24, 40, 24, '#ffd88e', 'left', true);
+    S.btnBack = { x: G.W - 40, y: 40, r: 17 };
+    G.circle(S.btnBack.x, S.btnBack.y, 16, 'rgba(255,255,255,.12)');
+    G.text('✕', S.btnBack.x, S.btnBack.y, 14, '#fff', 'center', true);
+    G.text('连签 ' + S.save.signDay + ' 天', G.W - 64, 64, 13, '#c9bda4', 'right');
+
+    var can = canSignIn();
+    var cur = S.save.signDay % D.SIGN.length;
+    /* 7 个格子排两行 */
+    for (var i = 0; i < D.SIGN.length; i++) {
+      var r = D.SIGN[i];
+      var col = i % 4, row = Math.floor(i / 4);
+      var bx = 16 + col * ((G.W - 32) / 4), bw = (G.W - 32) / 4 - 8;
+      var by = 96 + row * 116;
+      var claimed = i < cur || (!can && i === cur);
+      var today = can && i === cur;
+      G.round(bx, by, bw, 100, 10,
+        claimed ? 'rgba(255,255,255,.03)' : (today ? 'rgba(255,220,150,.12)' : 'rgba(255,255,255,.05)'),
+        today ? '#ffd88e' : 'rgba(255,255,255,.13)', today ? 2 : 1);
+      G.text('第' + (i + 1) + '天', bx + bw / 2, by + 18, 12, today ? '#ffd88e' : '#8a8272', 'center');
+      /* 奖励内容 */
+      var ry = by + 46;
+      if (r.gem) {
+        var gd = D.GEMS.filter(function (x) { return x.id === r.gem; })[0];
+        G.circle(bx + bw / 2, ry, 16, gd ? gd.col : '#888');
+        G.text(gd ? gd.name : '宝石', bx + bw / 2, ry, 9, 'rgba(0,0,0,.6)', 'center', true);
+      } else if (r.coin) {
+        G.text('金币', bx + bw / 2, ry - 8, 11, '#8a8272', 'center');
+        G.text('+' + r.coin, bx + bw / 2, ry + 8, 16, '#ffd76a', 'center', true);
+      } else {
+        G.text('精粹', bx + bw / 2, ry - 8, 11, '#8a8272', 'center');
+        G.text('+' + r.ess, bx + bw / 2, ry + 8, 16, '#b9a8ff', 'center', true);
+      }
+      if (claimed) G.text('✓', bx + bw / 2, by + 84, 15, '#7dff9b', 'center', true);
+    }
+    /* 领取按钮 */
+    S.btnClaim = { x: G.W / 2, y: G.H - 90, r: 60 };
+    G.round(G.W / 2 - 110, G.H - 124, 220, 56, 14,
+      can ? 'rgba(150,80,30,.95)' : 'rgba(50,48,44,.9)', can ? 'rgba(255,190,90,.75)' : 'rgba(255,255,255,.12)', 2);
+    G.text(can ? '领取奖励' : '今天已领取', G.W / 2, G.H - 96, 19, can ? '#ffe2b0' : '#6d675c', 'center', true);
+    if (can) G.text('第 ' + (cur + 1) + ' 天奖励', G.W / 2, G.H - 76, 11.5, '#d9b98a', 'center');
+  }
+
+  function doSign() {
+    var s = S.save;
+    if (!canSignIn()) { toast('今天已经签过啦'); return; }
+    var cur = s.signDay % D.SIGN.length;
+    var r = D.SIGN[cur];
+    s.coins += r.coin || 0;
+    s.essence = (s.essence || 0) + (r.ess || 0);
+    if (r.gem) { s.gems = s.gems || {}; s.gems[r.gem] = (s.gems[r.gem] || 0) + 1; }
+    s.signDay = (s.signDay || 0) + 1;
+    s.signDate = todayKey();
+    G.persist();
+    toast('签到成功！第 ' + s.signDay + ' 天');
+    S.state = 'maps';
   }
 
   /* ============ 武器造型面板 ============ */
@@ -1737,8 +1867,14 @@ window.DATA = (function () {
       }
       return;
     }
+    if (S.state === 'sign') {
+      if (S.btnBack && hit(x, y, S.btnBack)) { S.state = 'maps'; return; }
+      if (S.btnClaim && hit(x, y, S.btnClaim)) { doSign(); return; }
+      return;
+    }
     if (S.state === 'maps') {
       if (S.btnBack && hit(x, y, S.btnBack)) { S.state = 'battle'; return; }
+      if (S.btnSign && hit(x, y, S.btnSign)) { S.state = 'sign'; return; }
       for (var mk in S) {
         if (mk.indexOf('mapBtn') === 0) {
           var mb = S[mk];
@@ -1913,6 +2049,8 @@ window.DATA = (function () {
   /* ============ 主循环 ============ */
   function update(dt) {
     if (!S) return;
+    if (S.shake > 0) S.shake = Math.max(0, S.shake - dt);
+    if (S.banner && S.banner.t > 0) S.banner.t -= dt;
     if (S.state === 'pull' && S.pullT !== undefined) S.pullT += dt;
     if (S.state === 'battle') {
       updateBattle(dt);
@@ -1927,6 +2065,7 @@ window.DATA = (function () {
     if (S.state === 'upgrade') return drawUpgrade();
     if (S.state === 'skin') return drawSkins();
     if (S.state === 'maps') return drawMaps();
+    if (S.state === 'sign') return drawSign();
     if (S.state === 'pets') return drawPets();
     if (S.state === 'rank') return drawRank();
     if (S.state === 'pull') return drawPull();

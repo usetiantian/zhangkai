@@ -55,6 +55,17 @@ window.DATA = (function () {
     { id: 'b1', name: '妖王·黑煞', hp: 1500, atk: 38, spd: 34, xp: 240, coin: 190, r: 46, drop: 0.42, col: '#5a1f2e', boss: 2 }
   ];
 
+  /* ---------- 每日签到（7 天一轮）---------- */
+  var SIGN = [
+    { coin: 200, ess: 0, gem: null },
+    { coin: 0, ess: 5, gem: null },
+    { coin: 0, ess: 0, gem: 'gem_def' },
+    { coin: 500, ess: 0, gem: null },
+    { coin: 0, ess: 12, gem: null },
+    { coin: 0, ess: 0, gem: 'gem_atk' },
+    { coin: 2000, ess: 20, gem: 'gem_crit' }
+  ];
+
   /* ---------- 宝石（镶嵌用）----------
      每件装备 1 个宝石槽。宝石从精英/妖王掉。 */
   var GEMS = [
@@ -159,7 +170,7 @@ window.DATA = (function () {
   return {
     QUAL: QUAL, QUAL_RANK: QUAL_RANK, SALVAGE_VALUE: SALVAGE_VALUE,
     SLOTS: SLOTS, WEAPONS: WEAPONS, AFFIX: AFFIX, MONS: MONS, SKILLS: SKILLS,
-    PETS: PETS, MAPS: MAPS, GEMS: GEMS, WEAPON_SKIN: WEAPON_SKIN, CHAR_SKIN: CHAR_SKIN, DAGGER: DAGGER,
+    PETS: PETS, MAPS: MAPS, GEMS: GEMS, SIGN: SIGN, WEAPON_SKIN: WEAPON_SKIN, CHAR_SKIN: CHAR_SKIN, DAGGER: DAGGER,
     WS_MIGRATE: WS_MIGRATE,
     /* 主角贴图（按性别）。img 没加载出来就回退到程序化画的小人。 */
     HERO_IMG: { m: 'run/hero_m.png', f: 'run/hero_f.png' },
