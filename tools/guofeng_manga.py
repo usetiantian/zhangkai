@@ -795,7 +795,7 @@ def _at_sec(body):
     return _sec(*m.groups()) if m else None
 
 
-def retime_batch(desc, start, end):
+def retime_batch(desc, start, end, first_of_episode=True):
     """把一批分镜的 At 时间戳重排：严格递增、覆盖 [start,end]、总时长守恒。
 
     为什么不信 LLM 的 At：实测它在同一批里会给出倒退的时间戳
@@ -844,8 +844,9 @@ def retime_batch(desc, start, end):
     t = float(start)
     for i, p in enumerate(shots):
         nb = p
-        # 第一个 Shot 不写 At（官方格式要求），后续每个 Shot 必写且严格递增
-        if i > 0:
+        # 官方格式：**全剧**第一个 Shot 不写 At，之后每个 Shot 必写且严格递增。
+        # ⚠️ 分批生成时，每批的第一个（除第一批外）前面已经用掉时间了 → 必须写 At。
+        if i > 0 or not first_of_episode:
             nb = _SHOT_AT.sub("At " + _fmt(t) + ",", nb, count=1)
             if _at_sec(nb) is None:
                 nb = re.sub(r"(\[Shot\s+\d+\])", r"\1 At " + _fmt(t) + ",", nb, count=1)
@@ -884,7 +885,8 @@ def make_storyboard_batched(task, asset_context="（参考资产库为空）", b
                       sub + NL2 + NL2 + SHOT_RULES + NL2 + NL2 + SOUND_RULES
                       + NL2 + NL2 + "风格要求：" + GUOFENG_STYLE,
                       max_tokens=7000)
-        descs.append(retime_batch(_extract_desc(raw), start, end))
+        descs.append(retime_batch(_extract_desc(raw), start, end,
+                                  first_of_episode=(bi == 0)))
         k = raw.find("overall_soundscape:")
         if k >= 0:
             e = raw.find("non_diegetic_music:", k)
