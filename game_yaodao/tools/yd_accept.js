@@ -182,6 +182,13 @@ function check(name, ok, extra) {
   check('排行面板打开', await ev('GAME.S().state') === 'rank');
   await shot('11_排行');
 
+  console.log('\n【13】等级');
+  check('打怪攒到经验了', (await ev('GAME.S().save.xp||0')) > 0 || (await ev('GAME.S().save.kills||0')) > 0,
+    'xp=' + await ev('GAME.S().save.xp') + ' kills=' + await ev('GAME.S().save.kills'));
+  await ev('GAME.S().save.lv=12;');
+  await sleep(400);
+  check('等级系统已接', (await ev('GAME.S().save.lv')) === 12, 'lv=' + await ev('GAME.S().save.lv'));
+
   console.log('\n【运行时异常】');
   check('无 JS 异常', errs.length === 0, errs.slice(0, 3).join(' | '));
 

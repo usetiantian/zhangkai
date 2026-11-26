@@ -29,6 +29,7 @@
       gems: {},               /* 宝石库存 {gem_atk: 2, ...} */
       cleared: {},             /* 通关记录 {1:true, 2:true} */
       signDay: 0, signDate: '',  /* 签到：累计天数 + 最后签到日期 */
+      lv: 1, xp: 0,             /* 角色等级 + 当前经验 */
       muted: false,             /* 音效开关 */
       bag: [],
       /* 开局送一把基础妖刀 —— 空手开场没有打击感，也没法试强化 */
@@ -103,7 +104,10 @@
 
   /* ============ 属性计算 ============ */
   function stats() {
-    var s = S.save, st = { atk: 10, def: 0, hp: 120, crit: 5, critDmg: 50, aspd: 0, luck: 0, vamp: 0, drop: 0 };
+    var s = S.save, lv = s.lv || 1;
+    /* 等级加成：每级 +6 攻击 +30 生命 +2 防御 */
+    var st = { atk: 10 + (lv - 1) * 6, def: (lv - 1) * 2, hp: 120 + (lv - 1) * 30,
+               crit: 5, critDmg: 50, aspd: 0, luck: 0, vamp: 0, drop: 0 };
     var eq = s.equip;
     SLOT_KEYS.forEach(function (k) {
       var it = eq[k];
@@ -148,6 +152,26 @@
     return s.petMood || 0;
   }
 
+  /* ---------- 等级 ---------- */
+  /* 升到下一级需要的经验：50 * n^1.5（第 1→2 级 50，第 5→6 级 559） */
+  function xpNeed(lv) { return Math.round(50 * Math.pow(lv, 1.5)); }
+  function addXp(s, amount) {
+    s.xp = (s.xp || 0) + amount;
+    var ups = 0;
+    while (s.xp >= xpNeed(s.lv)) {
+      s.xp -= xpNeed(s.lv);
+      s.lv++;
+      ups++;
+    }
+    if (ups) {
+      S.stats = stats();
+      toast('升级！Lv ' + s.lv);
+      if (G.sfx) G.sfx.play('upgrade');
+      S.lvFx = 1.6;      /* 升级特效计时 */
+    }
+    return ups;
+  }
+
   /* ============ 战斗 ============ */
   function newBattle() {
     var st = stats();
@@ -176,7 +200,7 @@
       S.banner = { txt: (m.boss === 2 ? m.name : '精英 · ' + m.name), t: 2.0, col: m.boss === 2 ? '#ff5a6e' : '#ffd23a' };
       S.shake = 0.45;
     }
-    var a = rnd(0, 6.2832), r = rnd(430, 560);
+    var a = rnd(0, 6.2832), r = rnd(300, 390);   /* 别刷太远，开局 1 秒就能接上 */
     var lv = S.map.lv;
     var hp = m.hp * (1 + lv * 0.34);
     S.mobs.push({
@@ -209,15 +233,22 @@
     }
     if (!idle && S.autoOn && S.autoManual) { S.autoOn = false; }
 
-    /* —— 移动 —— */
+    /* —— 移动 ——
+       传奇类手游的角色是自动走向敌人的（玩家只负责放技能）。
+       原来只有「10 秒无操作自动战斗」时才走 → 开局干等 9 秒才打上第一只，
+       手感很闷。
+       现在的规则：
+         拖动中   → 按手指方向走（玩家优先，能拉扯、能捡掉落）
+         没在拖   → 自动走向最近的怪（游戏永远在动）
+         自动战斗 → 额外自动放技能 */
     var tx = null, ty = null;
-    if (S.autoOn) {
-      var near = nearest(h, 520);
-      if (near) { tx = near.x; ty = near.y; }
-    } else if (G.T.down) {
+    if (G.T.down) {
       var dx = G.T.dx, dy = G.T.dy;
       var len = Math.sqrt(dx * dx + dy * dy);
       if (len > 6) { tx = h.x + dx / len * 200; ty = h.y + dy / len * 200; }
+    } else {
+      var near = nearest(h, 9999);
+      if (near) { tx = near.x; ty = near.y; }
     }
     var spd = 250 * (1 + st.aspd * 0.01);
     if (tx !== null) {
@@ -323,6 +354,7 @@
     S.mobs = S.mobs.filter(function (m) {
       if (m.hp > 0) return true;
       s.kills++; s.coins += m.coin;
+      addXp(s, m.xp || 0);
       S.nums.push({ x: m.x, y: m.y, v: -26, t: 1.0, txt: '+' + m.coin, col: '#ffd76a' });
       /* 掉落保底链：连续太久没出史诗就必出（不然非酋会彻底放弃）
          —— 调研口径的保底链：5-8 / 10-15 / 50 / 100 / 150-200 次 */
@@ -866,6 +898,19 @@
       ctx.restore();
     }
 
+    /* 升级金光 */
+    if (S.lvFx > 0) {
+      var lf = S.lvFx;
+      ctx.save();
+      ctx.globalAlpha = Math.min(1, lf / 0.6) * 0.55;
+      var lgr = ctx.createRadialGradient(h.x, h.y - 18, 4, h.x, h.y - 18, 52);
+      lgr.addColorStop(0, '#fff6d0');
+      lgr.addColorStop(1, 'rgba(255,214,90,0)');
+      ctx.fillStyle = lgr;
+      ctx.beginPath(); ctx.arc(h.x, h.y - 18, 52, 0, 6.2832); ctx.fill();
+      ctx.restore();
+    }
+
     /* 新手提示 */
     if (S.hint && S.hint.t > 0) {
       ctx.globalAlpha = Math.min(1, S.hint.t);
@@ -888,6 +933,13 @@
     G.text(S.map.name, 24, 28, 16, '#ffd88e', 'left', true);
     G.text('▾', 24 + String(S.map.name).length * 16 + 4, 29, 12, '#ffd88e', 'left');
     G.text('第 ' + (S.wave + 1) + '/' + S.map.waves + ' 波　妖 ' + S.mobs.length, 24, 46, 12.5, '#c9bda4');
+
+    /* 等级 + 经验条 */
+    G.round(12, 60, 92, 24, 6, 'rgba(0,0,0,.5)');
+    G.text('Lv ' + (S.save.lv || 1), 22, 72, 13, '#ffd88e', 'left', true);
+    var need = xpNeed(S.save.lv || 1), cur = S.save.xp || 0;
+    G.bar(52, 66, 44, 12, need ? cur / need : 0, '#8fe3ff', 'rgba(0,0,0,.55)');
+    G.text(cur + '/' + need, 74, 72, 8.5, '#dff3ff', 'center', true);
 
     /* 战力 */
     G.round(G.W - 12 - 118, 14, 118, 30, 8, 'rgba(0,0,0,.5)');
@@ -1812,6 +1864,7 @@
     if (!S) return;
     if (S.shake > 0) S.shake = Math.max(0, S.shake - dt);
     if (S.hint && S.hint.t > 0) S.hint.t -= dt;
+    if (S.lvFx > 0) S.lvFx -= dt;
     if (S.banner && S.banner.t > 0) S.banner.t -= dt;
     if (S.state === 'pull' && S.pullT !== undefined) S.pullT += dt;
     if (S.state === 'battle') {

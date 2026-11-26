@@ -74,9 +74,13 @@ def affix_value(it):
     return v
 
 
-def power_of(equip, pet_lv=1):
-    """简化战力：攻击×2 + 词条总和×8（和游戏里的公式量级一致）"""
-    p = 24  # 基础 atk 10 ×2
+def xp_need(lv):
+    return int(50 * (lv ** 1.5))
+
+
+def power_of(equip, lv=1):
+    """简化战力：基础（受等级影响）+ 装备词条×8（和游戏里的公式量级一致）"""
+    p = (10 + (lv - 1) * 6) * 2 + 120 * 0.6 + (lv - 1) * 30 * 0.6 + (lv - 1) * 2 * 1.5
     for slot, it in equip.items():
         if not it:
             continue
@@ -104,6 +108,8 @@ def play(verbose=False, n_players=1000):
         ms = {'首件装备': None, '+1强化': None, '+5强化': None, '+10强化': None, '十连史诗': None}
         pulls = 0
         last_pull = 0
+        lv = 1
+        xp = 0
 
         while t < 7200:                       # 2 小时
             dt = 1.0                          # 每秒结算
@@ -114,6 +120,10 @@ def play(verbose=False, n_players=1000):
                 coins += 3
                 if kills % 25 == 0:          # 每 25 只出只精英
                     coins += MONS['e1']['coin']
+                    xp += MONS['e1']['xp']
+                    while xp >= xp_need(lv):
+                        xp -= xp_need(lv)
+                        lv += 1
                     if random.random() < 0.35:
                         g = wpick(GEMS)
                         gems[g['id']] = gems.get(g['id'], 0) + 1
@@ -128,6 +138,11 @@ def play(verbose=False, n_players=1000):
                 else:
                     got = False
                 if got:
+                    # 怪的经验
+                    xp += MONS['m1']['xp']
+                    while xp >= xp_need(lv):
+                        xp -= xp_need(lv)
+                        lv += 1
                     it = {'q': q['id'], 'qn': q['name'], 'slot': random.choice(['weapon', 'head', 'body', 'neck']),
                           'aff': {}, 'lv': 0}
                     for k in range(q['affix']):
@@ -202,7 +217,7 @@ def play(verbose=False, n_players=1000):
                         essence += D['SALVAGE_VALUE'][bag[i]['q']]
                         bag.pop(i)
             if int(t) % 600 == 0:
-                pts.append((t, power_of(equip), len(bag), coins, essence))
+                pts.append((t, power_of(equip, lv), len(bag), coins, essence))
             t += dt
         timelines.append(pts)
         milestones.append(ms)
