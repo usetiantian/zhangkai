@@ -46,6 +46,15 @@ window.DATA = (function () {
     drop: { id: 'drop', name: '掉落率', v: [3, 10], w: 7 }
   };
 
+  /* ---------- 套装 ----------
+     蓝色以上装备 35% 概率带套装标记（item.set），同名凑 2/4 件触发加成。
+     b2/b4 的 key 对应 stats 字段；atkPct/hpPct 是百分比；d2/d4 是显示文案。 */
+  var SETS = [
+    { id: 'blood', name: '血煞', col: '#e0605a', b2: { vamp: 2 }, b4: { atkPct: 8 }, d2: '吸血+2', d4: '攻击+8%' },
+    { id: 'turtle', name: '玄龟', col: '#5a9be0', b2: { def: 10 }, b4: { hpPct: 12 }, d2: '防御+10', d4: '生命+12%' },
+    { id: 'swift', name: '迅影', col: '#5ec4a0', b2: { aspd: 4 }, b4: { crit: 4 }, d2: '攻速+4', d4: '暴击+4' }
+  ];
+
   /* ---------- 怪物 ---------- */
   var MONS = [
     { id: 'm1', name: '山鼠', hp: 26, atk: 5, spd: 46, xp: 4, coin: 3, r: 15, drop: 0.055, col: '#8b7d63', boss: 0 },
@@ -194,6 +203,7 @@ window.DATA = (function () {
     QUAL: QUAL, QUAL_RANK: QUAL_RANK, SALVAGE_VALUE: SALVAGE_VALUE,
     SLOTS: SLOTS, SLOT_ICON: SLOT_ICON, WEAPONS: WEAPONS, AFFIX: AFFIX, MONS: MONS, SKILLS: SKILLS,
     PETS: PETS, MAPS: MAPS, GEMS: GEMS, SIGN: SIGN, WEAPON_SKIN: WEAPON_SKIN, CHAR_SKIN: CHAR_SKIN, DAGGER: DAGGER,
+    SETS: SETS,
     WS_MIGRATE: WS_MIGRATE,
     /* 主角贴图（按性别）。img 没加载出来就回退到程序化画的小人。 */
     HERO_IMG: { m: 'run/hero_m.png', f: 'run/hero_f.png' },

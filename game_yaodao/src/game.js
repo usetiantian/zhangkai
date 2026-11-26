@@ -105,6 +105,10 @@
       it.atk = Math.round(w.atk * q.mul * (1 + rnd(0, 0.12)));
       it.range = w.range; it.cd = w.cd; it.dmgMul = w.dmgMul;
     }
+    /* 套装：蓝色以上 35% 概率带标记 */
+    if (D.SETS && (D.QUAL_RANK[q.id] || 0) >= 2 && Math.random() < 0.35) {
+      it.set = D.SETS[Math.floor(Math.random() * D.SETS.length)].id;
+    }
     return it;
   }
 
@@ -161,8 +165,30 @@
       st[p.main] = Math.round((st[p.main] || 0) + p.base * 10 * mul);
       st.atk = Math.round(st.atk * (1 + (s.petLv - 1) * 0.04 * (m >= 80 ? 1.2 : 1)));
     }
+    /* 套装加成：已装备的同名套装 2 件小成 / 4 件大成（放最后，百分比吃满加成） */
+    var sc = setCounts(eq);
+    for (var sid in sc) {
+      var sd = D.SETS && D.SETS.filter(function (x) { return x.id === sid; })[0];
+      if (!sd) continue;
+      if (sc[sid] >= 2) for (var bk in sd.b2) setBonus(st, bk, sd.b2[bk]);
+      if (sc[sid] >= 4) for (var bk2 in sd.b4) setBonus(st, bk2, sd.b4[bk2]);
+    }
     st.atk = Math.round(st.atk);
     return st;
+  }
+  function setCounts(eq) {
+    var sc = {};
+    SLOT_KEYS.forEach(function (k) { var e2 = eq[k]; if (e2 && e2.set) sc[e2.set] = (sc[e2.set] || 0) + 1; });
+    return sc;
+  }
+  function setBonus(st, k, v) {
+    if (k === 'atkPct') st.atk = Math.round(st.atk * (1 + v / 100));
+    else if (k === 'hpPct') st.hp = Math.round(st.hp * (1 + v / 100));
+    else st[k] = (st[k] || 0) + v;
+  }
+  function setD(it) {
+    if (!it || !it.set || !D.SETS) return null;
+    return D.SETS.filter(function (x) { return x.id === it.set; })[0] || null;
   }
   function power(st) {
     st = st || stats();
@@ -1745,7 +1771,8 @@
     G.text('背包', 24, 40, 24, '#ffd88e', 'left', true);
     /* 战力挪到第二行 —— 原来和「造型」「改形象」两个按钮挤在一行，压在一起了 */
     G.text('战力 ' + fmt(power()), G.W - 32, 66, 15, '#ffd23a', 'right', true);
-    G.text('点击装备即换上', G.W - 32, 84, 11.5, '#9c9484', 'right');
+    /* ⚠️ 提示别放右侧 y=84 —— 会压到第 4 个装备格（格区 y=78 起） */
+    G.text('点击装备即换上', 24, 66, 11.5, '#9c9484', 'left');
 
     /* 已装备 4 格 */
     var slots = D.SLOTS;
@@ -1759,6 +1786,8 @@
         G.round(bx + 8, 100, bw - 16, 34, 5, 'rgba(255,255,255,.07)', it.col, 1.5);
         G.text(it.qn + (it.lv ? ' +' + it.lv : ''), bx + bw / 2, 114, 12.5, it.col, 'center', true);
         G.text(affixTxt(it), bx + bw / 2, 130, 10.5, '#bdb49e', 'center');
+        var sd0 = setD(it);
+        if (sd0) G.circle(bx + bw - 12, 106, 4.5, sd0.col);
       } else {
         G.text('空', bx + bw / 2, 117, 13, '#6d675c', 'center');
       }
@@ -1766,6 +1795,15 @@
 
     /* 背包列表 */
     var y = 168, n = 0;
+    /* 套装进度（凑到 2 件才显示） */
+    var sumTxt = '';
+    var scNow = setCounts(S.save.equip);
+    for (var ssid in scNow) {
+      if (scNow[ssid] < 2) continue;
+      var ssd = D.SETS.filter(function (x) { return x.id === ssid; })[0];
+      if (ssd) sumTxt += (sumTxt ? ' · ' : '') + ssd.name + ' ' + scNow[ssid] + '/4 ' + (scNow[ssid] >= 4 ? ssd.d4 : ssd.d2);
+    }
+    if (sumTxt) { G.text('◈ ' + sumTxt, 24, y, 12, '#c9bda4'); y += 20; }
     var gemTot = 0;
     if (S.save.gems) for (var gk in S.save.gems) gemTot += S.save.gems[gk];
     G.text('持有 ' + S.save.bag.length + ' 件' + (gemTot ? ' · 宝石 ' + gemTot : ''), 24, y, 13, '#9c9484');
@@ -1791,7 +1829,9 @@
         G.circle(36, y + 23, 3, 'rgba(255,255,255,.5)');
       }
       G.text(it2.qn + (it2.lv ? ' +' + it2.lv : ''), 64, y + 16, 14, it2.col, 'left', true);
-      G.text(slotName(it2.slot) + (it2.wtype ? '·' + D.WEAPONS[it2.wtype].name : ''), 64, y + 34, 11.5, '#a89f8c');
+      var sdi = setD(it2);
+      G.text(slotName(it2.slot) + (it2.wtype ? '·' + D.WEAPONS[it2.wtype].name : '') + (sdi ? ' · ' + sdi.name : ''),
+        64, y + 34, 11.5, sdi ? sdi.col : '#a89f8c');
       G.text(affixTxt(it2), G.W - 28, y + 26, 11.5, '#cfc6b0', 'right');
       S['bagItem' + j] = { x: 24, y: y + 26, r: 0, w: G.W - 48, h: 26, idx: j };
       y += 58; n++;
@@ -2134,6 +2174,7 @@
     var s = S.save, it = s.bag[idx];
     if (!it) return;
     var before = power();
+    var scB = setCounts(s.equip);
     s.equip[it.slot] = it;
     s.bag.splice(idx, 1);
     S.stats = stats();
@@ -2141,6 +2182,15 @@
     S.anim.power = 1.4; S.anim.powerFrom = before;
     if (after > s.best) s.best = after;
     toast('换上 ' + it.qn + '　战力 +' + (after - before));
+    /* 套装达成提示（2 件/4 件都响，覆盖装备 toast） */
+    var scA = setCounts(s.equip);
+    for (var sid in scA) {
+      if ((scA[sid] || 0) < 2) continue;
+      var sd = D.SETS.filter(function (x) { return x.id === sid; })[0];
+      if (!sd) continue;
+      if ((scB[sid] || 0) < 2 && scA[sid] >= 2) toast('◈ ' + sd.name + ' 2 件套：' + sd.d2);
+      if ((scB[sid] || 0) < 4 && scA[sid] >= 4) { toast('◈ ' + sd.name + ' 4 件套：' + sd.d4); if (G.sfx) G.sfx.play('rare'); }
+    }
     G.persist();
   }
   function feedPet() {
