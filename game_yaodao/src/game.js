@@ -1439,25 +1439,27 @@
       return;
     }
     var p = D.PETS.filter(function (x) { return x.id === s.pet.slot; })[0];
-    G.round(20, 80, G.W - 40, 120, 10, 'rgba(255,255,255,.05)', 'rgba(255,255,255,.12)');
+    /* 卡片：80~248，贴图占上半，名字/等级/心情条分两行 —— 别让文字压在贴图上 */
+    G.round(20, 80, G.W - 40, 168, 10, 'rgba(255,255,255,.05)', 'rgba(255,255,255,.12)');
     var pimg = S.petImg && S.petImg[s.pet.slot];
     if (pimg) {
-      var ph = 96, pw = pimg.width / pimg.height * ph;
-      ctx.drawImage(pimg, G.W / 2 - pw / 2, 88, pw, ph);
+      var ph = 104, pw = pimg.width / pimg.height * ph;
+      ctx.drawImage(pimg, G.W / 2 - pw / 2, 86, pw, ph);
     } else {
-      G.circle(G.W / 2, 128, 34, '#6a7f9a');
+      G.circle(G.W / 2, 138, 34, '#6a7f9a');
     }
-    G.text(p.name, G.W / 2, 128, 17, '#fff', 'center', true);
-    G.text('Lv ' + s.petLv + ' / ' + D.PET_MAX_LV, G.W / 2, 172, 14, '#c9bda4', 'center');
+    /* 名字 + 等级 */
+    G.text(p.name, 34, 202, 17, '#fff', 'left', true);
+    G.text('Lv ' + s.petLv + ' / ' + D.PET_MAX_LV, G.W - 34, 202, 13, '#c9bda4', 'right');
     /* 心情条 */
-    G.text('心情', 40, 190, 12, '#9c9484');
-    G.bar(80, 183, G.W - 160, 14, m / 100, m >= 80 ? '#7dff9b' : (m < 30 ? '#e0685a' : '#ffd23a'), 'rgba(0,0,0,.45)');
-    G.text(moodTxt(m), G.W - 44, 190, 12, m >= 80 ? '#7dff9b' : '#c9bda4', 'right');
-    G.text('心情好 → 词条数值 +10%', G.W / 2, 208, 11.5, '#8a8272', 'center');
+    G.text('心情', 34, 226, 12, '#9c9484');
+    G.bar(72, 219, G.W - 130, 13, m / 100, m >= 80 ? '#7dff9b' : (m < 30 ? '#e0685a' : '#ffd23a'), 'rgba(0,0,0,.45)');
+    G.text(moodTxt(m), G.W - 34, 226, 12, m >= 80 ? '#7dff9b' : '#c9bda4', 'right');
+    G.text('心情好 → 词条数值 +10%', G.W / 2, 262, 11.5, '#8a8272', 'center');
 
     /* 词条 */
-    G.text('宠物词条', 24, 232, 14, '#ffd88e', 'left', true);
-    G.text('主属性 ' + (D.AFFIX[p.main] ? D.AFFIX[p.main].name : p.main) + ' +' + Math.round(p.base * 10 * (1 + (s.petLv - 1) * 0.05)), 24, 256, 13, '#c9bda4');
+    G.text('宠物词条', 24, 288, 14, '#ffd88e', 'left', true);
+    G.text('主属性 ' + (D.AFFIX[p.main] ? D.AFFIX[p.main].name : p.main) + ' +' + Math.round(p.base * 10 * (1 + (s.petLv - 1) * 0.05)), 24, 312, 13, '#c9bda4');
 
     /* 喂食 */
     var need = s.petLv * 50;
