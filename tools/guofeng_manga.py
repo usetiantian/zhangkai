@@ -527,18 +527,25 @@ def rebalance_beats(task, total=None, rate=3.5):
            "over": [], "moved": [], "beats": len(blocks)}
     if sum_min > total + 1e-6:
         rep["ok"] = False
-        rep["msg"] = ("台词总需求 %.1f 秒 > 目标总时长 %.1f 秒：要么加长整集，"
-                      "要么砍台词（青葫道人那两句占全片 30%%）" % (sum_min, total))
+        rep["msg"] = ("台词总需求 %.1f 秒 > 总时长 %.1f 秒（按原比例摊开，"
+                      "台词会偏快）" % (sum_min, total))
         for i in range(len(blocks)):
             if mins[i] > durs[i] + 1e-6:
                 rep["over"].append({"beat": blocks[i][0], "chars": chars[i],
                                     "need": round(mins[i], 2), "have": round(durs[i], 2)})
-        return task, rep
+        # ⚠️ 装不下也**继续往下走**：时间轴必须连续化。
+        #    之前这里直接 return（原样不改）→ 删掉场次后留下时间空洞
+        #    （实测 110~148、182~198 是被删场次的槽），而且「目标总时长」
+        #    与场次实际对不上 → 守恒门禁直接拒收。
     slack = total - sum_min
     new = []
+    base_sum = sum(durs) or 1.0
     for i in range(len(blocks)):
-        share = (durs[i] / total) if total > 0 else (1.0 / len(blocks))
-        new.append(mins[i] + slack * share)
+        if slack >= 0:
+            share = (durs[i] / total) if total > 0 else (1.0 / len(blocks))
+            new.append(mins[i] + slack * share)
+        else:
+            new.append(durs[i] * total / base_sum)
     acc = 0.0
     for i in range(len(new) - 1):
         new[i] = round(new[i], 3)
@@ -985,15 +992,16 @@ def trim_beats_to_budget(task, max_total=300.0, rate=3.5):
         en = float(m.group(2)) if m else 0.0
         info.append({"num": num, "blk": blk, "dur": en - st, "chars": beat_dialogue_chars(blk)})
     budget = max_total * rate
-    def total_chars(keep):
-        return sum(x["chars"] for x in keep)
+    def alloc(keep):
+        """删完场次后，这些场次需要的总时长（各自至少要能装下自己的台词）。"""
+        return sum(max(x["dur"], x["chars"] / rate) for x in keep)
     dropped = []
     keep = list(info)
-    while total_chars(keep) > budget and len(keep) > 3:
-        # 删台词最重的那一场（信息密度最高、最容易被压掉）
-        worst = max(keep, key=lambda x: x["chars"])
-        keep = [x for x in keep if x is not worst]
-        dropped.append(worst["num"])
+    # 循环删：直到剩下的场次在 max_total 秒里装得下（删掉场次后其余会分到更多时间）
+    while len(keep) > 3 and alloc(keep) > max_total:
+        w = max(keep, key=lambda x: max(x["dur"], x["chars"] / rate))
+        keep = [x for x in keep if x is not w]
+        dropped.append(w["num"])
     fixed, rep = rebalance_beats(head + "".join(x["blk"] for x in keep), total=max_total)
     if not rep.get("ok"):
         # 还是装不下 → 加长到刚好装下
