@@ -1319,9 +1319,22 @@
     for (var j = S.save.bag.length - 1; j >= 0 && n < 40; j--) {
       var it2 = S.save.bag[j];
       G.round(16, y, G.W - 32, 52, 7, 'rgba(255,255,255,.045)', 'rgba(255,255,255,.10)');
-      G.round(24, y + 8, 8, 36, 4, it2.col);
-      G.text(it2.qn, 42, y + 16, 14, it2.col, 'left', true);
-      G.text(slotName(it2.slot) + (it2.wtype ? '·' + D.WEAPONS[it2.wtype].name : ''), 42, y + 34, 11.5, '#a89f8c');
+      /* 图标：武器用贴图，其它部位用品质色宝石 */
+      var iw2 = null;
+      if (it2.wtype) {
+        var sk2 = D.WEAPON_SKIN.filter(function (w) { return w.w === it2.wtype; })[0];
+        if (sk2 && S.wskinImg) iw2 = S.wskinImg[sk2.id];
+      }
+      if (iw2) {
+        var bhh2 = 36, bww2 = iw2.width / iw2.height * bhh2;
+        ctx.drawImage(iw2, 24 + (36 - bww2) / 2, y + 8, bww2, bhh2);
+      } else {
+        G.round(24, y + 8, 30, 36, 6, 'rgba(255,255,255,.05)', it2.col, 1.2);
+        G.circle(39, y + 26, 9, it2.col);
+        G.circle(36, y + 23, 3, 'rgba(255,255,255,.5)');
+      }
+      G.text(it2.qn + (it2.lv ? ' +' + it2.lv : ''), 64, y + 16, 14, it2.col, 'left', true);
+      G.text(slotName(it2.slot) + (it2.wtype ? '·' + D.WEAPONS[it2.wtype].name : ''), 64, y + 34, 11.5, '#a89f8c');
       G.text(affixTxt(it2), G.W - 28, y + 26, 11.5, '#cfc6b0', 'right');
       S['bagItem' + j] = { x: 24, y: y + 26, r: 0, w: G.W - 48, h: 26, idx: j };
       y += 58; n++;

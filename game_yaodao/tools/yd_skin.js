@@ -40,6 +40,20 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   await tap(sb.x,sb.y); await sleep(800);
   console.log('state =',await ev('GAME.S().state'));
   await shot('01_造型面板');
+  // 先看人物页
+  await ev('GAME.S().skinTab="char";');
+  await sleep(600);
+  await shot('01_人物造型');
+  console.log('   人物图加载 =', await ev('Object.keys(GAME.S().charImg||{}).join(",")'));
+  const cb=JSON.parse(await ev('(function(){var S=GAME.S();var k=Object.keys(S).filter(function(x){return x.indexOf("char")===0&&x!=="charImg";})[1];return k?JSON.stringify(S[k]):"none";})()'));
+  console.log('   目标人物 =',cb);
+  if(cb!=='none'){ await tap(cb.x,cb.y); await sleep(800);
+    console.log('   当前皮肤 =',await ev('GAME.S().save.skin')); await shot('02_换人物后'); }
+  // 切到武器页
+  await ev('GAME.S().skinTab="weapon";');
+  await sleep(600);
+  await shot('03_武器页');
+
   // 换成第 3 把（流云剑）
   const t=JSON.parse(await ev('(function(){var S=GAME.S();var k=Object.keys(S).filter(function(x){return x.indexOf("skin")===0&&x!=="skinBox";})[2];return JSON.stringify(S[k]);})()'));
   console.log('目标 =',t);

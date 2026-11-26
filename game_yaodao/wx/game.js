@@ -156,10 +156,10 @@ window.DATA = (function () {
 
   /* ---------- 人物皮肤（4 套 × 2 性别）---------- */
   var CHAR_SKIN = [
-    { id: 'cs1', name: '素衣', sex: 'm', col: '#5b6b7a', hair: '#1d1b1a' },
-    { id: 'cs2', name: '青竹', sex: 'm', col: '#2f6b57', hair: '#1d1b1a' },
-    { id: 'cs3', name: '素衣', sex: 'f', col: '#7a6a86', hair: '#241b1c' },
-    { id: 'cs4', name: '绛紫', sex: 'f', col: '#6d2740', hair: '#241b1c' }
+    { id: 'cs1', name: '素衣', sex: 'm', col: '#5b6b7a', hair: '#1d1b1a', img: 'run/cs1.png' },
+    { id: 'cs2', name: '青竹', sex: 'm', col: '#2f6b57', hair: '#1d1b1a', img: 'run/cs2.png' },
+    { id: 'cs3', name: '素衣', sex: 'f', col: '#7a6a86', hair: '#241b1c', img: 'run/cs3.png' },
+    { id: 'cs4', name: '绛紫', sex: 'f', col: '#6d2740', hair: '#241b1c', img: 'run/cs4.png' }
   ];
 
   /* ---------- 妖刀录（新手村）---------- */
@@ -820,6 +820,12 @@ window.DATA = (function () {
     D.WEAPON_SKIN.forEach(function (w) {
       if (w.img) list.push({ key: w.id, path: 'assets/' + w.img });
     });
+    if (D.CHAR_SKIN) {
+      for (var ck in D.CHAR_SKIN) {
+        var cs = D.CHAR_SKIN[ck];
+        if (cs.img) list.push({ key: cs.id, path: 'assets/' + cs.img });
+      }
+    }
     if (D.MONS_IMG) {
       for (var mk in D.MONS_IMG) list.push({ key: mk, path: 'assets/' + D.MONS_IMG[mk] });
     }
@@ -829,6 +835,9 @@ window.DATA = (function () {
     G.loadImgs(list, function (out) {
       S.heroImg = { m: out['m'] || null, f: out['f'] || null };
       S.wskinImg = out;
+      /* 人物皮肤贴图（cs1~cs4），跟武器贴图分开存 */
+      S.charImg = {};
+      if (D.CHAR_SKIN) for (var ck2 in D.CHAR_SKIN) S.charImg[D.CHAR_SKIN[ck2].id] = out[D.CHAR_SKIN[ck2].id] || null;
       /* 怪物和地图底单独拎出来，避免和武器的 key 混在一起 */
       S.mobImg = {}; S.mapImg = {};
       for (var k in out) {
@@ -1097,7 +1106,8 @@ window.DATA = (function () {
       ctx.beginPath(); ctx.arc(h.x, h.y - 16, 34, 0, 6.2832); ctx.fill();
       ctx.restore();
     }
-    var heroImg = S.heroImg && S.heroImg[S.save.sex];
+    /* 优先用当前人物皮肤的贴图，没有才回退到性别定妆图 */
+    var heroImg = (S.charImg && S.charImg[S.save.skin]) || (S.heroImg && S.heroImg[S.save.sex]);
     if (heroImg) {
       /* 贴图版：贴图是「脚底对齐」的，脚落在角色坐标上 */
       var hh = D.HERO_H;
@@ -1476,12 +1486,22 @@ window.DATA = (function () {
   /* ============ 武器造型面板 ============ */
   function drawSkins() {
     G.round(0, 0, G.W, G.H, 0, 'rgba(12,12,14,.97)');
-    G.text('武器造型', 24, 40, 24, '#ffd88e', 'left', true);
+    G.text('造型', 24, 40, 24, '#ffd88e', 'left', true);
     S.btnBack = { x: G.W - 40, y: 40, r: 17 };
     G.circle(S.btnBack.x, S.btnBack.y, 16, 'rgba(255,255,255,.12)');
     G.text('✕', S.btnBack.x, S.btnBack.y, 14, '#fff', 'center', true);
-    G.text('只换外观，不加属性', G.W - 64, 64, 12, '#8a8272', 'right');
 
+    /* 页签：人物 / 武器 */
+    S.skinTab = S.skinTab || 'char';
+    S.tabChar = { x: 74, y: 70, r: 40 };
+    S.tabWeapon = { x: 168, y: 70, r: 40 };
+    G.round(24, 56, 100, 28, 14, S.skinTab === 'char' ? 'rgba(255,220,150,.85)' : 'rgba(255,255,255,.07)');
+    G.round(118, 56, 100, 28, 14, S.skinTab === 'weapon' ? 'rgba(255,220,150,.85)' : 'rgba(255,255,255,.07)');
+    G.text('人物', 74, 70, 13, S.skinTab === 'char' ? '#2a2418' : '#8a8272', 'center', true);
+    G.text('武器', 168, 70, 13, S.skinTab === 'weapon' ? '#2a2418' : '#8a8272', 'center', true);
+    G.text('只换外观，不加属性', G.W - 64, 70, 11.5, '#8a8272', 'right');
+
+    if (S.skinTab === 'char') { drawCharSkins(); return; }
     var list = D.WEAPON_SKIN;
     var cols = 3, cw = (G.W - 32) / cols;
     for (var i = 0; i < list.length; i++) {
@@ -1503,6 +1523,34 @@ window.DATA = (function () {
       S['skin' + w.id] = { x: bx + (cw - 10) / 2, y: by + 60, r: 46, id: w.id, name: w.name };
     }
   }
+
+  /* 人物造型页 */
+  function drawCharSkins() {
+    var sex = S.save.sex || 'm';
+    var list = D.CHAR_SKIN.filter(function (x) { return x.sex === sex; });
+    G.text('当前：' + (D.CHAR_SKIN.filter(function (x) { return x.id === S.save.skin; })[0] || {}).name,
+      24, 106, 13, '#9c9484', 'left');
+    for (var i = 0; i < list.length; i++) {
+      var c = list[i];
+      var bx = 16 + i * ((G.W - 32) / 2), bw = (G.W - 32) / 2 - 8;
+      var on = S.save.skin === c.id;
+      G.round(bx, 126, bw, 320, 12, on ? 'rgba(255,220,150,.10)' : 'rgba(255,255,255,.04)',
+        on ? '#ffd88e' : 'rgba(255,255,255,.13)', on ? 2 : 1);
+      var img = S.charImg && S.charImg[c.id];
+      if (img) {
+        var ih = 236, iw = img.width / img.height * ih;
+        ctx.drawImage(img, bx + bw / 2 - iw / 2, by0(126, ih), iw, ih);
+      } else {
+        G.circle(bx + bw / 2, 240, 40, c.col);
+        G.text('?', bx + bw / 2, 240, 30, 'rgba(255,255,255,.25)', 'center', true);
+      }
+      G.text(c.name, bx + bw / 2, 400, 17, on ? '#ffd88e' : '#cfc6b0', 'center', true);
+      G.text(on ? '使用中' : '点击装备', bx + bw / 2, 424, 11.5, on ? '#ffd88e' : '#6d675c', 'center');
+      S['char' + c.id] = { x: bx + bw / 2, y: 250, r: 80, id: c.id };
+    }
+    G.text('人物造型', G.W / 2, G.H - 40, 11.5, '#6d675c', 'center');
+  }
+  function by0(y, h) { return y + 12; }
 
   function drawUpgrade() {
     G.round(0, 0, G.W, G.H, 0, 'rgba(10,10,12,.97)');
@@ -1687,9 +1735,22 @@ window.DATA = (function () {
     for (var j = S.save.bag.length - 1; j >= 0 && n < 40; j--) {
       var it2 = S.save.bag[j];
       G.round(16, y, G.W - 32, 52, 7, 'rgba(255,255,255,.045)', 'rgba(255,255,255,.10)');
-      G.round(24, y + 8, 8, 36, 4, it2.col);
-      G.text(it2.qn, 42, y + 16, 14, it2.col, 'left', true);
-      G.text(slotName(it2.slot) + (it2.wtype ? '·' + D.WEAPONS[it2.wtype].name : ''), 42, y + 34, 11.5, '#a89f8c');
+      /* 图标：武器用贴图，其它部位用品质色宝石 */
+      var iw2 = null;
+      if (it2.wtype) {
+        var sk2 = D.WEAPON_SKIN.filter(function (w) { return w.w === it2.wtype; })[0];
+        if (sk2 && S.wskinImg) iw2 = S.wskinImg[sk2.id];
+      }
+      if (iw2) {
+        var bhh2 = 36, bww2 = iw2.width / iw2.height * bhh2;
+        ctx.drawImage(iw2, 24 + (36 - bww2) / 2, y + 8, bww2, bhh2);
+      } else {
+        G.round(24, y + 8, 30, 36, 6, 'rgba(255,255,255,.05)', it2.col, 1.2);
+        G.circle(39, y + 26, 9, it2.col);
+        G.circle(36, y + 23, 3, 'rgba(255,255,255,.5)');
+      }
+      G.text(it2.qn + (it2.lv ? ' +' + it2.lv : ''), 64, y + 16, 14, it2.col, 'left', true);
+      G.text(slotName(it2.slot) + (it2.wtype ? '·' + D.WEAPONS[it2.wtype].name : ''), 64, y + 34, 11.5, '#a89f8c');
       G.text(affixTxt(it2), G.W - 28, y + 26, 11.5, '#cfc6b0', 'right');
       S['bagItem' + j] = { x: 24, y: y + 26, r: 0, w: G.W - 48, h: 26, idx: j };
       y += 58; n++;
@@ -1895,6 +1956,23 @@ window.DATA = (function () {
     }
     if (S.state === 'skin') {
       if (S.btnBack && hit(x, y, S.btnBack)) { S.state = 'bag'; return; }
+      if (S.tabChar && hit(x, y, S.tabChar)) { S.skinTab = 'char'; return; }
+      if (S.tabWeapon && hit(x, y, S.tabWeapon)) { S.skinTab = 'weapon'; return; }
+      /* 人物造型 */
+      for (var ck in S) {
+        if (ck.indexOf('char') === 0 && ck !== 'charImg') {
+          var cb2 = S[ck];
+          if (cb2 && hit(x, y, cb2)) {
+            var cs2 = D.CHAR_SKIN.filter(function (x) { return x.id === cb2.id; })[0];
+            S.save.skin = cb2.id;
+            S.stats = stats();
+            toast('换上 ' + (cs2 ? cs2.name : '造型'));
+            G.persist();
+            return;
+          }
+        }
+      }
+      /* 武器造型 */
       for (var wsk in S) {
         if (wsk.indexOf('skin') === 0 && wsk !== 'skinBox') {
           var wb = S[wsk];
