@@ -156,7 +156,12 @@ def _fmt(t):
 
 def split_shots(board):
     """把官方分镜正文切成 [(序号, 整块文本)]。只处理 integrated_multimodal_description 段。"""
+    # 两种格式都要认：
+    #   base 格式（导演台 AI 分镜原文）：integrated_multimodal_description:
+    #   Ref2VA 格式（段表里每段的 prompt）：detailed_description:
     i = board.find("integrated_multimodal_description:")
+    if i < 0:
+        i = board.find("detailed_description:")
     if i < 0:
         return board, [], board
     j = board.find("overall_soundscape:", i)
