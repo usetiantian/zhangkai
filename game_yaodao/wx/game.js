@@ -52,7 +52,15 @@ window.DATA = (function () {
     { id: 'm2', name: '野狼', hp: 58, atk: 10, spd: 62, xp: 9, coin: 7, r: 18, drop: 0.070, col: '#6d7a8c', boss: 0 },
     { id: 'm3', name: '妖藤', hp: 42, atk: 8, spd: 34, xp: 7, coin: 5, r: 17, drop: 0.060, col: '#4f8a52', boss: 0 },
     { id: 'e1', name: '铁背熊', hp: 420, atk: 22, spd: 40, xp: 60, coin: 46, r: 34, drop: 0.16, col: '#7a5230', boss: 1 },
-    { id: 'b1', name: '妖王·黑煞', hp: 1500, atk: 38, spd: 34, xp: 240, coin: 190, r: 46, drop: 0.42, col: '#5a1f2e', boss: 2 }
+    { id: 'b1', name: '妖王·黑煞', hp: 1500, atk: 38, spd: 34, xp: 240, coin: 190, r: 46, drop: 0.42, col: '#5a1f2e', boss: 2 },
+    { id: 'm4', name: '毒蛛', hp: 74, atk: 12, spd: 54, xp: 11, coin: 9, r: 17, drop: 0.065, col: '#4a5a2e', boss: 0 },
+    { id: 'm5', name: '血蝠', hp: 58, atk: 15, spd: 84, xp: 12, coin: 10, r: 15, drop: 0.070, col: '#5e2a34', boss: 0 },
+    { id: 'm6', name: '骷髅兵', hp: 126, atk: 19, spd: 42, xp: 18, coin: 14, r: 19, drop: 0.075, col: '#9a9285', boss: 0 },
+    { id: 'm7', name: '碧眼蛇', hp: 96, atk: 16, spd: 62, xp: 16, coin: 13, r: 19, drop: 0.070, col: '#2f6b4a', boss: 0 },
+    { id: 'e2', name: '玄甲龟', hp: 920, atk: 31, spd: 24, xp: 120, coin: 92, r: 36, drop: 0.18, col: '#3f4a44', boss: 1 },
+    { id: 'e3', name: '魇魔', hp: 760, atk: 36, spd: 52, xp: 135, coin: 105, r: 33, drop: 0.18, col: '#3a2a52', boss: 1 },
+    { id: 'b2', name: '妖王·赤焰', hp: 3400, atk: 56, spd: 30, xp: 520, coin: 420, r: 48, drop: 0.44, col: '#7a2416', boss: 2 },
+    { id: 'b3', name: '妖王·幽冥', hp: 2700, atk: 62, spd: 46, xp: 480, coin: 390, r: 46, drop: 0.44, col: '#1e2a44', boss: 2 }
   ];
 
   /* ---------- 每日签到（7 天一轮）---------- */
@@ -99,8 +107,23 @@ window.DATA = (function () {
     { id: 2, name: '乱葬岗', waves: 6, mobs: ['m2', 'm3', 'm1', 'e1'], elite: 'e1', boss: null, lv: 4,
       ground: '#3f3c38', ground2: '#4a4641', deco: ['#575249', '#6d6558', '#8a8072'], pw: 1200 },
     { id: 3, name: '黑风寨', waves: 7, mobs: ['m2', 'm3', 'e1', 'm1'], elite: 'e1', boss: 'b1', lv: 8,
-      ground: '#332821', ground2: '#3d3128', deco: ['#241d17', '#5a4432', '#6d5b46'], pw: 3000 }
+      ground: '#332821', ground2: '#3d3128', deco: ['#241d17', '#5a4432', '#6d5b46'], pw: 3000 },
+    { id: 4, name: '竹林幽径', waves: 6, mobs: ['m4', 'm7', 'm3', 'm6'], elite: 'e2', boss: null, lv: 12,
+      ground: '#2c3a26', ground2: '#35452d', deco: ['#1e2a19', '#5f8a44', '#7a9463'], pw: 4500 },
+    { id: 5, name: '寒霜地窟', waves: 7, mobs: ['m6', 'm5', 'm7', 'm4'], elite: 'e3', boss: null, lv: 16,
+      ground: '#3a4450', ground2: '#455060', deco: ['#252c36', '#8fa4b8', '#c9d8e4'], pw: 6800 },
+    { id: 6, name: '熔岩火谷', waves: 8, mobs: ['m2', 'm6', 'e2', 'm4'], elite: 'e2', boss: 'b2', lv: 20,
+      ground: '#3a1c16', ground2: '#48241b', deco: ['#26110c', '#a8402a', '#e0703a'], pw: 9500 },
+    { id: 7, name: '落星秘境', waves: 9, mobs: ['m3', 'm5', 'e3', 'm7'], elite: 'e3', boss: 'b3', lv: 26,
+      ground: '#1e2436', ground2: '#262e44', deco: ['#131828', '#4a5680', '#8f9ede'], pw: 14000 }
   ];
+
+  /* ---------- 装备部位图标（一张底图按品质染色）---------- */
+  var SLOT_ICON = {
+    head: { id: 'head', name: '头冠', img: 'icon/head.png' },
+    body: { id: 'body', name: '衣甲', img: 'icon/body.png' },
+    neck: { id: 'neck', name: '灵佩', img: 'icon/neck.png' }
+  };
 
   /* ---------- 武器皮肤（只换外观，不改数值）---------- */
   /* ---------- 武器外观（贴图 + 特效，两个独立资源 ID）----------
@@ -169,16 +192,13 @@ window.DATA = (function () {
 
   return {
     QUAL: QUAL, QUAL_RANK: QUAL_RANK, SALVAGE_VALUE: SALVAGE_VALUE,
-    SLOTS: SLOTS, WEAPONS: WEAPONS, AFFIX: AFFIX, MONS: MONS, SKILLS: SKILLS,
+    SLOTS: SLOTS, SLOT_ICON: SLOT_ICON, WEAPONS: WEAPONS, AFFIX: AFFIX, MONS: MONS, SKILLS: SKILLS,
     PETS: PETS, MAPS: MAPS, GEMS: GEMS, SIGN: SIGN, WEAPON_SKIN: WEAPON_SKIN, CHAR_SKIN: CHAR_SKIN, DAGGER: DAGGER,
     WS_MIGRATE: WS_MIGRATE,
     /* 主角贴图（按性别）。img 没加载出来就回退到程序化画的小人。 */
     HERO_IMG: { m: 'run/hero_m.png', f: 'run/hero_f.png' },
-    /* 怪物贴图：按 MONS 的 id 对应 */
-    MONS_IMG: { m1: 'mob/m1.png', m2: 'mob/m2.png', m3: 'mob/m3.png',
-                e1: 'mob/e1.png', b1: 'mob/b1.png' },
-    /* 地图底纹：按 MAPS 的 id 对应 */
-    MAPS_IMG: { 1: 'map/map1.jpg', 2: 'map/map2.jpg', 3: 'map/map3.jpg' },
+    /* 怪物/地图的贴图路径由代码按 MONS/MAPS 自动推导，
+       这里不用再维护映射表 —— 往数据表加一条怪就自动有图 */
     HERO_H: 68,               /* 主角在屏幕上的高度（px） */
     WEAPON_H: 42,             /* 武器贴图在屏幕上的高度（px） */
     /* 装备强化：每级 +8% 基础属性，满级 15 */
@@ -188,6 +208,9 @@ window.DATA = (function () {
     ENH_ESS: function (lv) { return 1 + lv; },
     /* 背包容量：超了自动分解最差的（史诗以上不分解） */
     BAG_CAP: 60,
+    /* 图鉴：集满这么多点换一次奖励（借鉴咸鱼之王的「微星」机制） */
+    DEX_GOAL: 100,
+    DEX_ESS: 50,
     /* 掉落保底：连续这么多只怪没出史诗，下一次必出 */
     PITY_EPIC: 150,
     /* 技能升级：每级 +15% 伤害、-4% 冷却，满 10 级 */
@@ -214,11 +237,10 @@ window.DATA = (function () {
     var mem = {};
     window.wx = {
       /* 浏览器里 wx.createCanvas() 不会自动进画面，必须自己挂上去 */
+      /* 只造画布，不挂到页面上 —— 主画布由 boot 显式挂，
+         离屏画布（图标染色）不能挂，否则会在屏幕上露出来 */
       createCanvas: function () {
-        var c = document.createElement('canvas');
-        c.style.cssText = 'position:fixed;left:0;top:0;';
-        document.body.appendChild(c);
-        return c;
+        return document.createElement('canvas');
       },
       getSystemInfoSync: function () {
         return { windowWidth: innerWidth, windowHeight: innerHeight, pixelRatio: devicePixelRatio || 1 };
@@ -255,8 +277,14 @@ window.DATA = (function () {
   if (typeof cv.style !== 'undefined' && cv.style) {
     cv.style.width = W + 'px';
     cv.style.height = H + 'px';
+    cv.style.cssText += ';position:fixed;left:0;top:0;';
     if (cv.style.setProperty) { cv.style.setProperty('width', W + 'px'); cv.style.setProperty('height', H + 'px'); }
+    /* 浏览器里主画布要手动挂到页面（微信那边 canvas 是自动上屏的） */
+    if (typeof document !== 'undefined' && document.body && document.body.appendChild) {
+      document.body.appendChild(cv);
+    }
   }
+
   ctx.scale(DPR, DPR);
 
   /* ---------- 输入 ---------- */
@@ -308,6 +336,21 @@ window.DATA = (function () {
     ctx: ctx, W: W, H: H, SCALE: SCALE, VW: VW, VH: VH, DPR: DPR,
     T: T, save: save, persist: persist, loadSave: loadSave,
     now: function () { return Date.now(); }
+  };
+
+  /* 离屏画布：用来做「图标按品质染色」这种预渲染。
+     微信里 wx.createCanvas() 造出来就是不显示的离屏画布；
+     浏览器里 document.createElement('canvas') 也不显示。
+     ⚠️ 必须挂在 G 定义之后 —— 挂前面会报 "Cannot set properties of undefined"。 */
+  G.createOffscreen = function (w, h) {
+    try {
+      if (WX.createOffscreenCanvas) {
+        return WX.createOffscreenCanvas({ type: '2d', width: w || 64, height: h || 64 });
+      }
+      var c2 = WX.createCanvas();
+      if (c2) { c2.width = w || 64; c2.height = h || 64; }
+      return c2;
+    } catch (e) { return null; }
   };
 
   function rr(x, y, w, h, r) {
@@ -513,6 +556,8 @@ window.DATA = (function () {
       signDay: 0, signDate: '',  /* 签到：累计天数 + 最后签到日期 */
       skLv: [1, 1, 1],          /* 三个技能各自等级 */
       lv: 1, xp: 0,             /* 角色等级 + 当前经验 */
+      firstDrop: 0,              /* 首杀是否已爆过装备（首杀必掉） */
+      dex: {}, dexP: 0,          /* 图鉴：每种怪的击杀数 + 图鉴点 */
       muted: false,             /* 音效开关 */
       bag: [],
       /* 开局送一把基础妖刀 —— 空手开场没有打击感，也没法试强化 */
@@ -670,6 +715,7 @@ window.DATA = (function () {
     if (!S.save.tipMove) {
       S.save.tipMove = 1;
       S.hint = { txt: '拖动屏幕移动角色', t: 4 };
+      S.arrow = { x: 0, y: 0, t: 5, kind: 'move' };
     }
   }
 
@@ -841,9 +887,19 @@ window.DATA = (function () {
       if (m.hp > 0) return true;
       s.kills++; s.coins += m.coin;
       addXp(s, m.xp || 0);
+      /* 图鉴点：普通怪 1、精英 5、妖王 20；首次击杀额外 +10
+         （借鉴咸鱼之王的「微星」收集机制，但按休闲游戏的思路做轻） */
+      s.dex = s.dex || {};
+      var isNew = !s.dex[m.id];
+      s.dex[m.id] = (s.dex[m.id] || 0) + 1;
+      s.dexP = (s.dexP || 0) + (m.boss === 2 ? 20 : m.boss === 1 ? 5 : 1) + (isNew ? 10 : 0);
+      if (isNew) toast('图鉴：' + m.name);
       S.nums.push({ x: m.x, y: m.y, v: -26, t: 1.0, txt: '+' + m.coin, col: '#ffd76a' });
       /* 掉落保底链：连续太久没出史诗就必出（不然非酋会彻底放弃）
          —— 调研口径的保底链：5-8 / 10-15 / 50 / 100 / 150-200 次 */
+      /* 首杀必掉 —— 调研结论：前 3 分钟决定 80% 次日留存，
+         第一件装备的到手时间越短，"操作→结果"的因果链越清晰 */
+      var firstKill = !s.firstDrop;
       var pityHit = s.dry >= D.PITY_EPIC;
       /* 精英和妖王掉宝石（比装备低得多） */
       if (m.boss && Math.random() < (m.boss === 2 ? 0.85 : 0.35)) {
@@ -853,7 +909,7 @@ window.DATA = (function () {
         S.nums.push({ x: m.x, y: m.y - 40, v: -30, t: 1.4, txt: gd2.name + ' ×1', col: gd2.col, big: true });
         toast('获得 ' + gd2.name + '！');
       }
-      if (pityHit || Math.random() < m.drop * (1 + st.luck * D.LUCK_PER)) {
+      if (firstKill || pityHit || Math.random() < m.drop * (1 + st.luck * D.LUCK_PER)) {
         var it = rollItem(st.luck);
         if (pityHit) {
           /* 保底：品质至少史诗（史诗/传说/神话 随机） */
@@ -870,7 +926,13 @@ window.DATA = (function () {
         }
         s.bag.push(it); s.items++;
         addToBag(it);
-        if (G.sfx) G.sfx.play((D.QUAL_RANK[it.q] || 0) >= 3 ? 'rare' : 'drop');
+        if (firstKill) {
+          s.firstDrop = 1;
+          if (G.sfx) G.sfx.play('rare');
+          toast('第一件装备！');
+        } else {
+          if (G.sfx) G.sfx.play((D.QUAL_RANK[it.q] || 0) >= 3 ? 'rare' : 'drop');
+        }
         S.drops.push({ x: m.x, y: m.y, it: it, t: 0 });
         S.nums.push({ x: m.x, y: m.y - 26, v: -30, t: 1.2, txt: it.qn + ' ' + it.slot, col: it.col, big: true });
         if (it.q === 'p' || it.q === 'o' || it.q === 'r') toast('获得 ' + it.qn + '！');
@@ -923,6 +985,30 @@ window.DATA = (function () {
     return D.WEAPON_SKIN.filter(function (x) { return x.id === id; })[0] || D.WEAPON_SKIN[0];
   }
 
+  /* ---------- 装备图标按品质染色 ----------
+     一张部位底图 × 品质色 = 装备图标。
+     染色要离屏画布（source-atop 只染有像素的地方），
+     染一次缓存起来，别每帧重画。 */
+  function tintedIcon(slot, col) {
+    if (!S.iconCache) return null;
+    var key = slot + '_' + col;
+    if (S.iconCache[key] !== undefined) return S.iconCache[key];
+    var src = S.slotIcon && S.slotIcon[slot];
+    if (!src || !G.createOffscreen) { S.iconCache[key] = null; return null; }
+    var sz = 64;
+    var tmp = G.createOffscreen(sz, sz);
+    if (!tmp) { S.iconCache[key] = null; return null; }
+    var tc = tmp.getContext('2d');
+    if (!tc) { S.iconCache[key] = null; return null; }
+    tc.clearRect(0, 0, sz, sz);
+    tc.drawImage(src, 0, 0, sz, sz);
+    tc.globalCompositeOperation = 'source-atop';
+    tc.fillStyle = col;
+    tc.fillRect(0, 0, sz, sz);
+    S.iconCache[key] = tmp;
+    return tmp;
+  }
+
   /* ---------- 美术资源预载 ----------
      图没加载完之前，游戏照常跑（程序化画的小人和色条），
      图来了自动换成贴图版 —— 不用等图，不用 loading 界面。 */
@@ -948,11 +1034,19 @@ window.DATA = (function () {
         if (ps.img) list.push({ key: 'pet_' + ps.id, path: 'assets/' + ps.img });
       }
     }
-    if (D.MONS_IMG) {
-      for (var mk in D.MONS_IMG) list.push({ key: mk, path: 'assets/' + D.MONS_IMG[mk] });
+    /* 怪物/地图贴图直接从数据表推导 —— 往 MONS/MAPS 加一条就自动加载对应图，
+       不用再回来改代码维护两张映射表 */
+    if (D.MONS) {
+      D.MONS.forEach(function (m) { list.push({ key: m.id, path: 'assets/mob/' + m.id + '.png' }); });
     }
-    if (D.MAPS_IMG) {
-      for (var gk in D.MAPS_IMG) list.push({ key: 'map' + gk, path: 'assets/' + D.MAPS_IMG[gk] });
+    if (D.MAPS) {
+      D.MAPS.forEach(function (mp) { list.push({ key: 'map' + mp.id, path: 'assets/map/map' + mp.id + '.jpg' }); });
+    }
+    /* 装备部位图标（一张底图按品质染色） */
+    if (D.SLOT_ICON) {
+      for (var ik in D.SLOT_ICON) {
+        if (D.SLOT_ICON[ik].img) list.push({ key: 'ico_' + ik, path: 'assets/' + D.SLOT_ICON[ik].img });
+      }
     }
     G.loadImgs(list, function (out) {
       S.heroImg = { m: out['m'] || null, f: out['f'] || null };
@@ -964,11 +1058,17 @@ window.DATA = (function () {
       S.petImg = {};
       if (D.PETS) for (var pk2 in D.PETS) S.petImg[D.PETS[pk2].id] = out['pet_' + D.PETS[pk2].id] || null;
       /* 怪物和地图底单独拎出来，避免和武器的 key 混在一起 */
-      S.mobImg = {}; S.mapImg = {};
+      S.mobImg = {}; S.mapImg = {}; S.slotIcon = {};
       for (var k in out) {
-        if (D.MONS_IMG && D.MONS_IMG[k]) S.mobImg[k] = out[k];
-        else if (k.indexOf('map') === 0) S.mapImg[k.slice(3)] = out[k];
+        if (D.MONS) {
+          var isMob = false;
+          D.MONS.forEach(function (m) { if (m.id === k) isMob = true; });
+          if (isMob) { S.mobImg[k] = out[k]; continue; }
+        }
+        if (k.indexOf('map') === 0) S.mapImg[k.slice(3)] = out[k];
+        else if (k.indexOf('ico_') === 0) S.slotIcon[k.slice(4)] = out[k];
       }
+      S.iconCache = {};
       /* 地图底做成 pattern，跟着相机滚 */
       S.mapPat = {};
       for (var id in S.mapImg) {
@@ -1062,8 +1162,10 @@ window.DATA = (function () {
   var FAKE_NAMES = ['剑无痕', '逍遥客', '叶良辰', '一剑霜寒', '墨白', '孤星', '云中君',
     '半盏茶', '无名氏', '风起时', '青衫客', '落九霄', '不归人', '长安月',
     '白露', '断浪', '孤舟', '拾光', '南风过境', '小酌'];
-  var FAKE_LADDER = [9600, 8200, 7000, 6000, 5200, 4500, 3900, 3400, 3000, 2650,
-    2350, 2100, 1850, 1650, 1450, 1280, 1120, 980, 850, 720];
+  /* 阶梯跟着实际战力走（模拟：2 小时约 1700，长期能到上万），
+     新玩家前期落在下半区 → 有往上爬的动力 */
+  var FAKE_LADDER = [20000, 17000, 14000, 11500, 9500, 8000, 6800, 5800, 5000, 4300,
+    3700, 3200, 2750, 2350, 2000, 1700, 1450, 1250, 1050, 900];
 
   /* ---- 按钮系统 ---- */
   /* 面板切换时**旧按钮必须清掉**。
@@ -1450,6 +1552,31 @@ window.DATA = (function () {
       ctx.restore();
     }
 
+    /* 新手箭头引导：脉动的箭头比文字有效得多（调研：完成率 30%→75%） */
+    if (S.arrow && S.arrow.t > 0) {
+      var at = S.arrow;
+      var pul = 0.6 + 0.4 * Math.sin(Date.now() / 160);
+      ctx.save();
+      ctx.globalAlpha = Math.min(1, at.t) * pul;
+      var ax = at.x, ay = at.y + Math.sin(Date.now() / 220) * 4;
+      ctx.strokeStyle = '#ffd88e';
+      ctx.fillStyle = '#ffd88e';
+      ctx.lineWidth = 3;
+      ctx.lineCap = 'round';
+      /* 一个上指的小箭头 */
+      ctx.beginPath();
+      ctx.moveTo(ax, ay);
+      ctx.lineTo(ax, ay - 16);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(ax, ay - 22);
+      ctx.lineTo(ax - 7, ay - 12);
+      ctx.lineTo(ax + 7, ay - 12);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+    }
+
     /* 新手提示 */
     if (S.hint && S.hint.t > 0) {
       ctx.globalAlpha = Math.min(1, S.hint.t);
@@ -1601,21 +1728,22 @@ window.DATA = (function () {
     G.text('战力 ' + fmt(pw), G.W - 64, 64, 13, '#ffd23a', 'right');
 
     var s = S.save;
-    var y = 92;
+    var y = 88;
+    /* 地图多了（7 张）→ 大卡片塞不下，改成紧凑列表，一屏放得下 */
     for (var i = 0; i < D.MAPS.length; i++) {
       var mp = D.MAPS[i];
       var unlocked = (i <= s.maxWave);
       var cur = (S.map && S.map.id === mp.id);
       var cleared = s.cleared && s.cleared[mp.id];
-      /* 卡片底色用地图自己的地面色，锁定的压灰 */
-      G.round(16, y, G.W - 32, 152, 12,
-        unlocked ? (cur ? 'rgba(255,220,150,.10)' : 'rgba(255,255,255,.045)') : 'rgba(30,30,32,.6)',
-        cur ? '#ffd88e' : (unlocked ? 'rgba(255,255,255,.14)' : 'rgba(255,255,255,.07)'), cur ? 2 : 1);
-      /* 左边一条地面色的色带 */
-      G.round(16, y, 8, 152, 4, unlocked ? mp.ground2 : '#3a3a3c');
+      var strong = pw >= mp.pw;
 
-      G.text(mp.name, 38, y + 24, 18, unlocked ? '#f0e6d2' : '#6d675c', 'left', true);
-      G.text(mp.waves + ' 波', 38, y + 48, 12, unlocked ? '#a89f8c' : '#55504a', 'left');
+      G.round(16, y, G.W - 32, 58, 9,
+        unlocked ? (cur ? 'rgba(255,220,150,.10)' : 'rgba(255,255,255,.04)') : 'rgba(28,28,30,.6)',
+        cur ? '#ffd88e' : (unlocked ? 'rgba(255,255,255,.10)' : 'rgba(255,255,255,.05)'), cur ? 2 : 1);
+      /* 左边地面色带 */
+      G.round(16, y, 7, 58, 4, unlocked ? mp.ground2 : '#333');
+
+      G.text(mp.name, 34, y + 17, 16, unlocked ? '#f0e6d2' : '#6d675c', 'left', true);
       /* 怪物 */
       var names = [];
       for (var k = 0; k < mp.mobs.length; k++) {
@@ -1628,26 +1756,15 @@ window.DATA = (function () {
         var bd = D.MONS.filter(function (x) { return x.id === mp.boss; })[0];
         if (bd && names.indexOf(bd.name) < 0) names.push(bd.name);
       }
-      G.text(names.join(' · '), 38, y + 70, 12, unlocked ? '#c9bda4' : '#55504a', 'left');
-      /* 推荐战力 */
-      var strong = pw >= mp.pw;
-      G.text('推荐战力 ' + fmt(mp.pw), 38, y + 94, 12, strong ? '#7dff9b' : '#e0685a', 'left');
-      if (unlocked) {
-        G.text(cleared ? '已通关（可重复刷）' : (cur ? '当前地图' : '点击进入'),
-          G.W - 32, y + 94, 12, cleared ? '#8a8272' : (cur ? '#ffd88e' : '#a89f8c'), 'right');
-        if (pw < mp.pw) G.text('⚠ 战力偏低', G.W - 32, y + 118, 12, '#e0685a', 'right');
-      } else {
-        G.text('🔒 通关「' + D.MAPS[i - 1].name + '」解锁', G.W - 32, y + 94, 12, '#6d675c', 'right');
-      }
-      /* 缩略地面色块 */
-      G.round(38, y + 112, 84, 26, 6, unlocked ? mp.ground : '#333');
-      for (var d2 = 0; d2 < 3; d2++) {
-        G.circle(52 + d2 * 26, y + 125, 5, unlocked ? mp.deco[d2 % 3] : '#3c3c3e');
-      }
-      S['mapBtn' + i] = { x: G.W / 2, y: y + 76, r: 76, idx: i, locked: !unlocked };
-      y += 168;
+      G.text(mp.waves + ' 波 · ' + names.join('·'), 34, y + 39, 11, unlocked ? '#9c9484' : '#55504a', 'left');
+      /* 右边：推荐战力 + 状态 */
+      G.text('战力 ' + fmt(mp.pw), G.W - 32, y + 17, 13, strong ? '#7dff9b' : '#e0685a', 'right', true);
+      G.text(unlocked ? (cleared ? '已通关' : (cur ? '当前' : '进入')) : '未解锁',
+        G.W - 32, y + 39, 11, cleared ? '#8a8272' : (cur ? '#ffd88e' : (unlocked ? '#a89f8c' : '#6d675c')), 'right');
+      S['mapBtn' + i] = { x: G.W / 2, y: y + 29, r: 29, idx: i, locked: !unlocked };
+      y += 64;
     }
-    G.text('低地图掉低级装备，高地图掉好东西 —— 自由切换', G.W / 2, G.H - 40, 11.5, '#6d675c', 'center');
+    G.text('低图掉低级装备、高图出好东西 —— 自由切换', G.W / 2, G.H - 34, 11.5, '#6d675c', 'center');
   }
 
   /* ============ 每日签到面板 ============ */
@@ -1921,6 +2038,19 @@ window.DATA = (function () {
     G.persist();
   }
 
+  function claimDex() {
+    var s = S.save;
+    if ((s.dexP || 0) < D.DEX_GOAL) { toast('图鉴点不够'); return; }
+    s.dexP -= D.DEX_GOAL;
+    s.essence = (s.essence || 0) + D.DEX_ESS;
+    s.gems = s.gems || {};
+    var g = D.GEMS[0];
+    s.gems[g.id] = (s.gems[g.id] || 0) + 1;
+    toast('图鉴兑换：精粹 +' + D.DEX_ESS + '　' + g.name + ' ×1');
+    if (G.sfx) G.sfx.play('rare');
+    G.persist();
+  }
+
   function sellEquipped() {
     var s = S.save, it = s.equip[S.upSlot];
     if (!it) return;
@@ -2016,9 +2146,12 @@ window.DATA = (function () {
         var sk2 = D.WEAPON_SKIN.filter(function (w) { return w.w === it2.wtype; })[0];
         if (sk2 && S.wskinImg) iw2 = S.wskinImg[sk2.id];
       }
+      var ti2 = tintedIcon(it2.slot, it2.col);
       if (iw2) {
         var bhh2 = 36, bww2 = iw2.width / iw2.height * bhh2;
         ctx.drawImage(iw2, 24 + (36 - bww2) / 2, y + 8, bww2, bhh2);
+      } else if (ti2) {
+        ctx.drawImage(ti2, 24, y + 8, 36, 36);
       } else {
         G.round(24, y + 8, 30, 36, 6, 'rgba(255,255,255,.05)', it2.col, 1.2);
         G.circle(39, y + 26, 9, it2.col);
@@ -2166,7 +2299,40 @@ window.DATA = (function () {
       G.text(rows[r][0], 28, y + r * 24, 12.5, '#9c9484');
       G.text(rows[r][1], G.W - 36, y + r * 24, 13, '#c9bda4', 'right');
     }
-    G.text('（单机版：榜单为模拟数据，记录只存在本机）', G.W / 2, G.H - 30, 11, '#5c574d', 'center');
+    /* ---- 图鉴：击杀收集 ---- */
+    y += 16;
+    G.text('图鉴', 24, y, 13, '#8a8272', 'left');
+    G.text('图鉴点 ' + (s.dexP || 0) + ' / ' + D.DEX_GOAL, G.W - 36, y, 12, '#b9a8ff', 'right');
+    y += 18;
+    /* 两列排：已收录的在前，未遭遇的压暗 */
+    var dx = s.dex || {};
+    var gotN = 0;
+    for (var di2 = 0; di2 < D.MONS.length; di2++) if (dx[D.MONS[di2].id]) gotN++;
+    G.text('已收录 ' + gotN + ' / ' + D.MONS.length + ' 种', G.W - 36, y, 11, '#8a8272', 'right');
+    y += 18;
+    var col2 = 0, row2 = 0;
+    for (var di = 0; di < D.MONS.length && row2 < 6; di++) {
+      var dm = D.MONS[di];
+      var cnt = dx[dm.id] || 0;
+      var gx = 26 + col2 * 178;
+      var gy = y + row2 * 21;
+      G.text(dm.name, gx, gy, 12, cnt ? '#c9bda4' : '#4f4b45');
+      G.text(cnt ? cnt + '只' : '—', gx + 74, gy, 11, cnt ? '#a89f8c' : '#413d38');
+      G.text(m.boss === 2 ? '妖王' : (m.boss === 1 ? '精英' : '小怪'), gx + 122, gy, 10.5,
+        m.boss === 2 ? '#ff5a6e' : (m.boss === 1 ? '#ffd23a' : '#5c574d'), 'right');
+      col2++;
+      if (col2 >= 2) { col2 = 0; row2++; }
+    }
+    y += Math.ceil(Math.min(D.MONS.length, 12) / 2) * 21 + 10;
+    /* 兑换 */
+    var canDex = (s.dexP || 0) >= D.DEX_GOAL;
+    S.btnDex = { x: G.W / 2, y: y + 18, r: 40 };
+    G.round(G.W / 2 - 95, y - 4, 190, 44, 12,
+      canDex ? 'rgba(90,60,120,.9)' : 'rgba(45,45,48,.8)', canDex ? 'rgba(185,168,255,.55)' : 'rgba(255,255,255,.1)', 1.5);
+    G.text(canDex ? ('兑换奖励（精粹×' + D.DEX_ESS + ' 宝石×1）') : ('还差 ' + (D.DEX_GOAL - (s.dexP || 0)) + ' 图鉴点'),
+      G.W / 2, y + 18, 13, canDex ? '#e6dcff' : '#6d675c', 'center', true);
+
+    G.text('（单机版：榜单为模拟数据，记录只存在本机）', G.W / 2, G.H - 26, 11, '#5c574d', 'center');
   }
 
   /* ============ 性别/皮肤选择 ============ */
@@ -2255,7 +2421,12 @@ window.DATA = (function () {
         if (mk.indexOf('mapBtn') === 0) {
           var mb = S[mk];
           if (mb && hit(x, y, mb)) {
-            if (mb.locked) { toast('还没解锁'); return; }
+            if (mb.locked) {
+              var mp2 = D.MAPS[mb.idx];
+              var prev = mb.idx > 0 ? D.MAPS[mb.idx - 1] : null;
+              toast('通关「' + (prev ? prev.name : '前一图') + '」后解锁');
+              return;
+            }
             S.save.map = mb.idx;
             S.map = D.MAPS[mb.idx];
             S.wave = 0; S.waveT = 1.0;
@@ -2322,6 +2493,7 @@ window.DATA = (function () {
     }
     if (S.state === 'rank') {
       if (S.btnBack && hit(x, y, S.btnBack)) { S.state = 'battle'; return; }
+      if (S.btnDex && hit(x, y, S.btnDex)) { claimDex(); return; }
       return;
     }
     if (S.state === 'pull') {
@@ -2348,6 +2520,8 @@ window.DATA = (function () {
       var b2 = S['btnS' + i];
       if (b2 && hit(x, y, b2)) {
         if (S.hero.skCd[i] > 0) { toast(D.SKILLS[i].name + ' 冷却中'); return; }
+        S.save.tipSkill = 1;
+        if (S.arrow && S.arrow.kind === 'skill') S.arrow.t = 0;
         S.skillQueued = S.skillQueued || [0, 0, 0];
         S.skillQueued[i] = true;
         return;
@@ -2462,6 +2636,21 @@ window.DATA = (function () {
     if (!S) return;
     if (S.shake > 0) S.shake = Math.max(0, S.shake - dt);
     if (S.hint && S.hint.t > 0) S.hint.t -= dt;
+    if (S.arrow) {
+      S.arrow.t -= dt;
+      if (S.arrow.kind === 'move') {
+        /* ⚠️ update() 这个作用域里没有 h，只有 S.hero —— 用 h 会 ReferenceError，
+           而且 update 一抛错后面的 draw 就不执行了（整个画面冻住） */
+        S.arrow.x = S.hero ? S.hero.x : 0;
+        S.arrow.y = S.hero ? S.hero.y + 40 : 0;
+        /* 移动教会了 → 接着教放技能（只教必要规则，分步来） */
+        if (S.arrow.t <= 0 && !S.save.tipSkill && S.mobs.length > 0 && S.btnS0) {
+          S.arrow = { x: S.btnS0.x, y: S.btnS0.y - 36, t: 4.5, kind: 'skill' };
+        }
+      } else if (S.arrow.kind === 'skill' && S.btnS0) {
+        S.arrow.x = S.btnS0.x; S.arrow.y = S.btnS0.y - 36;
+      }
+    }
     if (S.comboT > 0) { S.comboT -= dt; if (S.comboT <= 0) S.combo = 0; }
     if (S.comboBuff > 0) S.comboBuff -= dt;
     if (S.lvFx > 0) S.lvFx -= dt;

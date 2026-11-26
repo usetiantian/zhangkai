@@ -52,7 +52,15 @@ window.DATA = (function () {
     { id: 'm2', name: '野狼', hp: 58, atk: 10, spd: 62, xp: 9, coin: 7, r: 18, drop: 0.070, col: '#6d7a8c', boss: 0 },
     { id: 'm3', name: '妖藤', hp: 42, atk: 8, spd: 34, xp: 7, coin: 5, r: 17, drop: 0.060, col: '#4f8a52', boss: 0 },
     { id: 'e1', name: '铁背熊', hp: 420, atk: 22, spd: 40, xp: 60, coin: 46, r: 34, drop: 0.16, col: '#7a5230', boss: 1 },
-    { id: 'b1', name: '妖王·黑煞', hp: 1500, atk: 38, spd: 34, xp: 240, coin: 190, r: 46, drop: 0.42, col: '#5a1f2e', boss: 2 }
+    { id: 'b1', name: '妖王·黑煞', hp: 1500, atk: 38, spd: 34, xp: 240, coin: 190, r: 46, drop: 0.42, col: '#5a1f2e', boss: 2 },
+    { id: 'm4', name: '毒蛛', hp: 74, atk: 12, spd: 54, xp: 11, coin: 9, r: 17, drop: 0.065, col: '#4a5a2e', boss: 0 },
+    { id: 'm5', name: '血蝠', hp: 58, atk: 15, spd: 84, xp: 12, coin: 10, r: 15, drop: 0.070, col: '#5e2a34', boss: 0 },
+    { id: 'm6', name: '骷髅兵', hp: 126, atk: 19, spd: 42, xp: 18, coin: 14, r: 19, drop: 0.075, col: '#9a9285', boss: 0 },
+    { id: 'm7', name: '碧眼蛇', hp: 96, atk: 16, spd: 62, xp: 16, coin: 13, r: 19, drop: 0.070, col: '#2f6b4a', boss: 0 },
+    { id: 'e2', name: '玄甲龟', hp: 920, atk: 31, spd: 24, xp: 120, coin: 92, r: 36, drop: 0.18, col: '#3f4a44', boss: 1 },
+    { id: 'e3', name: '魇魔', hp: 760, atk: 36, spd: 52, xp: 135, coin: 105, r: 33, drop: 0.18, col: '#3a2a52', boss: 1 },
+    { id: 'b2', name: '妖王·赤焰', hp: 3400, atk: 56, spd: 30, xp: 520, coin: 420, r: 48, drop: 0.44, col: '#7a2416', boss: 2 },
+    { id: 'b3', name: '妖王·幽冥', hp: 2700, atk: 62, spd: 46, xp: 480, coin: 390, r: 46, drop: 0.44, col: '#1e2a44', boss: 2 }
   ];
 
   /* ---------- 每日签到（7 天一轮）---------- */
@@ -99,8 +107,23 @@ window.DATA = (function () {
     { id: 2, name: '乱葬岗', waves: 6, mobs: ['m2', 'm3', 'm1', 'e1'], elite: 'e1', boss: null, lv: 4,
       ground: '#3f3c38', ground2: '#4a4641', deco: ['#575249', '#6d6558', '#8a8072'], pw: 1200 },
     { id: 3, name: '黑风寨', waves: 7, mobs: ['m2', 'm3', 'e1', 'm1'], elite: 'e1', boss: 'b1', lv: 8,
-      ground: '#332821', ground2: '#3d3128', deco: ['#241d17', '#5a4432', '#6d5b46'], pw: 3000 }
+      ground: '#332821', ground2: '#3d3128', deco: ['#241d17', '#5a4432', '#6d5b46'], pw: 3000 },
+    { id: 4, name: '竹林幽径', waves: 6, mobs: ['m4', 'm7', 'm3', 'm6'], elite: 'e2', boss: null, lv: 12,
+      ground: '#2c3a26', ground2: '#35452d', deco: ['#1e2a19', '#5f8a44', '#7a9463'], pw: 4500 },
+    { id: 5, name: '寒霜地窟', waves: 7, mobs: ['m6', 'm5', 'm7', 'm4'], elite: 'e3', boss: null, lv: 16,
+      ground: '#3a4450', ground2: '#455060', deco: ['#252c36', '#8fa4b8', '#c9d8e4'], pw: 6800 },
+    { id: 6, name: '熔岩火谷', waves: 8, mobs: ['m2', 'm6', 'e2', 'm4'], elite: 'e2', boss: 'b2', lv: 20,
+      ground: '#3a1c16', ground2: '#48241b', deco: ['#26110c', '#a8402a', '#e0703a'], pw: 9500 },
+    { id: 7, name: '落星秘境', waves: 9, mobs: ['m3', 'm5', 'e3', 'm7'], elite: 'e3', boss: 'b3', lv: 26,
+      ground: '#1e2436', ground2: '#262e44', deco: ['#131828', '#4a5680', '#8f9ede'], pw: 14000 }
   ];
+
+  /* ---------- 装备部位图标（一张底图按品质染色）---------- */
+  var SLOT_ICON = {
+    head: { id: 'head', name: '头冠', img: 'icon/head.png' },
+    body: { id: 'body', name: '衣甲', img: 'icon/body.png' },
+    neck: { id: 'neck', name: '灵佩', img: 'icon/neck.png' }
+  };
 
   /* ---------- 武器皮肤（只换外观，不改数值）---------- */
   /* ---------- 武器外观（贴图 + 特效，两个独立资源 ID）----------
@@ -169,16 +192,13 @@ window.DATA = (function () {
 
   return {
     QUAL: QUAL, QUAL_RANK: QUAL_RANK, SALVAGE_VALUE: SALVAGE_VALUE,
-    SLOTS: SLOTS, WEAPONS: WEAPONS, AFFIX: AFFIX, MONS: MONS, SKILLS: SKILLS,
+    SLOTS: SLOTS, SLOT_ICON: SLOT_ICON, WEAPONS: WEAPONS, AFFIX: AFFIX, MONS: MONS, SKILLS: SKILLS,
     PETS: PETS, MAPS: MAPS, GEMS: GEMS, SIGN: SIGN, WEAPON_SKIN: WEAPON_SKIN, CHAR_SKIN: CHAR_SKIN, DAGGER: DAGGER,
     WS_MIGRATE: WS_MIGRATE,
     /* 主角贴图（按性别）。img 没加载出来就回退到程序化画的小人。 */
     HERO_IMG: { m: 'run/hero_m.png', f: 'run/hero_f.png' },
-    /* 怪物贴图：按 MONS 的 id 对应 */
-    MONS_IMG: { m1: 'mob/m1.png', m2: 'mob/m2.png', m3: 'mob/m3.png',
-                e1: 'mob/e1.png', b1: 'mob/b1.png' },
-    /* 地图底纹：按 MAPS 的 id 对应 */
-    MAPS_IMG: { 1: 'map/map1.jpg', 2: 'map/map2.jpg', 3: 'map/map3.jpg' },
+    /* 怪物/地图的贴图路径由代码按 MONS/MAPS 自动推导，
+       这里不用再维护映射表 —— 往数据表加一条怪就自动有图 */
     HERO_H: 68,               /* 主角在屏幕上的高度（px） */
     WEAPON_H: 42,             /* 武器贴图在屏幕上的高度（px） */
     /* 装备强化：每级 +8% 基础属性，满级 15 */
@@ -188,6 +208,9 @@ window.DATA = (function () {
     ENH_ESS: function (lv) { return 1 + lv; },
     /* 背包容量：超了自动分解最差的（史诗以上不分解） */
     BAG_CAP: 60,
+    /* 图鉴：集满这么多点换一次奖励（借鉴咸鱼之王的「微星」机制） */
+    DEX_GOAL: 100,
+    DEX_ESS: 50,
     /* 掉落保底：连续这么多只怪没出史诗，下一次必出 */
     PITY_EPIC: 150,
     /* 技能升级：每级 +15% 伤害、-4% 冷却，满 10 级 */

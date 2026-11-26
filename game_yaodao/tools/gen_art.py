@@ -131,6 +131,17 @@ MONS_ART = [
     ('e1', 'a big brown bear with an iron gray armored back plate and thick arms'),
     ('b1', 'a menacing dark crimson demon king with black horns, '
            'glowing red eyes, long black cape and curved blades'),
+    ('m4', 'a squat fat green venomous spider with eight legs, big yellow eyes and fangs'),
+    ('m5', 'a crimson red bat with spread leathery wings and sharp fangs'),
+    ('m6', 'a small white skeleton warrior with a bone sword and a bone shield'),
+    ('m7', 'a coiled green snake with glowing jade eyes and a forked tongue'),
+    ('e2', 'a huge dark armored turtle with a thick black iron shell and thick legs'),
+    ('e3', 'a purple nightmare demon with curved black horns, glowing violet eyes '
+           'and smoky shadow wings'),
+    ('b2', 'a fiery crimson demon king wreathed in orange flames, molten armor, '
+           'glowing yellow eyes, huge curved horns'),
+    ('b3', 'a ghostly dark blue demon king with a flowing shadow cape, pale glowing '
+           'cyan eyes, floating spectral mist'),
 ]
 
 # ⚠️ 必须是**均匀可平铺**的地面。之前出的是"一条路"的场景，平铺会出现重复的路。
@@ -184,7 +195,23 @@ PET_TMPL = ('masterpiece, ' + STYLE + ', '
             'plain light gray background, '
             'crisp edges, no human, no character')
 
+# 装备部位图标（一张底图，游戏里按品质染色 —— 不用每个品质出一张图）
+ICON_ART = [
+    ('head', 'a chinese xianxia cultivator crown headpiece, '
+             'gold filigree with a jade gem in the center'),
+    ('body', 'a chinese xianxia battle robe armor chest piece, '
+             'layered silk with gold trim and shoulder guards'),
+    ('neck', 'a round jade pendant necklace with a tassel cord'),
+]
+
+ICON_TMPL = ('masterpiece, ' + STYLE + ', '
+             'a game inventory icon, ' + '{desc}, '
+             'centered, whole item fully visible, '
+             'plain white background, '
+             'crisp edges, no character, no hand, no text')
+
 BATCHES = {
+    'icon': [(n + '.png', ICON_TMPL.format(desc=d), 512, 512) for n, d in ICON_ART],
     'pet': [(n + '.png', PET_TMPL.format(desc=d), 768, 768) for n, d in PET_ART],
     'skin': [(n + '.png', SKIN_TMPL.format(desc=d), 768, 768) for n, d in SKIN_ART],
     'mob': [(n + '.png', MOB_TMPL.format(desc=d), 768, 768) for n, d in MONS_ART],

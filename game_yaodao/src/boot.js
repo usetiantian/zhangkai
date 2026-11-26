@@ -10,11 +10,10 @@
     var mem = {};
     window.wx = {
       /* 浏览器里 wx.createCanvas() 不会自动进画面，必须自己挂上去 */
+      /* 只造画布，不挂到页面上 —— 主画布由 boot 显式挂，
+         离屏画布（图标染色）不能挂，否则会在屏幕上露出来 */
       createCanvas: function () {
-        var c = document.createElement('canvas');
-        c.style.cssText = 'position:fixed;left:0;top:0;';
-        document.body.appendChild(c);
-        return c;
+        return document.createElement('canvas');
       },
       getSystemInfoSync: function () {
         return { windowWidth: innerWidth, windowHeight: innerHeight, pixelRatio: devicePixelRatio || 1 };
@@ -51,8 +50,14 @@
   if (typeof cv.style !== 'undefined' && cv.style) {
     cv.style.width = W + 'px';
     cv.style.height = H + 'px';
+    cv.style.cssText += ';position:fixed;left:0;top:0;';
     if (cv.style.setProperty) { cv.style.setProperty('width', W + 'px'); cv.style.setProperty('height', H + 'px'); }
+    /* 浏览器里主画布要手动挂到页面（微信那边 canvas 是自动上屏的） */
+    if (typeof document !== 'undefined' && document.body && document.body.appendChild) {
+      document.body.appendChild(cv);
+    }
   }
+
   ctx.scale(DPR, DPR);
 
   /* ---------- 输入 ---------- */
@@ -104,6 +109,21 @@
     ctx: ctx, W: W, H: H, SCALE: SCALE, VW: VW, VH: VH, DPR: DPR,
     T: T, save: save, persist: persist, loadSave: loadSave,
     now: function () { return Date.now(); }
+  };
+
+  /* 离屏画布：用来做「图标按品质染色」这种预渲染。
+     微信里 wx.createCanvas() 造出来就是不显示的离屏画布；
+     浏览器里 document.createElement('canvas') 也不显示。
+     ⚠️ 必须挂在 G 定义之后 —— 挂前面会报 "Cannot set properties of undefined"。 */
+  G.createOffscreen = function (w, h) {
+    try {
+      if (WX.createOffscreenCanvas) {
+        return WX.createOffscreenCanvas({ type: '2d', width: w || 64, height: h || 64 });
+      }
+      var c2 = WX.createCanvas();
+      if (c2) { c2.width = w || 64; c2.height = h || 64; }
+      return c2;
+    } catch (e) { return null; }
   };
 
   function rr(x, y, w, h, r) {

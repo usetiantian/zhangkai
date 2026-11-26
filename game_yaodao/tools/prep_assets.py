@@ -32,13 +32,14 @@ TARGETS = {
     'mob': ('mob', 192, True, 'png'),
     'skin': ('run', 256, False, 'png'),
     'pet': ('pet', 192, True, 'png'),
+    'icon': ('icon', 96, True, 'png'),
     'map': ('map', 512, True, 'jpg'),
 }
 
 # 武器贴图左右翻转。
 # 出图时刀身是朝右上斜的，角色右手在画面左侧 → 刀会横跨角色脸。
 # 翻转后刀尖朝左外侧，才是「握在手里、刃朝外」的正常站姿。
-FLIP = {'weapon': True, 'hero': False, 'mob': False, 'map': False}
+FLIP = {'weapon': True, 'hero': False, 'mob': False, 'map': False, 'icon': False}
 
 
 def _border_bg(px, w, h):
