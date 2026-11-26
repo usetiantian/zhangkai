@@ -114,11 +114,31 @@ async function main() {
     const rr = r.result && r.result.result;
     return rr ? (rr.value !== undefined ? rr.value : rr.description) : '(undef)';
   };
-  const tap = async (x, y) => {
+  /* ⚠️ 微信模拟器：页面坐标 ≠ 游戏坐标（手机框有偏移/缩放）。
+     CDP 的 Input.dispatchTouchEvent 用页面坐标，游戏收到的 clientX 会偏。
+     所以先发两次已知坐标的触摸，读回游戏收到的 lastTap，反解出仿射映射。
+     —— 这也是之前"点女侠没反应"的真正原因：坐标根本不在按钮上。 */
+  let CAL = { s: 1, ox: 0, oy: 0 };
+  const rawTap = async (x, y) => {
     await c.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x, y }] });
-    await sleep(90);
+    await sleep(80);
     await c.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
-    await sleep(400);
+    await sleep(300);
+  };
+  async function calibrate() {
+    await rawTap(60, 60);
+    const p1 = JSON.parse(await ev('JSON.stringify(GAME.S().lastTap)'));
+    await rawTap(180, 180);
+    const p2 = JSON.parse(await ev('JSON.stringify(GAME.S().lastTap)'));
+    if (!p1 || !p2) { console.log('   校准失败（触摸没到游戏）'); return; }
+    const sx = (p2.x - p1.x) / 120 || 1;
+    const sy = (p2.y - p1.y) / 120 || 1;
+    CAL = { s: (sx + sy) / 2, ox: p1.x - 60 * sx, oy: p1.y - 60 * sy };
+    console.log('   校准: scale=' + CAL.s.toFixed(3) + ' offset=(' + CAL.ox.toFixed(1) + ',' + CAL.oy.toFixed(1) + ')');
+  }
+  const tap = async (x, y) => {
+    const px = (x - CAL.ox) / CAL.s, py = (y - CAL.oy) / CAL.s;
+    await rawTap(px, py);
   };
   const shot = async n => {
     const r = await c.send('Page.captureScreenshot', { format: 'png' });
@@ -126,13 +146,21 @@ async function main() {
     console.log('   截图', n);
   };
 
+  await calibrate();
   console.log('③ 开局 state =', await ev('GAME.S().state'), '| sex =', JSON.stringify(await ev('GAME.S().save.sex')));
   await shot('wx01_选性别');
 
   console.log('④ 点女侠');
   const p = JSON.parse(await ev('(function(){var S=GAME.S();return JSON.stringify({m:S.btnSexm,f:S.btnSexf});})()'));
-  await tap(p.f.x, p.f.y);
-  await sleep(1400);
+  console.log('   按钮坐标', JSON.stringify(p.f));
+  for (let k = 0; k < 3; k++) {
+    await tap(p.f.x, p.f.y);
+    const st = await ev('GAME.S().state');
+    if (st !== 'pick') break;
+    console.log('   第' + (k + 1) + '次点没生效，lastTap =', await ev('JSON.stringify(GAME.S().lastTap)'));
+    await sleep(600);
+  }
+  await sleep(1200);
   console.log('   state =', await ev('GAME.S().state'), '| sex =', await ev('GAME.S().save.sex'), '| skin =', await ev('GAME.S().save.skin'));
   await shot('wx02_战斗_女侠');
 
