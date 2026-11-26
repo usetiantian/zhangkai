@@ -153,6 +153,66 @@
   G.BOOT = BOOT;
   G.setHandlers = function (h) { if (h.down) BOOT.onDown = h.down; if (h.up) BOOT.onUp = h.up; };
 
+  /* ---------- 音效 ----------
+     微信小游戏用 wx.createInnerAudioContext()，浏览器用 new Audio()。
+     ⚠️ 同一个音效连着放要多个实例（一个播着时不能重播）→ 每个音效开 3 个轮着用。
+     ⚠️ 微信有「静音键不出声」的合规要求，obeyMuteCompliance=false 才能正常响。 */
+  var SFX_POOL = {};
+  G.sfx = {
+    mute: false,
+    _i: 0,
+    play: function (name, vol) {
+      if (G.sfx.mute) return;
+      var pool = SFX_POOL[name];
+      if (!pool || !pool.length) return;
+      var a = pool[G.sfx._i++ % pool.length];
+      try {
+        if (a.currentTime !== undefined) a.currentTime = 0;
+        if (a.volume !== undefined) a.volume = vol === undefined ? 0.6 : vol;
+        /* ⚠️ 浏览器 play() 返回 Promise，没经过用户手势时会 reject
+           （"the user didn't interact with the document first"）——
+           不接住就是一条未捕获异常。微信那边是同步的，没这个问题。 */
+        var pr = a.play();
+        if (pr && pr.catch) pr.catch(function () { });
+      } catch (e) { }
+    },
+    /* 浏览器要"用户手势"才允许出声：第一次点击时先偷偷播一个极轻的声音解锁 */
+    unlock: function () {
+      if (G.sfx._unlocked) return;
+      G.sfx._unlocked = true;
+      try {
+        var pool = SFX_POOL['click'];
+        if (!pool || !pool.length) return;
+        var a = pool[0];
+        if (a.volume !== undefined) a.volume = 0.01;
+        var pr = a.play();
+        if (pr && pr.catch) pr.catch(function () { });
+        if (a.volume !== undefined) a.volume = 0.6;
+      } catch (e) { }
+    }
+  };
+  function loadSfx(names) {
+    names.forEach(function (n) {
+      SFX_POOL[n] = [];
+      for (var i = 0; i < 3; i++) {
+        var a = null;
+        try {
+          if (WX.createInnerAudioContext) {
+            a = WX.createInnerAudioContext();
+            a.src = 'assets/sfx/' + n + '.wav';
+            a.obeyMuteCompliance = false;
+            a.volume = 0.6;
+          } else if (typeof Audio !== 'undefined') {
+            a = new Audio('assets/sfx/' + n + '.wav');
+            a.preload = 'auto';
+          }
+        } catch (e) { a = null; }
+        if (a) SFX_POOL[n].push(a);
+      }
+    });
+  }
+  G.loadSfx = loadSfx;
+
   /* ---------- 图片加载 ----------
      微信小游戏用 wx.createImage()，浏览器用 new Image()（上面的垫片已经统一了）。
      ⚠️ 必须先挂 onload 再给 src，否则图小的机器上会先触发完事件。 */

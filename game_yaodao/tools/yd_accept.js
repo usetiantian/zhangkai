@@ -31,7 +31,8 @@ function check(name, ok, extra) {
     if (m.id && pend.has(m.id)) { pend.get(m.id)(m); pend.delete(m.id); }
     if (m.method === 'Runtime.exceptionThrown') {
       const d = m.params.exceptionDetails || {};
-      errs.push((d.exception && (d.exception.description || d.exception.value)) || d.text || '');
+      errs.push(((d.exception && (d.exception.description || d.exception.value)) || d.text || '') +
+        ' || stack=' + JSON.stringify(d.stackTrace || {}).slice(0, 400));
     }
   };
   await new Promise(r => ws.onopen = r);

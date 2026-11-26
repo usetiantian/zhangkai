@@ -351,6 +351,48 @@ window.DATA = (function () {
   G.BOOT = BOOT;
   G.setHandlers = function (h) { if (h.down) BOOT.onDown = h.down; if (h.up) BOOT.onUp = h.up; };
 
+  /* ---------- 音效 ----------
+     微信小游戏用 wx.createInnerAudioContext()，浏览器用 new Audio()。
+     ⚠️ 同一个音效连着放要多个实例（一个播着时不能重播）→ 每个音效开 3 个轮着用。
+     ⚠️ 微信有「静音键不出声」的合规要求，obeyMuteCompliance=false 才能正常响。 */
+  var SFX_POOL = {};
+  G.sfx = {
+    mute: false,
+    _i: 0,
+    play: function (name, vol) {
+      if (G.sfx.mute) return;
+      var pool = SFX_POOL[name];
+      if (!pool || !pool.length) return;
+      var a = pool[G.sfx._i++ % pool.length];
+      try {
+        if (a.currentTime !== undefined) a.currentTime = 0;
+        if (a.volume !== undefined) a.volume = vol === undefined ? 0.6 : vol;
+        a.play();
+      } catch (e) { }
+    }
+  };
+  function loadSfx(names) {
+    names.forEach(function (n) {
+      SFX_POOL[n] = [];
+      for (var i = 0; i < 3; i++) {
+        var a = null;
+        try {
+          if (WX.createInnerAudioContext) {
+            a = WX.createInnerAudioContext();
+            a.src = 'assets/sfx/' + n + '.wav';
+            a.obeyMuteCompliance = false;
+            a.volume = 0.6;
+          } else if (typeof Audio !== 'undefined') {
+            a = new Audio('assets/sfx/' + n + '.wav');
+            a.preload = 'auto';
+          }
+        } catch (e) { a = null; }
+        if (a) SFX_POOL[n].push(a);
+      }
+    });
+  }
+  G.loadSfx = loadSfx;
+
   /* ---------- 图片加载 ----------
      微信小游戏用 wx.createImage()，浏览器用 new Image()（上面的垫片已经统一了）。
      ⚠️ 必须先挂 onload 再给 src，否则图小的机器上会先触发完事件。 */
@@ -445,6 +487,7 @@ window.DATA = (function () {
       gems: {},               /* 宝石库存 {gem_atk: 2, ...} */
       cleared: {},             /* 通关记录 {1:true, 2:true} */
       signDay: 0, signDate: '',  /* 签到：累计天数 + 最后签到日期 */
+      muted: false,             /* 音效开关 */
       bag: [],
       /* 开局送一把基础妖刀 —— 空手开场没有打击感，也没法试强化 */
       equip: { weapon: { uid: 'start_w', q: 'g', qn: '精良妖刀', col: '#5ec46a', slot: 'weapon',
@@ -581,6 +624,7 @@ window.DATA = (function () {
     if (!m) return;
     /* 精英/妖王登场：横幅 + 震屏 */
     if (m.boss) {
+      if (G.sfx) G.sfx.play('boss');
       /* 妖王的名字本身就带"妖王"，别再拼一遍 */
       S.banner = { txt: (m.boss === 2 ? m.name : '精英 · ' + m.name), t: 2.0, col: m.boss === 2 ? '#ff5a6e' : '#ffd23a' };
       S.shake = 0.45;
@@ -755,6 +799,7 @@ window.DATA = (function () {
         }
         s.bag.push(it); s.items++;
         addToBag(it);
+        if (G.sfx) G.sfx.play((D.QUAL_RANK[it.q] || 0) >= 3 ? 'rare' : 'drop');
         S.drops.push({ x: m.x, y: m.y, it: it, t: 0 });
         S.nums.push({ x: m.x, y: m.y - 26, v: -30, t: 1.2, txt: it.qn + ' ' + it.slot, col: it.col, big: true });
         if (it.q === 'p' || it.q === 'o' || it.q === 'r') toast('获得 ' + it.qn + '！');
@@ -854,6 +899,7 @@ window.DATA = (function () {
   function deal(m, dmg, st, isBasic) {
     var crit = Math.random() * 100 < st.crit;
     if (crit) dmg *= (1 + st.critDmg / 100);
+    if (isBasic && G.sfx) G.sfx.play(crit ? 'crit' : 'hit');
     m.hp -= dmg; m.hit = 0.14;
     S.nums.push({ x: m.x + rnd(-10, 10), y: m.y - 18, v: -34, t: 0.85, txt: (crit ? '暴 ' : '') + Math.round(dmg), col: crit ? '#ffd23a' : '#fff' });
     if (st.vamp > 0) S.hero.hp = Math.min(S.hero.maxhp, S.hero.hp + dmg * st.vamp / 100 * 0.4);
@@ -863,12 +909,14 @@ window.DATA = (function () {
   function pull10() {
     var s = S.save, got = [];
     S.pullT = 0;              /* 翻牌动画计时 */
+    if (G.sfx) G.sfx.play('pull');
     for (var i = 0; i < 10; i++) {
       s.pulls++;
       /* 6% 出宠物卡（已有宠物则折精粹） */
       if (Math.random() < 0.06) {
         var pc = rollPetCard(s);
         if (!s.pet) {
+          if (G.sfx) G.sfx.play('pet');
           s.pet = { slot: pc.slot, at: Date.now() };
           s.petLv = 1; s.petMood = 70; s.petMoodAt = Date.now();
         }
@@ -1290,6 +1338,11 @@ window.DATA = (function () {
       G.text('✕', S.btnAutoX.x, S.btnAutoX.y, 13, '#fff', 'center', true);
     }
 
+    /* 静音开关 */
+    S.btnMute = { x: 300, y: 74, r: 15 };
+    G.circle(S.btnMute.x, S.btnMute.y, 14, 'rgba(0,0,0,.45)', 'rgba(255,255,255,.2)', 1);
+    G.text(G.sfx && G.sfx.mute ? '🔇' : '🔊', S.btnMute.x, S.btnMute.y, 13, '#e6dcc6', 'center', true);
+
     /* 技能按钮 */
     for (var i = 0; i < 3; i++) {
       var sk2 = D.SKILLS[i];
@@ -1652,6 +1705,7 @@ window.DATA = (function () {
     S.anim.power = 1.4; S.anim.powerFrom = before;
     if (after > s.best) s.best = after;
     toast('强化成功 +' + it.lv + '　战力 +' + (after - before));
+    if (G.sfx) G.sfx.play('upgrade');
     G.persist();
   }
 
@@ -1692,6 +1746,7 @@ window.DATA = (function () {
     it.gem = want.id;
     S.stats = stats();
     toast('镶嵌 ' + want.name + '！');
+    if (G.sfx) G.sfx.play('gem');
     G.persist();
   }
 
@@ -1891,6 +1946,7 @@ window.DATA = (function () {
   /* ============ 输入分发 ============ */
   function onDown(x, y) {
     S.lastTap = { x: x, y: y };      /* 埋点：看收到的实际坐标 */
+    if (G.sfx) G.sfx.play('click', 0.35);
     S.autoManual = true;           // 一操作就交还控制权
     if (S.autoOn) { S.autoOn = false; S.autoManual = false; }
     if (S.state === 'pick') {
@@ -2022,6 +2078,13 @@ window.DATA = (function () {
     if (S.btnBag && hit(x, y, S.btnBag)) { S.state = 'bag'; return; }
     if (S.btnPet && hit(x, y, S.btnPet)) { S.state = 'pets'; return; }
     if (S.btnRank && hit(x, y, S.btnRank)) { S.state = 'rank'; return; }
+    if (S.btnMute && hit(x, y, S.btnMute)) {
+      if (G.sfx) G.sfx.mute = !G.sfx.mute;
+      S.save.muted = G.sfx && G.sfx.mute;
+      toast(G.sfx && G.sfx.mute ? '已静音' : '音效开启');
+      G.persist();
+      return;
+    }
     if (S.btnPull && hit(x, y, S.btnPull)) { S.pullRes = pull10(); S.state = 'pull'; return; }
     for (var i = 0; i < 3; i++) {
       var b2 = S['btnS' + i];
@@ -2175,6 +2238,10 @@ window.DATA = (function () {
     S.stats = stats();          /* 必须在 S 赋值之后：stats() 读 S.save */
     if (S.state === 'battle') newBattle();
     preloadArt();
+    if (G.loadSfx) {
+      G.loadSfx(['click', 'hit', 'crit', 'drop', 'rare', 'pull', 'upgrade', 'boss', 'gem', 'pet']);
+      if (G.sfx) G.sfx.mute = !!s.muted;
+    }
     G.update = update;      /* ⚠️ 必须挂上去：boot.js 的主循环只认 G.update / G.draw */
     G.draw = draw;
     G.setHandlers({ down: onDown, up: null });
