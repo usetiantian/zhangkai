@@ -418,6 +418,14 @@ def make_storyboard(script, asset_context="（参考资产库为空）", context
 
 BEAT_RULES = """
 【输出格式要求 — 严格照做，不要任何解释、小标题或 Markdown】
+0. ★ 先算预算再写（不要凭感觉写）：
+   - 全片台词总字数（所有场次所有台词之和，含标点）**不得超过 目标总时长 × 3.5**
+     （例：300 秒的戏 → 全片台词合计 ≤ 1050 字；慢念按 ×3 算 → ≤ 900 字）
+   - 场次数 ≈ 目标总时长 ÷ 12（300 秒 → 约 25 个场次），不要写成十几个大场次
+   - 每个场次的时长随戏变化：冲突紧的 8~12 秒，等待/情绪的 18~28 秒，
+     **不要清一色 24 秒**
+   - 每个场次里所有台词之和 ≤ 该场次秒数 × 3
+   预算不够就**删台词和情节**，不要压缩语速来硬塞。
 1. 第一行必须且只能写：目标总时长：X秒（X 就是给定的目标总时长）
 2. 之后每个场次严格按下面五行写，场次之间空一行：
 场次N
@@ -803,6 +811,46 @@ def gm_total(task):
         if mm:
             return mm.group(2)
     return "60"
+
+
+def beats_demand(task, rate=3.5):
+    """场次表里台词需要的总秒数（按 rate 字/秒）。"""
+    head, blocks = beat_blocks(task)
+    tot = 0.0
+    for num, blk in blocks:
+        tm = _BEAT_TIME.search(blk)
+        d = (float(tm.group(2)) - float(tm.group(1))) if tm else 0.0
+        tot += max(d, beat_dialogue_chars(blk) / rate if beat_dialogue_chars(blk) else 0.0)
+    return tot
+
+
+def fit_beats_to_budget(task, rate=3.5, min_total=None):
+    """台词装不下时，自动把总时长扩到刚好装得下（按原比例摊），并改写「目标总时长」。
+
+    为什么是加长而不是砍台词：砍台词会伤剧情和节奏；短剧本来就常在
+    「台词刚好的密度」上取平衡。程序化扩容是保内容的做法。
+    """
+    head, blocks = beat_blocks(task)
+    if not blocks:
+        return task, {"ok": False, "msg": "没解析到场次"}
+    demand = beats_demand(task, rate)
+    m = re.search(r"目标总时长：\s*(\d+(?:\.\d+)?)\s*秒", task)
+    cur = float(m.group(1)) if m else sum(
+        (float(_BEAT_TIME.search(b[1]).group(2)) if _BEAT_TIME.search(b[1]) else 0)
+        for b in blocks)
+    need = max(demand, cur)
+    if min_total:
+        need = max(need, min_total)
+    if need <= cur + 1e-6:
+        return task, {"ok": True, "total": cur, "demand": round(demand, 1),
+                     "msg": "台词装得下（需求 %.1f 秒 / 目标 %.1f 秒）" % (demand, cur)}
+    fixed, rep = rebalance_beats(task, total=need)
+    fixed = re.sub(r"目标总时长：\s*\d+(?:\.\d+)?\s*秒",
+                   "目标总时长：%d秒" % int(round(need)), fixed)
+    return fixed, {"ok": True, "total": round(need, 1), "demand": round(demand, 1),
+                   "extended_from": cur,
+                   "msg": "台词需要 %.1f 秒 → 整集自动加长到 %.1f 秒（不砍台词）"
+                           % (demand, need)}
 
 def parse_segments(board, original_input="", seed=0):
     """官方分镜 -> 导演台 segments_json 数组（复用插件解析器）。"""
