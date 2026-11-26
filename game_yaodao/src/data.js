@@ -156,10 +156,10 @@ window.DATA = (function () {
 
   /* ---------- 人物皮肤（4 套 × 2 性别）---------- */
   var CHAR_SKIN = [
-    { id: 'cs1', name: '素衣', sex: 'm', col: '#5b6b7a', hair: '#1d1b1a' },
-    { id: 'cs2', name: '青竹', sex: 'm', col: '#2f6b57', hair: '#1d1b1a' },
-    { id: 'cs3', name: '素衣', sex: 'f', col: '#7a6a86', hair: '#241b1c' },
-    { id: 'cs4', name: '绛紫', sex: 'f', col: '#6d2740', hair: '#241b1c' }
+    { id: 'cs1', name: '素衣', sex: 'm', col: '#5b6b7a', hair: '#1d1b1a', img: 'run/cs1.png' },
+    { id: 'cs2', name: '青竹', sex: 'm', col: '#2f6b57', hair: '#1d1b1a', img: 'run/cs2.png' },
+    { id: 'cs3', name: '素衣', sex: 'f', col: '#7a6a86', hair: '#241b1c', img: 'run/cs3.png' },
+    { id: 'cs4', name: '绛紫', sex: 'f', col: '#6d2740', hair: '#241b1c', img: 'run/cs4.png' }
   ];
 
   /* ---------- 妖刀录（新手村）---------- */

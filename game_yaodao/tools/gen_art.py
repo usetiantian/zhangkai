@@ -143,7 +143,32 @@ MAPS_ART = [
              'small wood chips, even coverage everywhere'),
 ]
 
+# 人物皮肤：4 套（男素衣/男青竹/女素衣/女绛紫），要跟定妆图同风格
+SKIN_ART = [
+    ('cs1', 'a brave young Chinese xianxia swordsman boy, '
+            'plain simple gray-blue hanfu robe with minimal trim, '
+            'short tidy black hair, calm expression'),
+    ('cs2', 'a brave young Chinese xianxia swordsman boy, '
+            'green bamboo themed hanfu robe with bamboo leaf patterns, '
+            'black hair tied in a topknot, confident expression'),
+    ('cs3', 'a brave young Chinese xianxia heroine girl, '
+            'simple plain white and lavender hanfu dress, '
+            'long black hair, calm expression'),
+    ('cs4', 'a brave young Chinese xianxia heroine girl, '
+            'deep crimson and dark purple hanfu dress with gold embroidery, '
+            'long black hair with a purple ribbon, fierce expression'),
+]
+
+SKIN_TMPL = ('masterpiece, ' + STYLE + ', '
+             'a game character costume design, ' + '{desc}, '
+             'standing idle pose, full body, both hands empty, unarmed, '
+             'whole character fully visible, centered, '
+             'top-down three-quarter view, '
+             'plain light gray background, '
+             'crisp edges, no weapon, no text')
+
 BATCHES = {
+    'skin': [(n + '.png', SKIN_TMPL.format(desc=d), 768, 768) for n, d in SKIN_ART],
     'mob': [(n + '.png', MOB_TMPL.format(desc=d), 768, 768) for n, d in MONS_ART],
     'map': [(n + '.png', MAP_TMPL.format(desc=d), 1024, 1024) for n, d in MAPS_ART],
     'hero': [(n + '.png', p, 768, 768) for n, p in
