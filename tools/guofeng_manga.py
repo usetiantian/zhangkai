@@ -110,8 +110,9 @@ SOUND_RULES = """
 2. 音效要写**音场、质感、远近、节奏**：干涩的/沙哑的/短促的/低沉的；近处/远处/画外。
 3. **静默设计**：关键台词前留半秒静默，或用"某声突然停止"把下一句话托起来。
    安静的留白比加音效更能让观众集中。
-4. **说话人必须带音色绑定标记**：写成"林守田（<Subject 2>，音色参考 <Audio 2>）开口：<d>…</d>"。
-   段表里挂的音色文件必须和实际说话人一一对应。
+4. **说话人必须写清楚是谁、以及他的嗓音特征**：写成"林守田（苍老沙哑的嗓音）开口：<d>…</d>"。
+   ⚠️ 这里**不要**写 <Subject N> 或 <Audio N> —— 那是导演台在重写成 Ref2VA 时自动绑定的，
+      你自己写会被判为格式错误。绑定关系由"段表挂的音色文件"决定。
 5. 一段里超过 3 个说话人时：把次要角色放画外（画外音仍写清楚是谁），
    或把这一段拆成两个镜头。
 """
@@ -426,8 +427,11 @@ BEAT_RULES = """
 △动作描述…
 角色名：台词
 3. 所有场次的时间首尾相接，第一个从 0.000 秒开始，最后一个结束正好等于 X 秒。
-4. 每句台词的汉字数（含标点）必须不超过该场次秒数乘 4。超了就把台词改短，
-   或者把这一场的时间拉长。台词短促、克制、有信息量，不要长篇大论。
+4. ★ 台词预算按**场次总字数**算，不是按单句算：
+   一个场次里**所有台词的汉字数之和（含标点）**必须不超过该场次秒数乘 4
+   （慢念请按秒数乘 3 留余量）。H3 念白共享同一段时间，逐句合规但总量超标
+   一样念不完 —— 会口型错位、念断。
+   超了就把台词改短，或者把这一场的时间拉长。台词短促、克制、有信息量，不要长篇大论。
 5. 每个场次只承担一个主要动作，不要在一个场次里塞多个事件。
 6. 场景与时间要写出古风场景的具体元素：建筑形制、器物、光线、天气、人物站位。
    全片不得出现任何现代物品（玻璃幕墙、水泥、电线杆、汽车、塑料、拉链、眼镜、灯具等）。
@@ -466,7 +470,7 @@ BEAT_RULES = """
 # LLM 只能照抄，没有重分配的余地 → 台词装不下时必然念不完。
 # 这一层重排才真正能动时间；分镜层（rebalance_shots）只是兜底。
 _BEAT_HEAD = re.compile(r"(?m)^场次\s*(\d+)\s*$")
-_BEAT_TIME = re.compile(r"(?m)^(\d+(?:\.\d+)?)\s*[–\-—~至]\s*(\d+(?:\.\d+)?)\s*秒\s*$")
+_BEAT_TIME = re.compile(r"(?m)^(\d+(?:\.\d+)?)\s*[–\-—~至]\s*(\d+(?:\.\d+)?)\s*(?:秒)?\s*$")
 _BEAT_LINE = re.compile(r"(?m)^([^\n：]{1,8})：([^\n]+)$")
 
 
@@ -695,6 +699,110 @@ def make_beat(chapter, duration, context="", asset_context="（参考资产库�
             task = fixed
     return task
 
+
+
+def beat_batches(task, batch_sec=75.0):
+    """把场次表按累计时长切成批（每批约 batch_sec 秒），返回 [(场次块列表, 起始秒, 结束秒)]。"""
+    head, blocks = beat_blocks(task)
+    if not blocks:
+        return [], []
+    times = []
+    for num, blk in blocks:
+        m = _BEAT_TIME.search(blk)
+        times.append((float(m.group(1)), float(m.group(2))) if m else (0.0, 0.0))
+    batches = []
+    cur = []
+    start = None
+    for i, (num, blk) in enumerate(blocks):
+        if start is None:
+            start = times[i][0]
+        cur.append((num, blk, times[i]))
+        if times[i][1] - start >= batch_sec or i == len(blocks) - 1:
+            batches.append((cur, start, times[i][1]))
+            cur = []
+            start = None
+    return batches, times
+
+
+def _extract_desc(block):
+    """从一段分镜文本里抽出 integrated_multimodal_description 段。"""
+    i = block.find("integrated_multimodal_description:")
+    j = block.find("overall_soundscape:", i)
+    if i < 0:
+        # 没有标记就当整段都是描述
+        return block.strip()
+    if j < 0:
+        j = len(block)
+    return block[i + len("integrated_multimodal_description:"):j].strip()
+
+
+def make_storyboard_batched(task, asset_context="（参考资产库为空）", batch_sec=75.0,
+                            context="", verbose=True):
+    """场次表 -> 官方 H3 分镜（按场次分批生成后拼接）。
+
+    为什么必须分批：单次 LLM 输出有 token 上限（deepseek-chat 约 8K）。
+    300 秒的戏按现在的详细度需要 15K+ token，一次生成会在 90 秒左右被截断，
+    连 director_import_manifest 都写不出来 → 整段分镜作废。
+    分批后每批 ~75 秒、输出 ~4~6K token，稳。
+    """
+    batches, _ = beat_batches(task, batch_sec)
+    if not batches:
+        return make_storyboard(task, asset_context=asset_context, context=context)
+    if verbose:
+        print("  分 %d 批生成（每批 ≤%.0f 秒）" % (len(batches), batch_sec))
+    descs = []
+    sounds = []
+    for bi, (cur, start, end) in enumerate(batches):
+        piece = "\n".join(blk for _n, blk, _t in cur)
+        sub = task
+        for _n, blk, _t in cur:
+            sub = sub.replace(blk, "")
+        sub = ("本批场次（绝对时间 %.3f–%.3f 秒）：\n%s\n\n"
+               "只写这一批场次的分镜，Shot 的 At 时间戳用**绝对时间**（从 %.3f 秒起）。"
+               % (start, end, piece, start))
+        if verbose:
+            print("    批 %d/%d：%.1f–%.1f 秒，%d 个场次" % (bi + 1, len(batches), start, end, len(cur)))
+        raw = ai_call(sys_prompt("create_storyboard", asset_context),
+                      sub + NL2 + NL2 + SHOT_RULES + NL2 + NL2 + SOUND_RULES
+                      + NL2 + NL2 + "风格要求：" + GUOFENG_STYLE,
+                      max_tokens=7000)
+        descs.append(_extract_desc(raw))
+        k = raw.find("overall_soundscape:")
+        if k >= 0:
+            e = raw.find("non_diegetic_music:", k)
+            if e < 0:
+                e = len(raw)
+            sounds.append(raw[k + len("overall_soundscape:"):e].strip())
+    # 拼描述，重新编号 Shot，绝对时间戳保持原样
+    all_desc = "\n".join(descs)
+    n = 0
+    def renum(m):
+        nonlocal n
+        n += 1
+        return "[Shot %d]" % n
+    all_desc = re.sub(r"\[Shot\s+\d+\]", renum, all_desc)
+    total = gm_total(task)
+    sound = " ".join(s for s in sounds if s) or "环境声按各镜头描述。"
+    board = ("integrated_multimodal_description:\n" + all_desc
+             + "\n\noverall_soundscape:\n" + sound
+             + "\n\nnon_diegetic_music:\nN/A"
+             + "\n\ndirector_import_manifest:\nformat_version: 2\n"
+             + "source_total_duration_seconds: %s\n" % total
+             + "duration_policy: preserve")
+    return board
+
+
+def gm_total(task):
+    """场次表声明的总时长。"""
+    m = re.search(r"目标总时长：\s*(\d+(?:\.\d+)?)\s*秒", task)
+    if m:
+        return m.group(1)
+    head, blocks = beat_blocks(task)
+    if blocks:
+        mm = _BEAT_TIME.search(blocks[-1][1])
+        if mm:
+            return mm.group(2)
+    return "60"
 
 def parse_segments(board, original_input="", seed=0):
     """官方分镜 -> 导演台 segments_json 数组（复用插件解析器）。"""
