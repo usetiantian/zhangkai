@@ -27,6 +27,7 @@
       map: 0, wave: 0, best: 0, maxWave: 0, kills: 0, pulls: 0, pity: 0,
       dry: 0, essence: 0,     /* dry=连续没出史诗的击杀数（保底用），essence=精粹 */
       gems: {},               /* 宝石库存 {gem_atk: 2, ...} */
+      cleared: {},             /* 通关记录 {1:true, 2:true} */
       bag: [],
       /* 开局送一把基础妖刀 —— 空手开场没有打击感，也没法试强化 */
       equip: { weapon: { uid: 'start_w', q: 'g', qn: '精良妖刀', col: '#5ec46a', slot: 'weapon',
@@ -209,7 +210,17 @@
     S.waveT -= dt;
     if (S.waveT <= 0 && S.mobs.length === 0) {
       if (S.wave >= S.map.waves) {
-        /* 通关 → 下一张图 */
+        /* 通关 → 记录 + 首通奖励 → 下一张图 */
+        s.cleared = s.cleared || {};
+        if (!s.cleared[S.map.id]) {
+          s.cleared[S.map.id] = true;
+          var rw = 200 + S.map.id * 260;
+          s.coins += rw;
+          s.gems = s.gems || {};
+          var gdw = D.GEMS.filter(function (x) { return x.id === 'gem_atk'; })[0];
+          if (gdw) s.gems[gdw.id] = (s.gems[gdw.id] || 0) + S.map.id;
+          toast('首通奖励：金币 +' + rw + '　红宝石 +' + S.map.id);
+        }
         s.maxWave = Math.max(s.maxWave, s.map + 1);
         s.map = Math.min(D.MAPS.length - 1, s.map + 1);
         S.map = D.MAPS[s.map];
@@ -777,7 +788,10 @@
     /* ============ HUD ============ */
     var pd = G.W * 0.5;
     G.round(12, 14, pd - 24, 42, 8, 'rgba(0,0,0,.5)');
+    /* 地图名可点 → 选关（加 ▾ 提示玩家能点） */
+    S.btnMap = { x: 70, y: 28, r: 60 };
     G.text(S.map.name, 24, 28, 16, '#ffd88e', 'left', true);
+    G.text('▾', 24 + String(S.map.name).length * 16 + 4, 29, 12, '#ffd88e', 'left');
     G.text('第 ' + (S.wave + 1) + '/' + S.map.waves + ' 波　妖 ' + S.mobs.length, 24, 46, 12.5, '#c9bda4');
 
     /* 战力 */
@@ -862,6 +876,66 @@
     }
     G.round(x - size / 2, y - size / 2, size, size, 8, it.col, 'rgba(255,255,255,.35)', 1.5);
     G.text(slotName(it.slot).slice(0, 1), x, y, size * 0.45, 'rgba(0,0,0,.45)', 'center', true);
+  }
+
+  /* ============ 选关面板 ============ */
+  function drawMaps() {
+    G.round(0, 0, G.W, G.H, 0, 'rgba(12,12,14,.97)');
+    G.text('选择地图', 24, 40, 24, '#ffd88e', 'left', true);
+    S.btnBack = { x: G.W - 40, y: 40, r: 17 };
+    G.circle(S.btnBack.x, S.btnBack.y, 16, 'rgba(255,255,255,.12)');
+    G.text('✕', S.btnBack.x, S.btnBack.y, 14, '#fff', 'center', true);
+    var pw = power();
+    G.text('战力 ' + fmt(pw), G.W - 64, 64, 13, '#ffd23a', 'right');
+
+    var s = S.save;
+    var y = 92;
+    for (var i = 0; i < D.MAPS.length; i++) {
+      var mp = D.MAPS[i];
+      var unlocked = (i <= s.maxWave);
+      var cur = (S.map && S.map.id === mp.id);
+      var cleared = s.cleared && s.cleared[mp.id];
+      /* 卡片底色用地图自己的地面色，锁定的压灰 */
+      G.round(16, y, G.W - 32, 152, 12,
+        unlocked ? (cur ? 'rgba(255,220,150,.10)' : 'rgba(255,255,255,.045)') : 'rgba(30,30,32,.6)',
+        cur ? '#ffd88e' : (unlocked ? 'rgba(255,255,255,.14)' : 'rgba(255,255,255,.07)'), cur ? 2 : 1);
+      /* 左边一条地面色的色带 */
+      G.round(16, y, 8, 152, 4, unlocked ? mp.ground2 : '#3a3a3c');
+
+      G.text(mp.name, 38, y + 24, 18, unlocked ? '#f0e6d2' : '#6d675c', 'left', true);
+      G.text(mp.waves + ' 波', 38, y + 48, 12, unlocked ? '#a89f8c' : '#55504a', 'left');
+      /* 怪物 */
+      var names = [];
+      for (var k = 0; k < mp.mobs.length; k++) {
+        var md = D.MONS.filter(function (x) { return x.id === mp.mobs[k]; })[0];
+        if (md && names.indexOf(md.name) < 0) names.push(md.name);
+      }
+      var ed = D.MONS.filter(function (x) { return x.id === mp.elite; })[0];
+      if (ed && names.indexOf(ed.name) < 0) names.push(ed.name);
+      if (mp.boss) {
+        var bd = D.MONS.filter(function (x) { return x.id === mp.boss; })[0];
+        if (bd && names.indexOf(bd.name) < 0) names.push(bd.name);
+      }
+      G.text(names.join(' · '), 38, y + 70, 12, unlocked ? '#c9bda4' : '#55504a', 'left');
+      /* 推荐战力 */
+      var strong = pw >= mp.pw;
+      G.text('推荐战力 ' + fmt(mp.pw), 38, y + 94, 12, strong ? '#7dff9b' : '#e0685a', 'left');
+      if (unlocked) {
+        G.text(cleared ? '已通关（可重复刷）' : (cur ? '当前地图' : '点击进入'),
+          G.W - 32, y + 94, 12, cleared ? '#8a8272' : (cur ? '#ffd88e' : '#a89f8c'), 'right');
+        if (pw < mp.pw) G.text('⚠ 战力偏低', G.W - 32, y + 118, 12, '#e0685a', 'right');
+      } else {
+        G.text('🔒 通关「' + D.MAPS[i - 1].name + '」解锁', G.W - 32, y + 94, 12, '#6d675c', 'right');
+      }
+      /* 缩略地面色块 */
+      G.round(38, y + 112, 84, 26, 6, unlocked ? mp.ground : '#333');
+      for (var d2 = 0; d2 < 3; d2++) {
+        G.circle(52 + d2 * 26, y + 125, 5, unlocked ? mp.deco[d2 % 3] : '#3c3c3e');
+      }
+      S['mapBtn' + i] = { x: G.W / 2, y: y + 76, r: 76, idx: i, locked: !unlocked };
+      y += 168;
+    }
+    G.text('低地图掉低级装备，高地图掉好东西 —— 自由切换', G.W / 2, G.H - 40, 11.5, '#6d675c', 'center');
   }
 
   /* ============ 武器造型面板 ============ */
@@ -1258,6 +1332,26 @@
       }
       return;
     }
+    if (S.state === 'maps') {
+      if (S.btnBack && hit(x, y, S.btnBack)) { S.state = 'battle'; return; }
+      for (var mk in S) {
+        if (mk.indexOf('mapBtn') === 0) {
+          var mb = S[mk];
+          if (mb && hit(x, y, mb)) {
+            if (mb.locked) { toast('还没解锁'); return; }
+            S.save.map = mb.idx;
+            S.map = D.MAPS[mb.idx];
+            S.wave = 0; S.waveT = 1.0;
+            S.mobs = []; S.drops = []; S.nums = []; S.eff = [];
+            S.state = 'battle';
+            toast('进入 ' + S.map.name);
+            G.persist();
+            return;
+          }
+        }
+      }
+      return;
+    }
     if (S.state === 'skin') {
       if (S.btnBack && hit(x, y, S.btnBack)) { S.state = 'bag'; return; }
       for (var wsk in S) {
@@ -1297,6 +1391,8 @@
     /* battle */
     if (S.btnAuto && hit(x, y, S.btnAuto)) { S.autoOn = !S.autoOn; S.autoManual = S.autoOn; return; }
     if (S.autoOn && S.btnAutoX && hit(x, y, S.btnAutoX)) { S.autoOn = false; S.autoManual = false; return; }
+    /* 点地图名 → 选关 */
+    if (S.btnMap && hit(x, y, S.btnMap)) { S.state = 'maps'; return; }
     if (S.btnBag && hit(x, y, S.btnBag)) { S.state = 'bag'; return; }
     if (S.btnPet && hit(x, y, S.btnPet)) { S.state = 'pets'; return; }
     if (S.btnRank && hit(x, y, S.btnRank)) { S.state = 'rank'; return; }
@@ -1425,6 +1521,7 @@
     if (S.state === 'bag') return drawBag();
     if (S.state === 'upgrade') return drawUpgrade();
     if (S.state === 'skin') return drawSkins();
+    if (S.state === 'maps') return drawMaps();
     if (S.state === 'pets') return drawPets();
     if (S.state === 'rank') return drawRank();
     if (S.state === 'pull') return drawPull();

@@ -84,11 +84,11 @@ window.DATA = (function () {
      程序化地面是无限、无缝、零包体、跟着相机完美滚动的。 */
   var MAPS = [
     { id: 1, name: '青石村外', waves: 5, mobs: ['m1', 'm1', 'm2', 'm3', 'm1'], elite: 'e1', boss: null, lv: 1,
-      ground: '#5d4f38', ground2: '#6d5c40', deco: ['#4a3f2c', '#7f8a4e', '#8d8a7c'] },
+      ground: '#5d4f38', ground2: '#6d5c40', deco: ['#4a3f2c', '#7f8a4e', '#8d8a7c'], pw: 400 },
     { id: 2, name: '乱葬岗', waves: 6, mobs: ['m2', 'm3', 'm1', 'e1'], elite: 'e1', boss: null, lv: 4,
-      ground: '#3f3c38', ground2: '#4a4641', deco: ['#575249', '#6d6558', '#8a8072'] },
+      ground: '#3f3c38', ground2: '#4a4641', deco: ['#575249', '#6d6558', '#8a8072'], pw: 1200 },
     { id: 3, name: '黑风寨', waves: 7, mobs: ['m2', 'm3', 'e1', 'm1'], elite: 'e1', boss: 'b1', lv: 8,
-      ground: '#332821', ground2: '#3d3128', deco: ['#241d17', '#5a4432', '#6d5b46'] }
+      ground: '#332821', ground2: '#3d3128', deco: ['#241d17', '#5a4432', '#6d5b46'], pw: 3000 }
   ];
 
   /* ---------- 武器皮肤（只换外观，不改数值）---------- */
