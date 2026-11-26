@@ -26,7 +26,11 @@
       sex: '', skin: 'cs1', wskin: 'ws_blade_1',
       map: 0, wave: 0, best: 0, maxWave: 0, kills: 0, pulls: 0, pity: 0,
       dry: 0, essence: 0,     /* dry=连续没出史诗的击杀数（保底用），essence=精粹 */
-      bag: [], equip: { weapon: null, head: null, body: null, neck: null },
+      bag: [],
+      /* 开局送一把基础妖刀 —— 空手开场没有打击感，也没法试强化 */
+      equip: { weapon: { uid: 'start_w', q: 'g', qn: '精良妖刀', col: '#5ec46a', slot: 'weapon',
+        wtype: 'blade', atk: 7, range: 96, cd: 0.55, dmgMul: 1.05, aff: { atk: 2 }, lv: 0 },
+        head: null, body: null, neck: null },
       pet: null, petLv: 1, petMood: 70, petMoodAt: Date.now(),
       coins: 0, items: 0, log: []
     };
@@ -35,6 +39,11 @@
     var s = G.loadSave();
     if (!s || !s.equip) { s = newSave(); }
     if (s.wskin && D.WS_MIGRATE[s.wskin]) s.wskin = D.WS_MIGRATE[s.wskin];
+    /* 老存档可能没有武器 */
+    if (s.equip && !s.equip.weapon) {
+      s.equip.weapon = { uid: 'start_w', q: 'g', qn: '精良妖刀', col: '#5ec46a', slot: 'weapon',
+        wtype: 'blade', atk: 7, range: 96, cd: 0.55, dmgMul: 1.05, aff: { atk: 2 }, lv: 0 };
+    }
     if (!s.pet) { s.pet = null; s.petLv = 1; s.petMood = 70; s.petMoodAt = Date.now(); }
     return s;
   }
@@ -96,12 +105,14 @@
       var it = eq[k];
       if (!it) return;
       var q = D.QUAL.filter(function (x) { return x.id === it.q; })[0] || D.QUAL[0];
-      if (k === 'weapon') { st.atk += it.atk || 0; }
-      for (var a in it.aff) st[a] = (st[a] || 0) + it.aff[a];
+      /* 强化等级：每级 +8% 基础属性（武器攻击/词条/品质主属性都吃） */
+      var lm = 1 + (it.lv || 0) * D.ENH_MUL;
+      if (k === 'weapon') { st.atk += Math.round((it.atk || 0) * lm); }
+      for (var a in it.aff) st[a] = (st[a] || 0) + it.aff[a] * lm;
       // 品质给主属性加成
       var sl = D.SLOTS.filter(function (x) { return x.id === k; })[0];
       var base = { atk: 3, def: 2, hp: 14, crit: 1 }[sl.main] || 0;
-      st[sl.main] += Math.round(base * q.mul);
+      st[sl.main] += Math.round(base * q.mul * lm);
     });
     // 宠物
     if (s.pet) {
@@ -709,6 +720,128 @@
   }
 
   /* ============ 背包界面 ============ */
+  /* ============ 装备强化面板 ============ */
+  function itemIcon(it, x, y, size) {
+    /* 武器用贴图，其它部位用品质色方块 */
+    var img = null;
+    if (it.wtype) {
+      var sk = D.WEAPON_SKIN.filter(function (w) { return w.w === it.wtype; })[0];
+      if (sk && S.wskinImg) img = S.wskinImg[sk.id];
+    }
+    if (img) {
+      var ww = img.width / img.height * size;
+      ctx.drawImage(img, x - ww / 2, y - size * 0.5, ww, size);
+      return;
+    }
+    G.round(x - size / 2, y - size / 2, size, size, 8, it.col, 'rgba(255,255,255,.35)', 1.5);
+    G.text(slotName(it.slot).slice(0, 1), x, y, size * 0.45, 'rgba(0,0,0,.45)', 'center', true);
+  }
+
+  function drawUpgrade() {
+    G.round(0, 0, G.W, G.H, 0, 'rgba(10,10,12,.97)');
+    var it = S.save.equip[S.upSlot];
+    if (!it) { S.state = 'bag'; return; }
+    var lv = it.lv || 0;
+
+    G.text('强化', 24, 40, 24, '#ffd88e', 'left', true);
+    S.btnBack = { x: G.W - 40, y: 40, r: 17 };
+    G.circle(S.btnBack.x, S.btnBack.y, 16, 'rgba(255,255,255,.12)');
+    G.text('✕', S.btnBack.x, S.btnBack.y, 14, '#fff', 'center', true);
+
+    /* 装备卡 */
+    G.round(16, 74, G.W - 32, 150, 12, 'rgba(255,255,255,.05)', it.col, 1.5);
+    itemIcon(it, 68, 148, 84);
+    G.text(it.qn + (lv ? ' +' + lv : ''), 122, 106, 19, it.col, 'left', true);
+    G.text(slotName(it.slot) + (it.wtype ? ' · ' + D.WEAPONS[it.wtype].name : ''), 122, 130, 12.5, '#a89f8c', 'left');
+    G.text('强化等级 ' + lv + ' / ' + D.ENH_MAX, 122, 152, 13, lv ? '#ffd23a' : '#8a8272', 'left');
+    G.text('每级属性 +' + Math.round(D.ENH_MUL * 100) + '%', 122, 172, 11.5, '#8a8272', 'left');
+
+    /* 属性 */
+    var y = 244;
+    G.text('词条', 24, y, 13, '#9c9484', 'left');
+    var affs = affixTxt(it);
+    G.text(affs === '无词条' ? '无' : affs, 24, y + 22, 14, affs === '无词条' ? '#6d675c' : '#cfc6b0', 'left');
+
+    /* 攻击预览 */
+    if (it.wtype && it.atk) {
+      var lm = 1 + lv * D.ENH_MUL;
+      G.text('攻击', 24, y + 52, 13, '#9c9484', 'left');
+      G.text(Math.round(it.atk), 70, y + 52, 15, '#e6dcc6', 'left');
+      G.text('→', 108, y + 52, 13, '#6d675c', 'left');
+      G.text(Math.round(it.atk * (1 + D.ENH_MUL)), 128, y + 52, 17, '#ffd23a', 'left', true);
+      G.text('（+1 级）', 172, y + 52, 11.5, '#8a8272', 'left');
+    }
+
+    /* 资源 */
+    G.text('金币 ' + Math.floor(S.save.coins), 24, G.H - 150, 13, '#ffd76a', 'left');
+    G.text('精粹 ' + Math.floor(S.save.essence || 0), 24, G.H - 128, 13, '#b9a8ff', 'left');
+
+    /* 强化按钮 */
+    var coin = D.ENH_COIN(lv), ess = D.ENH_ESS(lv);
+    var can = lv < D.ENH_MAX && S.save.coins >= coin && (S.save.essence || 0) >= ess;
+    S.btnEnh = { x: G.W / 2, y: G.H - 74, r: 60 };
+    G.round(G.W / 2 - 130, G.H - 122, 260, 60, 14,
+      can ? 'rgba(150,80,30,.95)' : 'rgba(50,48,44,.9)',
+      can ? 'rgba(255,190,90,.75)' : 'rgba(255,255,255,.12)', 2);
+    G.text(lv >= D.ENH_MAX ? '已满级' : '强化 +1', G.W / 2, G.H - 92, 20,
+      can ? '#ffe2b0' : '#6d675c', 'center', true);
+    G.text(lv >= D.ENH_MAX ? '' : ('金币 ' + coin + ' · 精粹 ' + ess),
+      G.W / 2, G.H - 68, 12, can ? '#d9b98a' : '#5c574d', 'center');
+
+    /* 分解（把这件卖了） */
+    S.btnSell = { x: G.W - 62, y: G.H - 190, r: 34 };
+    G.round(G.W - 96, G.H - 224, 68, 68, 12, 'rgba(90,50,40,.85)', 'rgba(220,120,90,.5)', 1.5);
+    G.text('分解', G.W - 62, G.H - 190, 13, '#ffcbb0', 'center', true);
+    G.text('+' + (D.SALVAGE_VALUE[it.q] || 3) + '精粹', G.W - 62, G.H - 170, 10, '#e0a890', 'center');
+  }
+
+  function doEnhance() {
+    var s = S.save, it = s.equip[S.upSlot];
+    if (!it) return;
+    var lv = it.lv || 0;
+    if (lv >= D.ENH_MAX) { toast('已经满级了'); return; }
+    var coin = D.ENH_COIN(lv), ess = D.ENH_ESS(lv);
+    if (s.coins < coin) { toast('金币不够'); return; }
+    if ((s.essence || 0) < ess) { toast('精粹不够，去分解装备'); return; }
+    s.coins -= coin; s.essence -= ess;
+    it.lv = lv + 1;
+    var before = power();
+    S.stats = stats();
+    var after = power();
+    S.anim.power = 1.4; S.anim.powerFrom = before;
+    if (after > s.best) s.best = after;
+    toast('强化成功 +' + it.lv + '　战力 +' + (after - before));
+    G.persist();
+  }
+
+  function sellEquipped() {
+    var s = S.save, it = s.equip[S.upSlot];
+    if (!it) return;
+    var v = D.SALVAGE_VALUE[it.q] || 3;
+    v = Math.round(v * (1 + (it.lv || 0) * 0.3));   /* 强化过的更值钱 */
+    delete s.equip[S.upSlot];
+    s.essence = (s.essence || 0) + v;
+    S.stats = stats();
+    S.state = 'bag';
+    toast('分解得到 ' + v + ' 精粹');
+    G.persist();
+  }
+
+  function salvageJunk() {
+    var s = S.save, n = 0, gain = 0;
+    for (var i = s.bag.length - 1; i >= 0; i--) {
+      var q = s.bag[i].q;
+      if (q === 'w' || q === 'g') {
+        gain += D.SALVAGE_VALUE[q] || 1;
+        s.bag.splice(i, 1); n++;
+      }
+    }
+    if (!n) { toast('没有可分解的装备'); return; }
+    s.essence = (s.essence || 0) + gain;
+    toast('分解 ' + n + ' 件 → 精粹 +' + gain);
+    G.persist();
+  }
+
   function drawBag() {
     G.round(0, 0, G.W, G.H, 0, 'rgba(12,12,14,.96)');
     G.text('背包', 24, 40, 24, '#ffd88e', 'left', true);
@@ -722,9 +855,10 @@
       var it = S.save.equip[sl.id];
       G.round(bx, 78, bw, 74, 8, 'rgba(255,255,255,.05)', 'rgba(255,255,255,.14)');
       G.text(sl.name, bx + bw / 2, 92, 12, '#9c9484', 'center');
+      S['slotBtn' + sl.id] = { x: bx + bw / 2, y: 115, r: 40, slot: sl.id };
       if (it) {
         G.round(bx + 8, 100, bw - 16, 34, 5, 'rgba(255,255,255,.07)', it.col, 1.5);
-        G.text(it.qn, bx + bw / 2, 114, 12.5, it.col, 'center', true);
+        G.text(it.qn + (it.lv ? ' +' + it.lv : ''), bx + bw / 2, 114, 12.5, it.col, 'center', true);
         G.text(affixTxt(it), bx + bw / 2, 130, 10.5, '#bdb49e', 'center');
       } else {
         G.text('空', bx + bw / 2, 117, 13, '#6d675c', 'center');
@@ -758,6 +892,12 @@
     G.text('✕', S.btnBack.x, S.btnBack.y, 14, '#fff', 'center', true);
 
     /* 改形象：回性别选择页重选（装备/等级/进度都保留） */
+    /* 一键分解：把背包里的白/绿品质全分解成精粹 */
+    S.btnSalvage = { x: 60, y: G.H - 122, r: 46 };
+    G.round(14, G.H - 168, 92, 92, 12, 'rgba(120,70,30,.85)', 'rgba(255,190,90,.45)', 1.5);
+    G.text('一键分解', 60, G.H - 142, 13, '#ffe2b0', 'center', true);
+    G.text('白/绿 → 精粹', 60, G.H - 124, 10.5, '#d9b98a', 'center');
+
     S.btnLook = { x: G.W - 118, y: 40, r: 17 };
     G.round(S.btnLook.x - 38, S.btnLook.y - 14, 76, 28, 14, 'rgba(255,255,255,.10)', 'rgba(255,255,255,.22)', 1);
     G.text('改形象', S.btnLook.x, S.btnLook.y, 13, '#e6dcc6', 'center', true);
@@ -886,6 +1026,16 @@
     if (S.state === 'bag') {
       if (S.btnBack && hit(x, y, S.btnBack)) { S.state = 'battle'; return; }
       if (S.btnLook && hit(x, y, S.btnLook)) { S.pickPrev = 'bag'; S.state = 'pick'; return; }
+      if (S.btnSalvage && hit(x, y, S.btnSalvage)) { salvageJunk(); return; }
+      /* 点已装备的格子 → 强化面板 */
+      for (var sk in S) {
+        if (sk.indexOf('slotBtn') === 0) {
+          var sb = S[sk];
+          if (sb && hit(x, y, sb) && S.save.equip[sb.slot]) {
+            S.upSlot = sb.slot; S.state = 'upgrade'; return;
+          }
+        }
+      }
       if (S.btnPull10 && hit(x, y, S.btnPull10)) { S.pullRes = pull10(); S.state = 'pull'; return; }
       for (var k in S) {
         if (k.indexOf('bagItem') === 0) {
@@ -895,6 +1045,12 @@
           }
         }
       }
+      return;
+    }
+    if (S.state === 'upgrade') {
+      if (S.btnBack && hit(x, y, S.btnBack)) { S.state = 'bag'; return; }
+      if (S.btnEnh && hit(x, y, S.btnEnh)) { doEnhance(); return; }
+      if (S.btnSell && hit(x, y, S.btnSell)) { sellEquipped(); return; }
       return;
     }
     if (S.state === 'pets') {
@@ -985,6 +1141,7 @@
     if (!S) return;
     if (S.state === 'pick') return drawPick();
     if (S.state === 'bag') return drawBag();
+    if (S.state === 'upgrade') return drawUpgrade();
     if (S.state === 'pets') return drawPets();
     if (S.state === 'rank') return drawRank();
     if (S.state === 'pull') return drawPull();

@@ -161,6 +161,11 @@ window.DATA = (function () {
     MAPS_IMG: { 1: 'map/map1.jpg', 2: 'map/map2.jpg', 3: 'map/map3.jpg' },
     HERO_H: 68,               /* 主角在屏幕上的高度（px） */
     WEAPON_H: 42,             /* 武器贴图在屏幕上的高度（px） */
+    /* 装备强化：每级 +8% 基础属性，满级 15 */
+    ENH_MAX: 15,
+    ENH_MUL: 0.08,
+    ENH_COIN: function (lv) { return Math.round(60 * Math.pow(lv + 1, 1.45)); },
+    ENH_ESS: function (lv) { return 1 + lv; },
     /* 背包容量：超了自动分解最差的（史诗以上不分解） */
     BAG_CAP: 60,
     /* 掉落保底：连续这么多只怪没出史诗，下一次必出 */
