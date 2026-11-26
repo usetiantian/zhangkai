@@ -799,22 +799,17 @@ def retime_batch(desc, start, end):
     shots = [p for p in parts if p.lstrip().startswith("[Shot")]
     if len(shots) < 2:
         return desc
-    starts = []
-    cur = float(start)
+    # ⚠️ 完全忽略 LLM 给的 At 值：它有时写绝对时间、有时写批内相对时间，
+    #    两种都出现过（实测同一次跑里第 2 批的 At 从 0 重新开始）。
+    #    所以这里只保留**镜头的先后顺序**，时长自己分配。
+    w = []
     for p in shots:
-        t = _at_sec(p)
-        if t is None or t < cur or t > end:
-            t = cur
-        starts.append(t)
-        cur = t
-    durs = []
-    for i in range(len(shots)):
-        nxt = starts[i + 1] if i + 1 < len(shots) else float(end)
-        durs.append(max(0.0, nxt - starts[i]))
-    tot = sum(durs)
-    if tot <= 0:
-        durs = [span / len(shots)] * len(shots)
-        tot = span
+        c = shot_chars(p)
+        txt = len(p)
+        w.append(max(1.0, c * 2.0 + txt * 0.15))   # 台词多的镜、写得细的镜给更多时间
+    tw = sum(w) or 1.0
+    durs = [span * x / tw for x in w]
+    tot = span
     # 台词镜不能短到念不完：每镜最小时长 = 字数/4（有富余的镜让出时间）
     durs = [d * span / tot for d in durs]
     mins = []
@@ -953,12 +948,65 @@ def fit_beats_to_budget(task, rate=3.5, min_total=None):
         return task, {"ok": True, "total": cur, "demand": round(demand, 1),
                      "msg": "台词装得下（需求 %.1f 秒 / 目标 %.1f 秒）" % (demand, cur)}
     fixed, rep = rebalance_beats(task, total=need)
+    actual = beats_total(fixed)
     fixed = re.sub(r"目标总时长：\s*\d+(?:\.\d+)?\s*秒",
-                   "目标总时长：%d秒" % int(round(need)), fixed)
-    return fixed, {"ok": True, "total": round(need, 1), "demand": round(demand, 1),
+                   "目标总时长：%s秒" % ("%.3f" % actual), fixed)
+    return fixed, {"ok": True, "total": actual, "demand": round(demand, 1),
                    "extended_from": cur,
                    "msg": "台词需要 %.1f 秒 → 整集自动加长到 %.1f 秒（不砍台词）"
-                           % (demand, need)}
+                           % (demand, actual)}
+
+
+def beats_total(task):
+    """场次时间线的实际总和（秒）。"""
+    head, blocks = beat_blocks(task)
+    t = 0.0
+    for num, blk in blocks:
+        m = _BEAT_TIME.search(blk)
+        if m:
+            t += float(m.group(2)) - float(m.group(1))
+    return round(t, 3)
+
+
+def trim_beats_to_budget(task, max_total=300.0, rate=3.5):
+    """台词装不下时**删场次**（不删台词、不改任何内容），剩下的按比例摊到 max_total。
+
+    为什么删场次而不是删台词：删台词会伤人物和节奏；
+    删一整场戏只是少演一段，剩下的话还是原样念得完。
+    返回 (新任务书, 报告)，报告里列被删的场次。
+    """
+    head, blocks = beat_blocks(task)
+    if not blocks:
+        return task, {"ok": False, "msg": "没解析到场次"}
+    info = []
+    for num, blk in blocks:
+        m = _BEAT_TIME.search(blk)
+        st = float(m.group(1)) if m else 0.0
+        en = float(m.group(2)) if m else 0.0
+        info.append({"num": num, "blk": blk, "dur": en - st, "chars": beat_dialogue_chars(blk)})
+    budget = max_total * rate
+    def total_chars(keep):
+        return sum(x["chars"] for x in keep)
+    dropped = []
+    keep = list(info)
+    while total_chars(keep) > budget and len(keep) > 3:
+        # 删台词最重的那一场（信息密度最高、最容易被压掉）
+        worst = max(keep, key=lambda x: x["chars"])
+        keep = [x for x in keep if x is not worst]
+        dropped.append(worst["num"])
+    fixed, rep = rebalance_beats(head + "".join(x["blk"] for x in keep), total=max_total)
+    if not rep.get("ok"):
+        # 还是装不下 → 加长到刚好装下
+        need = rep.get("sum_min", max_total)
+        fixed, rep2 = rebalance_beats(head + "".join(x["blk"] for x in keep), total=need)
+        actual = beats_total(fixed)
+    else:
+        actual = beats_total(fixed)
+    fixed = re.sub(r"目标总时长：\s*\d+(?:\.\d+)?\s*秒",
+                   "目标总时长：%s秒" % ("%.3f" % actual), fixed)
+    msg = "台词装不下 → 删了 %d 个场次（%s），整集定为 %.1f 秒" % (
+        len(dropped), "、".join("场次%d" % d for d in dropped) or "无", actual)
+    return fixed, {"ok": True, "total": actual, "dropped": dropped, "msg": msg}
 
 def parse_segments(board, original_input="", seed=0):
     """官方分镜 -> 导演台 segments_json 数组（复用插件解析器）。"""
