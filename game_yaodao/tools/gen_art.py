@@ -106,7 +106,46 @@ FIST_TMPL = ('masterpiece, ' + STYLE + ', '
              'isolated on plain white background, '
              'crisp edges, no character, no hand')
 
+# 怪物：俯视角 3/4 视角，脚底对齐地面点
+MOB_TMPL = ('masterpiece, ' + STYLE + ', '
+            'a chibi monster game enemy, ' + '{desc}, '
+            'cute but slightly menacing, standing on the ground, '
+            'full body, whole creature fully visible, centered, '
+            'top-down three-quarter view, '
+            'plain light gray background, '
+            'no character, no human, no weapon')
+
+# 地图底：俯视地面纹理
+MAP_TMPL = ('masterpiece, top-down game ground texture, ' + '{desc}, '
+            'perfectly seamless tileable repeating texture, '
+            'no path, no road, no borders, no edges, no vignette, '
+            'no characters, no objects, no props, no buildings, '
+            'flat even lighting, orthographic top view, '
+            'high detail, best quality')
+
+MONS_ART = [
+    ('m1', 'a chubby brown mountain rat creature with big front teeth, '
+           'round ears and a short tail'),
+    ('m2', 'a gray blue wolf cub with sharp ears and glowing yellow eyes'),
+    ('m3', 'a green vine plant monster with leafy tendrils and a flower bud head'),
+    ('e1', 'a big brown bear with an iron gray armored back plate and thick arms'),
+    ('b1', 'a menacing dark crimson demon king with black horns, '
+           'glowing red eyes, long black cape and curved blades'),
+]
+
+# ⚠️ 必须是**均匀可平铺**的地面。之前出的是"一条路"的场景，平铺会出现重复的路。
+MAPS_ART = [
+    ('map1', 'uniform flat chinese village outskirts ground, packed dry dirt with '
+             'small gray pebbles, sparse short dry grass tufts, even coverage everywhere'),
+    ('map2', 'uniform flat ancient graveyard ground, dry cracked pale earth, '
+             'scattered small bone fragments and dead leaves, even coverage everywhere'),
+    ('map3', 'uniform flat bandit stronghold ground, dark packed soil with ash and '
+             'small wood chips, even coverage everywhere'),
+]
+
 BATCHES = {
+    'mob': [(n + '.png', MOB_TMPL.format(desc=d), 768, 768) for n, d in MONS_ART],
+    'map': [(n + '.png', MAP_TMPL.format(desc=d), 1024, 1024) for n, d in MAPS_ART],
     'hero': [(n + '.png', p, 768, 768) for n, p in
              (('hero_m', HERO_M), ('hero_f', HERO_F))],
     'weapon': [(n + '.png', WEAPON_TMPL.format(desc=d), 768, 768)

@@ -4,6 +4,10 @@
  */
 window.DATA = (function () {
   /* ---------- 品质 ---------- */
+  /* 品质排名（用于「保底至少史诗」「分解时找最差的」）：白 0 → 红 5 */
+  var QUAL_RANK = { w: 0, g: 1, b: 2, p: 3, o: 4, r: 5 };
+  /* 分解成精粹的价值（按品质） */
+  var SALVAGE_VALUE = { w: 1, g: 4, b: 12, p: 40, o: 120, r: 400 };
   var QUAL = [
     { id: 'w', name: '普通', color: '#c8c2b4', affix: 0, mul: 1.00, w: 58 },  // 白
     { id: 'g', name: '精良', color: '#5ec46a', affix: 1, mul: 1.35, w: 27 },  // 绿
@@ -66,10 +70,16 @@ window.DATA = (function () {
   ];
 
   /* ---------- 地图 ---------- */
+  /* ground/deco：程序化地面的底色和装饰配色。
+     为什么不用美术图平铺：AI 出的地面没法无缝，镜像拼接一眼能看出对称花纹。
+     程序化地面是无限、无缝、零包体、跟着相机完美滚动的。 */
   var MAPS = [
-    { id: 1, name: '青石村外', waves: 5, mobs: ['m1', 'm1', 'm2', 'm3', 'm1'], elite: 'e1', boss: null, lv: 1 },
-    { id: 2, name: '乱葬岗', waves: 6, mobs: ['m2', 'm3', 'm1', 'e1'], elite: 'e1', boss: null, lv: 4 },
-    { id: 3, name: '黑风寨', waves: 7, mobs: ['m2', 'm3', 'e1', 'm1'], elite: 'e1', boss: 'b1', lv: 8 }
+    { id: 1, name: '青石村外', waves: 5, mobs: ['m1', 'm1', 'm2', 'm3', 'm1'], elite: 'e1', boss: null, lv: 1,
+      ground: '#5d4f38', ground2: '#6d5c40', deco: ['#4a3f2c', '#7f8a4e', '#8d8a7c'] },
+    { id: 2, name: '乱葬岗', waves: 6, mobs: ['m2', 'm3', 'm1', 'e1'], elite: 'e1', boss: null, lv: 4,
+      ground: '#3f3c38', ground2: '#4a4641', deco: ['#575249', '#6d6558', '#8a8072'] },
+    { id: 3, name: '黑风寨', waves: 7, mobs: ['m2', 'm3', 'e1', 'm1'], elite: 'e1', boss: 'b1', lv: 8,
+      ground: '#332821', ground2: '#3d3128', deco: ['#241d17', '#5a4432', '#6d5b46'] }
   ];
 
   /* ---------- 武器皮肤（只换外观，不改数值）---------- */
@@ -138,13 +148,23 @@ window.DATA = (function () {
   };
 
   return {
-    QUAL: QUAL, SLOTS: SLOTS, WEAPONS: WEAPONS, AFFIX: AFFIX, MONS: MONS, SKILLS: SKILLS,
+    QUAL: QUAL, QUAL_RANK: QUAL_RANK, SALVAGE_VALUE: SALVAGE_VALUE,
+    SLOTS: SLOTS, WEAPONS: WEAPONS, AFFIX: AFFIX, MONS: MONS, SKILLS: SKILLS,
     PETS: PETS, MAPS: MAPS, WEAPON_SKIN: WEAPON_SKIN, CHAR_SKIN: CHAR_SKIN, DAGGER: DAGGER,
     WS_MIGRATE: WS_MIGRATE,
     /* 主角贴图（按性别）。img 没加载出来就回退到程序化画的小人。 */
     HERO_IMG: { m: 'run/hero_m.png', f: 'run/hero_f.png' },
+    /* 怪物贴图：按 MONS 的 id 对应 */
+    MONS_IMG: { m1: 'mob/m1.png', m2: 'mob/m2.png', m3: 'mob/m3.png',
+                e1: 'mob/e1.png', b1: 'mob/b1.png' },
+    /* 地图底纹：按 MAPS 的 id 对应 */
+    MAPS_IMG: { 1: 'map/map1.jpg', 2: 'map/map2.jpg', 3: 'map/map3.jpg' },
     HERO_H: 68,               /* 主角在屏幕上的高度（px） */
     WEAPON_H: 42,             /* 武器贴图在屏幕上的高度（px） */
+    /* 背包容量：超了自动分解最差的（史诗以上不分解） */
+    BAG_CAP: 60,
+    /* 掉落保底：连续这么多只怪没出史诗，下一次必出 */
+    PITY_EPIC: 150,
     PET_MAX_LV: 10, MOOD_MAX: 100, MOOD_DECAY_MS: 2 * 3600 * 1000, MOOD_FEED: 18,
     LUCK_PER: 0.05,          // 幸运 +N → 爆率 ×(1+0.05N)
     DROPRATE_BASE: 0.058     // 单次独立爆率先按 5.8% 测（调研口径 5%~7%）

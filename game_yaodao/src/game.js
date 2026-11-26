@@ -25,6 +25,7 @@
       /* sex 留空 → 首次进入走 'pick' 性别选择（原来默认 'm' 导致选人界面永远进不去） */
       sex: '', skin: 'cs1', wskin: 'ws_blade_1',
       map: 0, wave: 0, best: 0, maxWave: 0, kills: 0, pulls: 0, pity: 0,
+      dry: 0, essence: 0,     /* dry=连续没出史诗的击杀数（保底用），essence=精粹 */
       bag: [], equip: { weapon: null, head: null, body: null, neck: null },
       pet: null, petLv: 1, petMood: 70, petMoodAt: Date.now(),
       coins: 0, items: 0, log: []
@@ -40,8 +41,9 @@
 
   /* ============ 装备生成 ============ */
   var SLOT_KEYS = ['weapon', 'head', 'body', 'neck'];
-  function rollItem(luck) {
-    var q = weightedPick(D.QUAL);
+  /* forceQ：保底时指定品质（武器攻击/词条数都要按新品质重算，不能只改标签） */
+  function rollItem(luck, forceQ) {
+    var q = forceQ || weightedPick(D.QUAL);
     var slot = pick(SLOT_KEYS);
     var it = {
       uid: 'i' + Date.now() + Math.floor(Math.random() * 1000),
@@ -64,6 +66,26 @@
       it.range = w.range; it.cd = w.cd; it.dmgMul = w.dmgMul;
     }
     return it;
+  }
+
+  /* ---------- 背包容量 + 自动分解 ----------
+     模拟结论：5.8% 爆率 × 1.6 秒一只怪 = 25 秒一件，30 分钟 64 件。
+     背包不设上限的话会被垃圾塞爆、存档越来越大。
+     所以：超过容量就把**最差的**几件分解成精粹（不是直接丢，玩家不亏）。 */
+  function addToBag(it) {
+    var s = S.save;
+    if (s.bag.length < D.BAG_CAP) return;
+    /* 找一件品质最低的分解掉（史诗以上不分解） */
+    var worst = -1, worstRank = 99;
+    for (var i = 0; i < s.bag.length; i++) {
+      var rk = D.QUAL_RANK && D.QUAL_RANK[s.bag[i].q] !== undefined ? D.QUAL_RANK[s.bag[i].q] : 0;
+      if (rk < worstRank) { worstRank = rk; worst = i; }
+    }
+    if (worst < 0) return;
+    if (worstRank >= 3) return;          /* 全是史诗以上就不分解，宁可超容量 */
+    var junk = s.bag.splice(worst, 1)[0];
+    s.essence = (s.essence || 0) + D.SALVAGE_VALUE[junk.q] || 3;
+    S.nums.push({ x: h.x + rnd(-14, 14), y: h.y - 34, v: -24, t: 1.0, txt: '+' + (D.SALVAGE_VALUE[junk.q] || 3) + ' 精粹', col: '#b9a8ff' });
   }
 
   /* ============ 属性计算 ============ */
@@ -251,9 +273,26 @@
       if (m.hp > 0) return true;
       s.kills++; s.coins += m.coin;
       S.nums.push({ x: m.x, y: m.y, v: -26, t: 1.0, txt: '+' + m.coin, col: '#ffd76a' });
-      if (Math.random() < m.drop * (1 + st.luck * D.LUCK_PER)) {
+      /* 掉落保底链：连续太久没出史诗就必出（不然非酋会彻底放弃）
+         —— 调研口径的保底链：5-8 / 10-15 / 50 / 100 / 150-200 次 */
+      var pityHit = s.dry >= D.PITY_EPIC;
+      if (pityHit || Math.random() < m.drop * (1 + st.luck * D.LUCK_PER)) {
         var it = rollItem(st.luck);
+        if (pityHit) {
+          /* 保底：品质至少史诗（史诗/传说/神话 随机） */
+          var qs = D.QUAL.filter(function (x) { return (D.QUAL_RANK[x.id] || 0) >= 3; });
+          var q2 = qs.length ? qs[Math.floor(Math.random() * qs.length)] : D.QUAL[D.QUAL.length - 1];
+          it = rollItem(st.luck, q2);
+          s.dry = 0;
+          toast('保底！必出 ' + it.qn);
+        } else {
+          s.dry++;
+          if (D.QUAL_RANK && D.QUAL_RANK[it.q] !== undefined) {
+            if (D.QUAL_RANK[it.q] >= 3) s.dry = 0;   /* 出了史诗就重置计数 */
+          }
+        }
         s.bag.push(it); s.items++;
+        addToBag(it);
         S.drops.push({ x: m.x, y: m.y, it: it, t: 0 });
         S.nums.push({ x: m.x, y: m.y - 26, v: -30, t: 1.2, txt: it.qn + ' ' + it.slot, col: it.col, big: true });
         if (it.q === 'p' || it.q === 'o' || it.q === 'r') toast('获得 ' + it.qn + '！');
@@ -317,9 +356,26 @@
     D.WEAPON_SKIN.forEach(function (w) {
       if (w.img) list.push({ key: w.id, path: 'assets/' + w.img });
     });
+    if (D.MONS_IMG) {
+      for (var mk in D.MONS_IMG) list.push({ key: mk, path: 'assets/' + D.MONS_IMG[mk] });
+    }
+    if (D.MAPS_IMG) {
+      for (var gk in D.MAPS_IMG) list.push({ key: 'map' + gk, path: 'assets/' + D.MAPS_IMG[gk] });
+    }
     G.loadImgs(list, function (out) {
       S.heroImg = { m: out['m'] || null, f: out['f'] || null };
       S.wskinImg = out;
+      /* 怪物和地图底单独拎出来，避免和武器的 key 混在一起 */
+      S.mobImg = {}; S.mapImg = {};
+      for (var k in out) {
+        if (D.MONS_IMG && D.MONS_IMG[k]) S.mobImg[k] = out[k];
+        else if (k.indexOf('map') === 0) S.mapImg[k.slice(3)] = out[k];
+      }
+      /* 地图底做成 pattern，跟着相机滚 */
+      S.mapPat = {};
+      for (var id in S.mapImg) {
+        try { S.mapPat[id] = ctx.createPattern(S.mapImg[id], 'repeat'); } catch (e) { }
+      }
     });
   }
   function deal(m, dmg, st, isBasic) {
@@ -374,6 +430,81 @@
     return dx * dx + dy * dy <= b.r * b.r;
   }
 
+  /* ---------- 程序化地面 ----------
+     底色 + 按世界坐标哈希散落的装饰（石头/草/枯枝）。
+     用坐标做哈希 → 同一个世界坐标永远长一样，但整体无限、无缝、无重复感。 */
+  function hash2(x, y, k) {
+    var n = (x * 374761393 + y * 668265263 + (k || 0) * 1442695040) | 0;
+    n = (n ^ (n >> 13)) * 1274126177;
+    return ((n ^ (n >> 16)) >>> 0) / 4294967296;
+  }
+  function drawGround(sx, sy) {
+    var mp = S.map;
+    /* ⚠️ 这里已经在 ctx.translate(sx, sy) 之后了 —— 屏幕原点是世界坐标 (-sx, -sy)，
+       直接 fillRect(0,0,W,H) 只会画到世界原点那一片，屏幕会露底。 */
+    ctx.fillStyle = mp.ground || '#2b2f26';
+    ctx.fillRect(-sx, -sy, G.W, G.H);
+
+    /* 大块的深浅斑（打破纯色） */
+    var CELL = 150;
+    var cx0 = Math.floor((-sx) / CELL) - 1, cx1 = Math.ceil((G.W - sx) / CELL) + 1;
+    var cy0 = Math.floor((-sy) / CELL) - 1, cy1 = Math.ceil((G.H - sy) / CELL) + 1;
+    for (var cx = cx0; cx <= cx1; cx++) {
+      for (var cy = cy0; cy <= cy1; cy++) {
+        var px = cx * CELL + hash2(cx, cy, 1) * CELL;
+        var py = cy * CELL + hash2(cx, cy, 2) * CELL;
+        var r = 26 + hash2(cx, cy, 3) * 30;
+        ctx.fillStyle = mp.ground2 || 'rgba(255,255,255,.04)';
+        ctx.globalAlpha = 0.55;
+        ctx.beginPath();
+        ctx.ellipse(px, py, r, r * 0.6, hash2(cx, cy, 4) * 3, 0, 6.2832);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+      }
+    }
+
+    /* 装饰物：碎石 / 草 / 枯枝，三种形态随机分布 */
+    var dec = mp.deco || ['#555'];
+    for (var dx = cx0; dx <= cx1; dx++) {
+      for (var dy = cy0; dy <= cy1; dy++) {
+        var hv = hash2(dx, dy, 7);
+        if (hv > 0.42) continue;           /* 一部分格子才有装饰 */
+        var kx = dx * CELL + hash2(dx, dy, 8) * CELL;
+        var ky = dy * CELL + hash2(dx, dy, 9) * CELL;
+        var kind = Math.floor(hash2(dx, dy, 10) * 3);
+        var col = dec[kind] || dec[0];
+        var s2 = 0.7 + hash2(dx, dy, 11) * 0.8;
+        if (kind === 0) {
+          /* 碎石：两三个小圆 */
+          for (var q = 0; q < 3; q++) {
+            var ox = (hash2(dx * 3 + q, dy, 12) - 0.5) * 22;
+            var oy = (hash2(dx, dy * 3 + q, 13) - 0.5) * 14;
+            G.circle(kx + ox, ky + oy, (2.2 + hash2(dx + q, dy + q, 14) * 2.6) * s2, col);
+          }
+        } else if (kind === 1) {
+          /* 草：三根短竖线 */
+          ctx.strokeStyle = col; ctx.lineWidth = 1.6 * s2; ctx.lineCap = 'round';
+          for (var b = 0; b < 3; b++) {
+            var ang = -1.9 + hash2(dx, dy + b, 15) * 0.9;
+            var len = (6 + hash2(dx + b, dy, 16) * 6) * s2;
+            var bx = kx + (b - 1) * 4 * s2;
+            ctx.beginPath();
+            ctx.moveTo(bx, ky);
+            ctx.lineTo(bx + Math.cos(ang) * len, ky + Math.sin(ang) * len);
+            ctx.stroke();
+          }
+        } else {
+          /* 枯枝：一小段横线 */
+          ctx.strokeStyle = col; ctx.lineWidth = 2.4 * s2; ctx.lineCap = 'round';
+          ctx.beginPath();
+          ctx.moveTo(kx - 7 * s2, ky);
+          ctx.lineTo(kx + 8 * s2, ky + (hash2(dx, dy, 17) - 0.5) * 6);
+          ctx.stroke();
+        }
+      }
+    }
+  }
+
   function drawBattle() {
     var h = S.hero, st = S.stats;
     var camX = h.x, camY = h.y;
@@ -382,12 +513,7 @@
     /* 地面 */
     ctx.fillStyle = '#2b2f26'; ctx.fillRect(0, 0, G.W, G.H);
     ctx.save(); ctx.translate(sx, sy);
-    var g = 90;
-    var x0 = Math.floor((0 - sx) / g) * g, x1 = G.W - sx + g;
-    var y0 = Math.floor((0 - sy) / g) * g, y1 = G.H - sy + g;
-    ctx.strokeStyle = 'rgba(255,255,255,.045)'; ctx.lineWidth = 1;
-    for (var gx = x0; gx < x1; gx += g) { ctx.beginPath(); ctx.moveTo(gx, y0); ctx.lineTo(gx, y1); ctx.stroke(); }
-    for (var gy = y0; gy < y1; gy += g) { ctx.beginPath(); ctx.moveTo(x0, gy); ctx.lineTo(x1, gy); ctx.stroke(); }
+    drawGround(sx, sy);
 
     /* 掉落物 */
     S.drops.forEach(function (d) {
@@ -398,14 +524,33 @@
     /* 怪物 */
     S.mobs.forEach(function (m) {
       var r = m.r * (m.boss === 2 ? 1.5 : m.boss === 1 ? 1.15 : 1);
-      G.circle(m.x, m.y, r, m.hit > 0 ? '#fff' : m.col);
-      G.circle(m.x - r * 0.32, m.y - r * 0.18, r * 0.15, '#1a1a1a');
-      G.circle(m.x + r * 0.32, m.y - r * 0.18, r * 0.15, '#1a1a1a');
+      var img = S.mobImg && S.mobImg[m.id];
+      var top = m.y - r;              /* 血条和标签的基准高度 */
+      if (img) {
+        var hh = r * 2.6;             /* 贴图高度 */
+        var ww = img.width / img.height * hh;
+        top = m.y - hh + r * 0.55;
+        ctx.save();
+        if (m.hit > 0) ctx.globalAlpha = 0.8;
+        ctx.drawImage(img, m.x - ww / 2, top, ww, hh);
+        ctx.restore();
+        if (m.hit > 0) {              /* 受击闪白 */
+          ctx.save();
+          ctx.globalAlpha = Math.min(1, m.hit / 0.14) * 0.45;
+          G.circle(m.x, m.y - r * 0.9, r * 0.85, '#fff');
+          ctx.restore();
+        }
+      } else {
+        /* 没贴图 → 回退到原来的圆球 */
+        G.circle(m.x, m.y, r, m.hit > 0 ? '#fff' : m.col);
+        G.circle(m.x - r * 0.32, m.y - r * 0.18, r * 0.15, '#1a1a1a');
+        G.circle(m.x + r * 0.32, m.y - r * 0.18, r * 0.15, '#1a1a1a');
+      }
       if (m.boss) {
-        G.text(m.id === 'b1' ? '妖王' : '精英', m.x, m.y - r - 16, 14, '#ffd23a', 'center', true);
+        G.text(m.id === 'b1' ? '妖王' : '精英', m.x, top - 14, 14, '#ffd23a', 'center', true);
       }
       var bw = r * 1.7;
-      G.bar(m.x - bw / 2, m.y - r - 8, bw, 5, m.hp / m.maxhp, '#e0483f', 'rgba(0,0,0,.5)');
+      G.bar(m.x - bw / 2, top - 7, bw, 5, m.hp / m.maxhp, '#e0483f', 'rgba(0,0,0,.5)');
     });
 
     /* 主角 */
@@ -483,6 +628,13 @@
       ctx.globalAlpha = 1;
     });
     ctx.restore();
+
+    /* 屏幕暗角：把注意力收到中间的角色上 */
+    var vg = ctx.createRadialGradient(G.W / 2, G.H / 2, G.H * 0.34, G.W / 2, G.H / 2, G.H * 0.78);
+    vg.addColorStop(0, 'rgba(0,0,0,0)');
+    vg.addColorStop(1, 'rgba(0,0,0,.42)');
+    ctx.fillStyle = vg;
+    ctx.fillRect(0, 0, G.W, G.H);
 
     /* ============ HUD ============ */
     var pd = G.W * 0.5;

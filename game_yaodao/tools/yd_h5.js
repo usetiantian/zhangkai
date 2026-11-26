@@ -14,7 +14,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
     '--headless=new', '--disable-gpu', '--no-sandbox',
     '--remote-debugging-port=' + PORT,
     '--window-size=390,844',
-    '--user-data-dir=' + OUT + '/profile',
+    '--user-data-dir=' + OUT + '/profile_' + Date.now(),
     'about:blank'
   ], { stdio: 'ignore' });
 
@@ -61,6 +61,8 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 
   await send('Runtime.enable');
   await send('Page.enable');
+  await send('Network.enable');
+  await send('Network.setCacheDisabled', {cacheDisabled: true});
   await send('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 2, mobile: true });
   await send('Page.navigate', { url: URL });
   await sleep(2500);
