@@ -400,8 +400,20 @@
   /* ============ 抽卡（广告）============ */
   function pull10() {
     var s = S.save, got = [];
+    S.pullT = 0;              /* 翻牌动画计时 */
     for (var i = 0; i < 10; i++) {
       s.pulls++;
+      /* 6% 出宠物卡（已有宠物则折精粹） */
+      if (Math.random() < 0.06) {
+        var pc = rollPetCard(s);
+        if (!s.pet) {
+          s.pet = { slot: pc.slot, at: Date.now() };
+          s.petLv = 1; s.petMood = 70; s.petMoodAt = Date.now();
+        }
+        s.essence = (s.essence || 0) + (s.pet ? 10 : 0);
+        got.push(pc);
+        continue;
+      }
       var forced = (s.pulls % 8 === 0);            // 每 8 次必出史诗以上（保底可见）
       var q = forced ? weightedPick(D.QUAL.filter(function (x) { return ['p', 'o', 'r'].indexOf(x.id) >= 0; }))
         : weightedPick(D.QUAL.filter(function (x) { return ['w', 'g', 'b', 'p'].indexOf(x.id) >= 0; }));
@@ -427,6 +439,18 @@
     }
     G.persist();
     return got;
+  }
+
+  /* ---------- 宠物卡 ----------
+     宠物面板写着"去商店抽卡可以抽到宠物"，那就得真能抽到。
+     每张卡 6% 概率是宠物；已有宠物时重复卡折成精粹。 */
+  function rollPetCard(s) {
+    var slot = pick(['beast', 'mount', 'pal']);
+    var pd = D.PETS.filter(function (x) { return x.slot === slot; })[0];
+    if (s.pet) {
+      return { pet: true, dup: true, slot: slot, qn: pd.name + '·重复', col: '#6d675c', q: 'w' };
+    }
+    return { pet: true, slot: slot, qn: pd.name, col: '#7dff9b', q: 'r', pname: pd.name };
   }
 
   /* ============ 界面 ============ */
@@ -1114,15 +1138,68 @@
   /* ============ 抽卡结果 ============ */
   function drawPull() {
     G.round(0, 0, G.W, G.H, 0, 'rgba(12,12,14,.97)');
-    G.text('十连结果', G.W / 2, 46, 22, '#ffd88e', 'center', true);
     var res = S.pullRes || [];
+    /* 按品质从高到低排 —— 抽卡出史诗排在最前面才有仪式感 */
+    res.sort(function (a, b) {
+      return (D.QUAL_RANK[b.q] || 0) - (D.QUAL_RANK[a.q] || 0);
+    });
+    G.text('十连结果', G.W / 2, 46, 22, '#ffd88e', 'center', true);
+
     for (var i = 0; i < res.length; i++) {
-      var it = res[i], cx = G.W / 2 + ((i % 5) - 2) * 62, cy = 130 + Math.floor(i / 5) * 96;
-      G.round(cx - 27, cy - 27, 54, 54, 8, 'rgba(255,255,255,.06)', it.col, 2);
-      G.text(it.qn, cx, cy - 6, 13, it.col, 'center', true);
-      G.text(slotName(it.slot), cx, cy + 12, 10, '#a89f8c', 'center');
+      var it = res[i];
+      var rank = D.QUAL_RANK[it.q] || 0;
+      var cx = G.W / 2 + ((i % 5) - 2) * 62, cy = 130 + Math.floor(i / 5) * 96;
+      /* 逐张翻开：每张间隔 0.06s */
+      var reveal = (S.pullT || 0) - i * 0.06;
+      if (reveal < 0) {
+        /* 还没翻到：显示背面 */
+        G.round(cx - 27, cy - 27, 54, 54, 8, 'rgba(40,44,52,.9)', 'rgba(255,255,255,.12)', 1.5);
+        G.text('?', cx, cy, 22, 'rgba(255,255,255,.18)', 'center', true);
+        continue;
+      }
+      var ap = Math.min(1, reveal / 0.18);
+      var pop = 1 + (1 - ap) * 0.5;   /* 翻开时先弹一下 */
+      /* 史诗以上：发光 + 呼吸 */
+      if (rank >= 3) {
+        var pu = 0.5 + 0.5 * Math.sin((S.pullT || 0) * 5);
+        ctx.save();
+        ctx.globalAlpha = 0.25 + pu * 0.35;
+        ctx.fillStyle = it.col;
+        ctx.beginPath();
+        ctx.arc(cx, cy, 34 * pop, 0, 6.2832);
+        ctx.fill();
+        ctx.restore();
+      }
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.scale(pop, pop);
+      G.round(-27, -27, 54, 54, 8, 'rgba(255,255,255,.06)', it.col, rank >= 3 ? 2.5 : 1.5);
+      /* 武器用贴图当图标 */
+      var img = null;
+      if (it.pet) {
+        /* 宠物卡：圆球 + 名字 */
+        G.circle(0, -4, 17, it.dup ? 'rgba(90,90,90,.8)' : 'rgba(125,255,155,.28)', it.col, 2);
+        G.text(it.pet && it.slot ? (it.slot === 'beast' ? '兽' : it.slot === 'mount' ? '骑' : '友') : '宠',
+          0, -4, 14, it.dup ? '#8a8272' : '#d9ffdd', 'center', true);
+      } else if (it.wtype) {
+        var sk = D.WEAPON_SKIN.filter(function (w) { return w.w === it.wtype; })[0];
+        if (sk && S.wskinImg) img = S.wskinImg[sk.id];
+      }
+      if (img) {
+        var ww = img.width / img.height * 40;
+        ctx.drawImage(img, -ww / 2, -20, ww, 40);
+      } else {
+        G.text(it.qn, 0, -5, 13, it.col, 'center', true);
+      }
+      ctx.restore();
+      G.text(it.pet ? (it.dup ? '重复' : '宠物') : slotName(it.slot), cx, cy + 20, 10, '#a89f8c', 'center');
+      /* 传说/神话额外标个角 */
+      if (rank >= 4) G.text('★', cx + 20, cy - 20, 13, it.col, 'center', true);
     }
-    G.text('已入背包', G.W / 2, 340, 13, '#8a8272', 'center');
+    var hasPet = false, hasDup = false;
+    for (var pi = 0; pi < res.length; pi++) { if (res[pi].pet) { if (res[pi].dup) hasDup = true; else hasPet = true; } }
+    G.text(hasPet ? '获得宠物！去「宠物」面板看看' : (hasDup ? '重复宠物已折成 10 精粹' : '已入背包'),
+      G.W / 2, 340, 13, hasPet ? '#7dff9b' : '#8a8272', 'center');
     S.btnBack = { x: G.W / 2, y: G.H - 60, r: 58 };
     G.round(G.W / 2 - 90, G.H - 90, 180, 56, 12, 'rgba(50,90,60,.9)', 'rgba(140,230,150,.5)', 2);
     G.text('收下', G.W / 2, G.H - 62, 18, '#d9ffdd', 'center', true);
@@ -1131,6 +1208,7 @@
   /* ============ 主循环 ============ */
   function update(dt) {
     if (!S) return;
+    if (S.state === 'pull' && S.pullT !== undefined) S.pullT += dt;
     if (S.state === 'battle') {
       updateBattle(dt);
       var pw = power(S.stats);
