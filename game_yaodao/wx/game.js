@@ -73,12 +73,56 @@ window.DATA = (function () {
   ];
 
   /* ---------- 武器皮肤（只换外观，不改数值）---------- */
+  /* ---------- 武器外观（贴图 + 特效，两个独立资源 ID）----------
+     ⚠️ 竞品教训（咸鱼之王）：换皮时只迁了模型、没迁特效，老皮肤返场还不带特效。
+     所以这里 img 和 fx 必须成对出现，谁也别想只换一半。
+
+     anchor：手在**主角贴图**上的位置（比例坐标，男女取折中值）
+     grip  ：握把在**武器贴图**上的位置（比例坐标）
+     rot   ：待机角度（弧度，负=向右倾）
+     swing ：挥砍时角度从 from 转到 to，dur 秒
+     img 指到 assets/ 下；图片没加载出来时游戏回退到「小色条」，不会崩。 */
+  var HAND = { x: 0.31, y: 0.70 };          /* 手部锚点（主角贴图比例，男女折中） */
+  /* 武器贴图已左右翻转（prep_assets FLIP），所以握把在**右侧** */
+  var GRIP_D = { x: 0.87, y: 0.86 };        /* 斜持武器的握把（翻转后） */
+  var GRIP_S = { x: 0.50, y: 0.93 };        /* 竖杖的握把 */
+  var GRIP_F = { x: 0.32, y: 0.32 };        /* 拳套：拳头中心就是手 */
+
   var WEAPON_SKIN = [
-    { id: 'ws1', name: '素铁', w: 'blade', col: '#b9c2cc' },
-    { id: 'ws2', name: '赤炎', w: 'blade', col: '#ff6b35' },
-    { id: 'ws3', name: '青霜', w: 'sword', col: '#7fd7ff' },
-    { id: 'ws4', name: '玄墨', w: 'staff', col: '#8a6ad6' }
+    { id: 'ws_blade_1', name: '青锋', w: 'blade', col: '#9fd8ff', img: 'weapon/ws_blade_1.png',
+      fx: 'slash_ice', anchor: HAND, grip: GRIP_D, rot: 0.22,
+      swing: { dur: 0.26, from: -0.85, to: 0.85 }, trail: '#bfe9ff' },
+    { id: 'ws_blade_2', name: '赤霄', w: 'blade', col: '#ff6b35', img: 'weapon/ws_blade_2.png',
+      fx: 'slash_fire', anchor: HAND, grip: GRIP_D, rot: 0.22,
+      swing: { dur: 0.28, from: -0.9, to: 0.9 }, trail: '#ffb066' },
+    { id: 'ws_sword_1', name: '流云', w: 'sword', col: '#fff2c4', img: 'weapon/ws_sword_1.png',
+      fx: 'slash_gold', anchor: HAND, grip: GRIP_D, rot: 0.26,
+      swing: { dur: 0.24, from: -0.8, to: 0.8 }, trail: '#ffe9a8' },
+    { id: 'ws_sword_2', name: '紫电', w: 'staff', col: '#b78aff', img: 'weapon/ws_sword_2.png',
+      fx: 'slash_thunder', anchor: HAND, grip: GRIP_D, rot: 0.18,
+      swing: { dur: 0.3, from: -0.75, to: 0.95 }, trail: '#d9c2ff' },
+    { id: 'ws_staff_1', name: '玄木', w: 'staff', col: '#8a6ad6', img: 'weapon/ws_staff_1.png',
+      fx: 'orb_cyan', anchor: HAND, grip: GRIP_S, rot: 0,
+      swing: { dur: 0.32, from: -0.45, to: 0.75 }, trail: '#a98aff' },
+    { id: 'ws_staff_2', name: '烈阳', w: 'staff', col: '#ffb347', img: 'weapon/ws_staff_2.png',
+      fx: 'orb_fire', anchor: HAND, grip: GRIP_S, rot: 0,
+      swing: { dur: 0.32, from: -0.45, to: 0.75 }, trail: '#ffcf7a' },
+    { id: 'ws_fist_1', name: '金刚', w: 'fist', col: '#ffd23a', img: 'weapon/ws_fist_1.png',
+      fx: 'punch_blue', anchor: HAND, grip: GRIP_F, rot: 0, h: 26,
+      swing: { dur: 0.2, from: -0.5, to: 0.8 }, trail: '#ffe9a8' },
+    { id: 'ws_fist_2', name: '血影', w: 'fist', col: '#d94b6a', img: 'weapon/ws_fist_2.png',
+      fx: 'punch_crimson', anchor: HAND, grip: GRIP_F, rot: 0, h: 26,
+      swing: { dur: 0.22, from: -0.5, to: 0.85 }, trail: '#ff8fa8' },
+    { id: 'ws_dagger_1', name: '月影', w: 'blade', col: '#c9d6e8', img: 'weapon/ws_dagger_1.png',
+      fx: 'slash_moon', anchor: HAND, grip: GRIP_D, rot: 0.30,
+      swing: { dur: 0.2, from: -0.9, to: 0.8 }, trail: '#e8f0ff' },
+    { id: 'ws_dagger_2', name: '星辰', w: 'blade', col: '#a98aff', img: 'weapon/ws_dagger_2.png',
+      fx: 'slash_star', anchor: HAND, grip: GRIP_D, rot: 0.30,
+      swing: { dur: 0.24, from: -0.95, to: 0.85 }, trail: '#d9c2ff' }
   ];
+
+  /* 老存档的武器皮肤 id → 新 id（旧皮肤只对应前四把） */
+  var WS_MIGRATE = { ws1: 'ws_blade_1', ws2: 'ws_blade_2', ws3: 'ws_sword_1', ws4: 'ws_staff_1' };
 
   /* ---------- 人物皮肤（4 套 × 2 性别）---------- */
   var CHAR_SKIN = [
@@ -96,6 +140,11 @@ window.DATA = (function () {
   return {
     QUAL: QUAL, SLOTS: SLOTS, WEAPONS: WEAPONS, AFFIX: AFFIX, MONS: MONS, SKILLS: SKILLS,
     PETS: PETS, MAPS: MAPS, WEAPON_SKIN: WEAPON_SKIN, CHAR_SKIN: CHAR_SKIN, DAGGER: DAGGER,
+    WS_MIGRATE: WS_MIGRATE,
+    /* 主角贴图（按性别）。img 没加载出来就回退到程序化画的小人。 */
+    HERO_IMG: { m: 'run/hero_m.png', f: 'run/hero_f.png' },
+    HERO_H: 68,               /* 主角在屏幕上的高度（px） */
+    WEAPON_H: 42,             /* 武器贴图在屏幕上的高度（px） */
     PET_MAX_LV: 10, MOOD_MAX: 100, MOOD_DECAY_MS: 2 * 3600 * 1000, MOOD_FEED: 18,
     LUCK_PER: 0.05,          // 幸运 +N → 爆率 ×(1+0.05N)
     DROPRATE_BASE: 0.058     // 单次独立爆率先按 5.8% 测（调研口径 5%~7%）
@@ -257,6 +306,29 @@ window.DATA = (function () {
   G.BOOT = BOOT;
   G.setHandlers = function (h) { if (h.down) BOOT.onDown = h.down; if (h.up) BOOT.onUp = h.up; };
 
+  /* ---------- 图片加载 ----------
+     微信小游戏用 wx.createImage()，浏览器用 new Image()（上面的垫片已经统一了）。
+     ⚠️ 必须先挂 onload 再给 src，否则图小的机器上会先触发完事件。 */
+  G.loadImg = function (path, cb) {
+    var img;
+    try { img = WX.createImage(); } catch (e) { cb(null); return; }
+    var done = false;
+    img.onload = function () { if (!done) { done = true; cb(img); } };
+    img.onerror = function () { if (!done) { done = true; cb(null); } };
+    try { img.src = path; } catch (e) { if (!done) { done = true; cb(null); } }
+  };
+  /* 批量加载：全部回来再回调，缺图不算失败 */
+  G.loadImgs = function (list, cb) {
+    var out = {}, left = list.length;
+    if (!left) { cb(out); return; }
+    list.forEach(function (it) {
+      G.loadImg(it.path, function (img) {
+        if (img) out[it.key] = img;
+        if (--left <= 0) cb(out);
+      });
+    });
+  };
+
   /* ---------- 主循环 ---------- */
   var last = 0, acc = 0, fps = 60, frames = 0, fpsT = 0;
   function loop(ts) {
@@ -321,7 +393,8 @@ window.DATA = (function () {
   /* ============ 存档结构 ============ */
   function newSave() {
     return {
-      sex: 'm', skin: 'cs1', wskin: 'ws1',
+      /* sex 留空 → 首次进入走 'pick' 性别选择（原来默认 'm' 导致选人界面永远进不去） */
+      sex: '', skin: 'cs1', wskin: 'ws_blade_1',
       map: 0, wave: 0, best: 0, maxWave: 0, kills: 0, pulls: 0, pity: 0,
       bag: [], equip: { weapon: null, head: null, body: null, neck: null },
       pet: null, petLv: 1, petMood: 70, petMoodAt: Date.now(),
@@ -331,6 +404,7 @@ window.DATA = (function () {
   function load() {
     var s = G.loadSave();
     if (!s || !s.equip) { s = newSave(); }
+    if (s.wskin && D.WS_MIGRATE[s.wskin]) s.wskin = D.WS_MIGRATE[s.wskin];
     if (!s.pet) { s.pet = null; s.petLv = 1; s.petMood = 70; s.petMoodAt = Date.now(); }
     return s;
   }
@@ -408,7 +482,8 @@ window.DATA = (function () {
     var st = stats();
     S.hero = {
       x: 0, y: 0, hp: st.hp, maxhp: st.hp, face: 1,
-      atkCd: 0, skCd: [0, 0, 0], invuln: 0, hurt: 0
+      atkCd: 0, skCd: [0, 0, 0], invuln: 0, hurt: 0,
+      swing: 0            /* 挥砍动画剩余时间（秒），>0 表示正在挥武器 */
     };
     S.mobs = []; S.drops = []; S.nums = []; S.eff = [];
     S.waveT = 1.2; S.spawned = 0; S.map = D.MAPS[S.save.map] || D.MAPS[0];
@@ -490,11 +565,15 @@ window.DATA = (function () {
 
     /* —— 普攻 —— */
     h.atkCd -= dt;
+    if (h.swing > 0) h.swing -= dt;
     if (h.atkCd <= 0) {
       var wpn = equippedWeapon();
       var tg = nearest(h, wpn.range);
       if (tg) {
         h.atkCd = wpn.cd;
+        /* 面向目标 + 起手挥砍 */
+        h.face = tg.x >= h.x ? 1 : -1;
+        h.swing = skinOf(S.save.wskin).swing ? skinOf(S.save.wskin).swing.dur : 0.24;
         deal(tg, wpn.atk * wpn.dmgMul * (1 + (st.crit - 5) * 0.004) * rnd(0.92, 1.08), st, true);
       }
     }
@@ -592,6 +671,28 @@ window.DATA = (function () {
     }
     return D.DAGGER;
   }
+  function skinOf(id) {
+    return D.WEAPON_SKIN.filter(function (x) { return x.id === id; })[0] || D.WEAPON_SKIN[0];
+  }
+
+  /* ---------- 美术资源预载 ----------
+     图没加载完之前，游戏照常跑（程序化画的小人和色条），
+     图来了自动换成贴图版 —— 不用等图，不用 loading 界面。 */
+  function preloadArt() {
+    if (!G.loadImgs) return;
+    var list = [];
+    if (D.HERO_IMG) {
+      if (D.HERO_IMG.m) list.push({ key: 'm', path: 'assets/' + D.HERO_IMG.m });
+      if (D.HERO_IMG.f) list.push({ key: 'f', path: 'assets/' + D.HERO_IMG.f });
+    }
+    D.WEAPON_SKIN.forEach(function (w) {
+      if (w.img) list.push({ key: w.id, path: 'assets/' + w.img });
+    });
+    G.loadImgs(list, function (out) {
+      S.heroImg = { m: out['m'] || null, f: out['f'] || null };
+      S.wskinImg = out;
+    });
+  }
   function deal(m, dmg, st, isBasic) {
     var crit = Math.random() * 100 < st.crit;
     if (crit) dmg *= (1 + st.critDmg / 100);
@@ -680,14 +781,64 @@ window.DATA = (function () {
 
     /* 主角 */
     var sk = D.CHAR_SKIN.filter(function (x) { return x.id === S.save.skin; })[0] || D.CHAR_SKIN[0];
-    G.circle(h.x, h.y, 17, h.hurt > 0 ? '#fff' : sk.col);
-    G.circle(h.x, h.y - 5, 15, sk.hair);
-    G.circle(h.x - 6 + h.face * 2, h.y - 4, 2.6, '#fff');
-    G.bar(h.x - 24, h.y - 30, 48, 6, h.hp / h.maxhp, '#4ad07a', 'rgba(0,0,0,.5)');
+    var heroImg = S.heroImg && S.heroImg[S.save.sex];
+    if (heroImg) {
+      /* 贴图版：贴图是「脚底对齐」的，脚落在角色坐标上 */
+      var hh = D.HERO_H;
+      var hw = heroImg.width / heroImg.height * hh;
+      ctx.save();
+      if (h.hurt > 0) ctx.globalAlpha = 0.75;
+      ctx.drawImage(heroImg, h.x - hw / 2, h.y - hh + 6, hw, hh);
+      ctx.restore();
+    } else {
+      /* 没图（包还没带图 / 图加载失败）→ 回退程序化小人，不能黑屏 */
+      G.circle(h.x, h.y, 17, h.hurt > 0 ? '#fff' : sk.col);
+      G.circle(h.x, h.y - 5, 15, sk.hair);
+      G.circle(h.x - 6 + h.face * 2, h.y - 4, 2.6, '#fff');
+    }
+    G.bar(h.x - 24, h.y - 76, 48, 6, h.hp / h.maxhp, '#4ad07a', 'rgba(0,0,0,.5)');
 
-    /* 武器 */
-    var wp = equippedWeapon();
-    G.round(h.x + h.face * 16, h.y - 4, 22, 4, 2, D.WEAPON_SKIN.filter(function (x) { return x.id === S.save.wskin; })[0].col);
+    /* 武器（贴图层）：握把对齐手的位置，挥砍时按 swing 轨迹转 */
+    var wsk = skinOf(S.save.wskin);
+    var wImg = S.wskinImg && S.wskinImg[S.save.wskin];
+    if (wImg && heroImg) {
+      var wh = wsk.h || D.WEAPON_H;   /* 每把武器可以有自己的尺寸 */
+      var ww = wImg.width / wImg.height * wh;
+      /* 主角贴图左上角在 (h.x - hw/2, h.y - hh + 6)，锚点是贴图里的比例坐标 */
+      var hx = (h.x - hw/2) + wsk.anchor.x * hw;
+      var hy = (h.y - hh + 6) + wsk.anchor.y * hh;
+      var rot = wsk.rot;
+      var pr = 0;
+      if (h.swing > 0 && wsk.swing) {
+        pr = 1 - h.swing / wsk.swing.dur;      /* 0 起手 → 1 砍完 */
+        /* from/to 是相对待机角的增量 */
+        rot = wsk.rot + wsk.swing.from + (wsk.swing.to - wsk.swing.from) * pr;
+      }
+      ctx.save();
+      ctx.translate(hx, hy);
+      ctx.rotate(rot);
+      /* 握把点挪到原点：图片左上角 = -grip × 尺寸 */
+      ctx.drawImage(wImg, -wsk.grip.x * ww, -wsk.grip.y * wh, ww, wh);
+      ctx.restore();
+
+      /* 刀光：挥砍时在身前画一道弧 —— 纯程序化，零包体 */
+      if (pr > 0 && wsk.swing) {
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, 1 - pr) * 0.9;
+        ctx.strokeStyle = wsk.trail;
+        ctx.lineWidth = 4 + 7 * (1 - pr);
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        var a0 = wsk.rot + wsk.swing.from - 0.45;
+        var a1 = wsk.rot + wsk.swing.from + (wsk.swing.to - wsk.swing.from) * pr;
+        ctx.arc(h.x, h.y - 16, 42, a0, a1, false);
+        ctx.stroke();
+        ctx.restore();
+      }
+    } else {
+      /* 没武器图 → 画原来的小色条 */
+      G.round(h.x + h.face * 16, h.y - 4, 22, 4, 2, wsk.col);
+    }
 
     /* 特效 */
     S.eff.forEach(function (e) {
@@ -824,6 +975,11 @@ window.DATA = (function () {
     S.btnBack = { x: G.W - 40, y: 40, r: 17 };
     G.circle(S.btnBack.x, S.btnBack.y, 16, 'rgba(255,255,255,.12)');
     G.text('✕', S.btnBack.x, S.btnBack.y, 14, '#fff', 'center', true);
+
+    /* 改形象：回性别选择页重选（装备/等级/进度都保留） */
+    S.btnLook = { x: G.W - 118, y: 40, r: 17 };
+    G.round(S.btnLook.x - 38, S.btnLook.y - 14, 76, 28, 14, 'rgba(255,255,255,.10)', 'rgba(255,255,255,.22)', 1);
+    G.text('改形象', S.btnLook.x, S.btnLook.y, 13, '#e6dcc6', 'center', true);
   }
   function slotName(id) { var s = D.SLOTS.filter(function (x) { return x.id === id; })[0]; return s ? s.name : id; }
   function affixTxt(it) {
@@ -915,6 +1071,13 @@ window.DATA = (function () {
       G.text(s.name, bx + 55, 250, 16, '#fff', 'center', true);
     }
     G.text('选一个开始', G.W / 2, 330, 13, '#6d675c', 'center');
+
+    /* 已选过才能取消（首次进入没有返回） */
+    if (S.save.sex) {
+      S.btnBack = { x: G.W - 40, y: 40, r: 17 };
+      G.circle(S.btnBack.x, S.btnBack.y, 16, 'rgba(255,255,255,.12)');
+      G.text('✕', S.btnBack.x, S.btnBack.y, 14, '#fff', 'center', true);
+    }
   }
 
   /* ============ 输入分发 ============ */
@@ -923,19 +1086,25 @@ window.DATA = (function () {
     S.autoManual = true;           // 一操作就交还控制权
     if (S.autoOn) { S.autoOn = false; S.autoManual = false; }
     if (S.state === 'pick') {
+      if (S.btnBack && hit(x, y, S.btnBack)) { S.state = S.pickPrev || 'battle'; return; }
       ['m', 'f'].forEach(function (k) {
         var b = S['btnSex' + k]; if (!b) return;
         if (hit(x, y, b)) {
+          var first = !S.save.sex;
           S.save.sex = k;
           S.save.skin = k === 'm' ? 'cs1' : 'cs3';
-          S.save.wskin = 'ws1';
-          S.state = 'battle'; newBattle(); G.persist();
+          S.save.wskin = D.WEAPON_SKIN[0].id;   /* 不能再写死老 id，否则贴图查不到 */
+          S.state = S.pickPrev || 'battle';
+          S.pickPrev = null;
+          if (first) newBattle();      /* 改形象不该重开一局 */
+          G.persist();
         }
       });
       return;
     }
     if (S.state === 'bag') {
       if (S.btnBack && hit(x, y, S.btnBack)) { S.state = 'battle'; return; }
+      if (S.btnLook && hit(x, y, S.btnLook)) { S.pickPrev = 'bag'; S.state = 'pick'; return; }
       if (S.btnPull10 && hit(x, y, S.btnPull10)) { S.pullRes = pull10(); S.state = 'pull'; return; }
       for (var k in S) {
         if (k.indexOf('bagItem') === 0) {
@@ -1048,7 +1217,7 @@ window.DATA = (function () {
       save: s, state: s.sex ? 'battle' : 'pick',
       hero: null, mobs: [], drops: [], nums: [], eff: [],
       wave: 0, waveT: 1.2, map: D.MAPS[s.map] || D.MAPS[0],
-      stats: null, autoOn: false, autoManual: false,
+      stats: null, autoOn: false, autoManual: false, pickPrev: null,
       skillQueued: [0, 0, 0], toast: '', toastT: 0,
       anim: { power: 0, powerFrom: 0 }, pullRes: []
     };
@@ -1057,6 +1226,7 @@ window.DATA = (function () {
     s.farmInvEf = s.ef;
     S.stats = stats();          /* 必须在 S 赋值之后：stats() 读 S.save */
     if (S.state === 'battle') newBattle();
+    preloadArt();
     G.update = update;      /* ⚠️ 必须挂上去：boot.js 的主循环只认 G.update / G.draw */
     G.draw = draw;
     G.setHandlers({ down: onDown, up: null });

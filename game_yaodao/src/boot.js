@@ -153,6 +153,29 @@
   G.BOOT = BOOT;
   G.setHandlers = function (h) { if (h.down) BOOT.onDown = h.down; if (h.up) BOOT.onUp = h.up; };
 
+  /* ---------- 图片加载 ----------
+     微信小游戏用 wx.createImage()，浏览器用 new Image()（上面的垫片已经统一了）。
+     ⚠️ 必须先挂 onload 再给 src，否则图小的机器上会先触发完事件。 */
+  G.loadImg = function (path, cb) {
+    var img;
+    try { img = WX.createImage(); } catch (e) { cb(null); return; }
+    var done = false;
+    img.onload = function () { if (!done) { done = true; cb(img); } };
+    img.onerror = function () { if (!done) { done = true; cb(null); } };
+    try { img.src = path; } catch (e) { if (!done) { done = true; cb(null); } }
+  };
+  /* 批量加载：全部回来再回调，缺图不算失败 */
+  G.loadImgs = function (list, cb) {
+    var out = {}, left = list.length;
+    if (!left) { cb(out); return; }
+    list.forEach(function (it) {
+      G.loadImg(it.path, function (img) {
+        if (img) out[it.key] = img;
+        if (--left <= 0) cb(out);
+      });
+    });
+  };
+
   /* ---------- 主循环 ---------- */
   var last = 0, acc = 0, fps = 60, frames = 0, fpsT = 0;
   function loop(ts) {

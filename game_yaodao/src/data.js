@@ -73,12 +73,56 @@ window.DATA = (function () {
   ];
 
   /* ---------- 武器皮肤（只换外观，不改数值）---------- */
+  /* ---------- 武器外观（贴图 + 特效，两个独立资源 ID）----------
+     ⚠️ 竞品教训（咸鱼之王）：换皮时只迁了模型、没迁特效，老皮肤返场还不带特效。
+     所以这里 img 和 fx 必须成对出现，谁也别想只换一半。
+
+     anchor：手在**主角贴图**上的位置（比例坐标，男女取折中值）
+     grip  ：握把在**武器贴图**上的位置（比例坐标）
+     rot   ：待机角度（弧度，负=向右倾）
+     swing ：挥砍时角度从 from 转到 to，dur 秒
+     img 指到 assets/ 下；图片没加载出来时游戏回退到「小色条」，不会崩。 */
+  var HAND = { x: 0.31, y: 0.70 };          /* 手部锚点（主角贴图比例，男女折中） */
+  /* 武器贴图已左右翻转（prep_assets FLIP），所以握把在**右侧** */
+  var GRIP_D = { x: 0.87, y: 0.86 };        /* 斜持武器的握把（翻转后） */
+  var GRIP_S = { x: 0.50, y: 0.93 };        /* 竖杖的握把 */
+  var GRIP_F = { x: 0.32, y: 0.32 };        /* 拳套：拳头中心就是手 */
+
   var WEAPON_SKIN = [
-    { id: 'ws1', name: '素铁', w: 'blade', col: '#b9c2cc' },
-    { id: 'ws2', name: '赤炎', w: 'blade', col: '#ff6b35' },
-    { id: 'ws3', name: '青霜', w: 'sword', col: '#7fd7ff' },
-    { id: 'ws4', name: '玄墨', w: 'staff', col: '#8a6ad6' }
+    { id: 'ws_blade_1', name: '青锋', w: 'blade', col: '#9fd8ff', img: 'weapon/ws_blade_1.png',
+      fx: 'slash_ice', anchor: HAND, grip: GRIP_D, rot: 0.22,
+      swing: { dur: 0.26, from: -0.85, to: 0.85 }, trail: '#bfe9ff' },
+    { id: 'ws_blade_2', name: '赤霄', w: 'blade', col: '#ff6b35', img: 'weapon/ws_blade_2.png',
+      fx: 'slash_fire', anchor: HAND, grip: GRIP_D, rot: 0.22,
+      swing: { dur: 0.28, from: -0.9, to: 0.9 }, trail: '#ffb066' },
+    { id: 'ws_sword_1', name: '流云', w: 'sword', col: '#fff2c4', img: 'weapon/ws_sword_1.png',
+      fx: 'slash_gold', anchor: HAND, grip: GRIP_D, rot: 0.26,
+      swing: { dur: 0.24, from: -0.8, to: 0.8 }, trail: '#ffe9a8' },
+    { id: 'ws_sword_2', name: '紫电', w: 'staff', col: '#b78aff', img: 'weapon/ws_sword_2.png',
+      fx: 'slash_thunder', anchor: HAND, grip: GRIP_D, rot: 0.18,
+      swing: { dur: 0.3, from: -0.75, to: 0.95 }, trail: '#d9c2ff' },
+    { id: 'ws_staff_1', name: '玄木', w: 'staff', col: '#8a6ad6', img: 'weapon/ws_staff_1.png',
+      fx: 'orb_cyan', anchor: HAND, grip: GRIP_S, rot: 0,
+      swing: { dur: 0.32, from: -0.45, to: 0.75 }, trail: '#a98aff' },
+    { id: 'ws_staff_2', name: '烈阳', w: 'staff', col: '#ffb347', img: 'weapon/ws_staff_2.png',
+      fx: 'orb_fire', anchor: HAND, grip: GRIP_S, rot: 0,
+      swing: { dur: 0.32, from: -0.45, to: 0.75 }, trail: '#ffcf7a' },
+    { id: 'ws_fist_1', name: '金刚', w: 'fist', col: '#ffd23a', img: 'weapon/ws_fist_1.png',
+      fx: 'punch_blue', anchor: HAND, grip: GRIP_F, rot: 0, h: 26,
+      swing: { dur: 0.2, from: -0.5, to: 0.8 }, trail: '#ffe9a8' },
+    { id: 'ws_fist_2', name: '血影', w: 'fist', col: '#d94b6a', img: 'weapon/ws_fist_2.png',
+      fx: 'punch_crimson', anchor: HAND, grip: GRIP_F, rot: 0, h: 26,
+      swing: { dur: 0.22, from: -0.5, to: 0.85 }, trail: '#ff8fa8' },
+    { id: 'ws_dagger_1', name: '月影', w: 'blade', col: '#c9d6e8', img: 'weapon/ws_dagger_1.png',
+      fx: 'slash_moon', anchor: HAND, grip: GRIP_D, rot: 0.30,
+      swing: { dur: 0.2, from: -0.9, to: 0.8 }, trail: '#e8f0ff' },
+    { id: 'ws_dagger_2', name: '星辰', w: 'blade', col: '#a98aff', img: 'weapon/ws_dagger_2.png',
+      fx: 'slash_star', anchor: HAND, grip: GRIP_D, rot: 0.30,
+      swing: { dur: 0.24, from: -0.95, to: 0.85 }, trail: '#d9c2ff' }
   ];
+
+  /* 老存档的武器皮肤 id → 新 id（旧皮肤只对应前四把） */
+  var WS_MIGRATE = { ws1: 'ws_blade_1', ws2: 'ws_blade_2', ws3: 'ws_sword_1', ws4: 'ws_staff_1' };
 
   /* ---------- 人物皮肤（4 套 × 2 性别）---------- */
   var CHAR_SKIN = [
@@ -96,6 +140,11 @@ window.DATA = (function () {
   return {
     QUAL: QUAL, SLOTS: SLOTS, WEAPONS: WEAPONS, AFFIX: AFFIX, MONS: MONS, SKILLS: SKILLS,
     PETS: PETS, MAPS: MAPS, WEAPON_SKIN: WEAPON_SKIN, CHAR_SKIN: CHAR_SKIN, DAGGER: DAGGER,
+    WS_MIGRATE: WS_MIGRATE,
+    /* 主角贴图（按性别）。img 没加载出来就回退到程序化画的小人。 */
+    HERO_IMG: { m: 'run/hero_m.png', f: 'run/hero_f.png' },
+    HERO_H: 68,               /* 主角在屏幕上的高度（px） */
+    WEAPON_H: 42,             /* 武器贴图在屏幕上的高度（px） */
     PET_MAX_LV: 10, MOOD_MAX: 100, MOOD_DECAY_MS: 2 * 3600 * 1000, MOOD_FEED: 18,
     LUCK_PER: 0.05,          // 幸运 +N → 爆率 ×(1+0.05N)
     DROPRATE_BASE: 0.058     // 单次独立爆率先按 5.8% 测（调研口径 5%~7%）

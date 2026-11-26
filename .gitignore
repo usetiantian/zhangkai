@@ -90,3 +90,14 @@ qiankun-uzi/__pycache__/
 /wigolo/
 /wigolo_partial*/
 /_cli-anything/
+
+# 妖刀录美术原图（768px 大图，可随时用 tools/gen_art.py 重出，不入库）
+/game_yaodao/assets/raw/
+
+# 妖刀录游戏美术必须入库（游戏运行时要用），但原图不入库
+!/game_yaodao/assets/run/
+!/game_yaodao/assets/run/*.png
+!/game_yaodao/assets/weapon/
+!/game_yaodao/assets/weapon/*.png
+!/game_yaodao/wx/assets/
+!/game_yaodao/wx/assets/**/*.png

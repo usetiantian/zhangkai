@@ -54,7 +54,48 @@ def build_wx():
     print('微信包 ->', os.path.join(WX, 'game.js'), os.path.getsize(os.path.join(WX, 'game.js')) // 1024, 'KB')
 
 
+# 只有处理过的成品目录进包（原始 768px 大图不进）
+SHIP_DIRS = ['run', 'weapon']
+
+
+def copy_assets():
+    """把处理好的美术资源拷进 H5 和微信包。
+
+    微信小游戏主包上限 4MB —— 每次都要报体积，超了就得先压缩。
+    """
+    src = os.path.join(HERE, 'assets')
+    if not os.path.isdir(src):
+        print('资源: 没有 assets 目录，跳过')
+        return
+    total = 0
+    for sub in SHIP_DIRS:
+        s = os.path.join(src, sub)
+        if not os.path.isdir(s):
+            continue
+        for base in (DIST, WX):
+            d = os.path.join(base, 'assets', sub)
+            if os.path.isdir(d):
+                shutil.rmtree(d)
+            os.makedirs(d)
+            for fn in os.listdir(s):
+                shutil.copy2(os.path.join(s, fn), os.path.join(d, fn))
+                total += os.path.getsize(os.path.join(d, fn))
+    if total:
+        print('资源: 拷贝 %d 个目录，合计 %.1f KB' % (len(SHIP_DIRS), total / 1024.0))
+    # 报一下主包体积（微信 4MB 限制）
+    if os.path.isdir(WX):
+        pkg = 0
+        for root, _, files in os.walk(WX):
+            for f in files:
+                if f == 'project.config.json':
+                    continue
+                pkg += os.path.getsize(os.path.join(root, f))
+        flag = 'OK' if pkg < 4 * 1024 * 1024 else '!!! 超 4MB'
+        print('主包体积: %.2f MB  %s' % (pkg / 1024.0 / 1024.0, flag))
+
+
 if __name__ == '__main__':
     build_h5()
     if '--wx' in sys.argv:
         build_wx()
+    copy_assets()
