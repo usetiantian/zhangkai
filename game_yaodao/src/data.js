@@ -190,6 +190,12 @@ window.DATA = (function () {
     BAG_CAP: 60,
     /* 掉落保底：连续这么多只怪没出史诗，下一次必出 */
     PITY_EPIC: 150,
+    /* 技能升级：每级 +15% 伤害、-4% 冷却，满 10 级 */
+    SK_MAX: 10,
+    SK_DMG: 0.15,
+    SK_CD: 0.04,
+    SK_COIN: function (lv) { return Math.round(80 * Math.pow(lv + 1, 1.4)); },
+    SK_ESS: function (lv) { return 1 + lv; },
     PET_MAX_LV: 10, MOOD_MAX: 100, MOOD_DECAY_MS: 2 * 3600 * 1000, MOOD_FEED: 18,
     LUCK_PER: 0.05,          // 幸运 +N → 爆率 ×(1+0.05N)
     DROPRATE_BASE: 0.058     // 单次独立爆率先按 5.8% 测（调研口径 5%~7%）

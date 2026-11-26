@@ -29,6 +29,7 @@
       gems: {},               /* 宝石库存 {gem_atk: 2, ...} */
       cleared: {},             /* 通关记录 {1:true, 2:true} */
       signDay: 0, signDate: '',  /* 签到：累计天数 + 最后签到日期 */
+      skLv: [1, 1, 1],          /* 三个技能各自等级 */
       lv: 1, xp: 0,             /* 角色等级 + 当前经验 */
       muted: false,             /* 音效开关 */
       bag: [],
@@ -313,17 +314,19 @@
     for (var i = 0; i < 3; i++) {
       h.skCd[i] -= dt;
       var sk = D.SKILLS[i];
+      var skLv = (S.save.skLv && S.save.skLv[i]) || 1;
+      var skMul = 1 + (skLv - 1) * D.SK_DMG;
       if (h.skCd[i] <= 0 && (S.autoOn || S.skillQueued[i])) {
         var tgt = nearest(h, sk.range);
         if (tgt) {
-          h.skCd[i] = sk.cd;
+          h.skCd[i] = sk.cd * (1 - (skLv - 1) * D.SK_CD);
           if (S.skillQueued[i]) S.skillQueued[i] = false;
           if (sk.aoe) {
-            S.mobs.forEach(function (m) { if (dist(m, h) <= sk.range) deal(m, sk.dmg * (st.atk * 0.22), st, false); });
+            S.mobs.forEach(function (m) { if (dist(m, h) <= sk.range) deal(m, sk.dmg * (st.atk * 0.22) * skMul, st, false); });
             /* 旋风(1) = 风环扩散；妖火(2) = 火球爆开 */
             S.eff.push({ x: h.x, y: h.y, r: 0, r2: sk.range, t: 0.5, dur: 0.5, col: sk.col, kind: i === 1 ? 'wind' : 'fire' });
           } else {
-            deal(tgt, sk.dmg * (st.atk * 0.30), st, false);
+            deal(tgt, sk.dmg * (st.atk * 0.30) * skMul, st, false);
             /* 剑气(0) = 从主角射出的一道光刃 */
             S.eff.push({ x: h.x, y: h.y - 14, tx: tgt.x, ty: tgt.y - 10, t: 0.28, dur: 0.28, col: sk.col, kind: 'beam' });
           }
@@ -568,6 +571,19 @@
     2350, 2100, 1850, 1650, 1450, 1280, 1120, 980, 850, 720];
 
   /* ---- 按钮系统 ---- */
+  /* 面板切换时**旧按钮必须清掉**。
+     S 是个大对象，按钮都挂在上面；换个面板不清理的话，
+     上个面板的按钮还会被点到 → 比如在「强化」面板点到残留的「造型」按钮就崩。
+     而且按钮 key 有前缀关系（btnSk 是 btnSkin 的前缀），更要用前缀表统一管。 */
+  var BTN_PREFIX = ['btn', 'slotBtn', 'bagItem', 'skUp', 'chBtn', 'skBtn', 'mapBtn'];
+  function clearBtns() {
+    for (var k in S) {
+      for (var i = 0; i < BTN_PREFIX.length; i++) {
+        if (k.indexOf(BTN_PREFIX[i]) === 0) { delete S[k]; break; }
+      }
+    }
+  }
+
   /* hit(x, y, b)：b 是**按钮对象**（含 x/y/r），不是半径数字。
      ⚠️ 之前写成 hit(x,y,r) 却用 r.x → NaN 比较恒为 false → 所有按钮都点不动。 */
   function hit(x, y, b) {
@@ -980,6 +996,7 @@
       var ready = h.skCd[i] <= 0;
       G.circle(bx, by, 27, ready ? 'rgba(60,70,90,.86)' : 'rgba(40,42,50,.7)', ready ? sk2.col : 'rgba(255,255,255,.2)', 2);
       G.text(sk2.name, bx, by, 13, ready ? '#fff' : '#8a8a90', 'center', true);
+      G.text('Lv' + ((S.save.skLv && S.save.skLv[i]) || 1), bx, by + 15, 9.5, ready ? '#c9bda4' : '#6a6a70', 'center');
       if (!ready) {
         var cd = h.skCd[i] / sk2.cd;      /* 1 = 刚放完，0 = 转好了 */
         /* 扇形遮罩：比一根细条清楚多了 */
@@ -1039,6 +1056,7 @@
 
   /* ============ 选关面板 ============ */
   function drawMaps() {
+    clearBtns();
     G.round(0, 0, G.W, G.H, 0, 'rgba(12,12,14,.97)');
     G.text('选择地图', 24, 40, 24, '#ffd88e', 'left', true);
     /* 每日签到入口（有红点提示） */
@@ -1112,6 +1130,7 @@
   function canSignIn() { return S.save.signDate !== todayKey(); }
 
   function drawSign() {
+    clearBtns();
     G.round(0, 0, G.W, G.H, 0, 'rgba(12,12,14,.97)');
     G.text('每日签到', 24, 40, 24, '#ffd88e', 'left', true);
     S.btnBack = { x: G.W - 40, y: 40, r: 17 };
@@ -1173,6 +1192,7 @@
 
   /* ============ 武器造型面板 ============ */
   function drawSkins() {
+    clearBtns();
     G.round(0, 0, G.W, G.H, 0, 'rgba(12,12,14,.97)');
     G.text('造型', 24, 40, 24, '#ffd88e', 'left', true);
     S.btnBack = { x: G.W - 40, y: 40, r: 17 };
@@ -1208,7 +1228,7 @@
       }
       G.text(w.name, bx + (cw - 10) / 2, by + 114, 14, on ? w.col : '#cfc6b0', 'center', true);
       G.text(on ? '使用中' : '点击装备', bx + (cw - 10) / 2, by + 130, 10.5, on ? '#ffd88e' : '#6d675c', 'center');
-      S['skin' + w.id] = { x: bx + (cw - 10) / 2, y: by + 60, r: 46, id: w.id, name: w.name };
+      S['skBtn' + w.id] = { x: bx + (cw - 10) / 2, y: by + 60, r: 46, id: w.id, name: w.name };
     }
   }
 
@@ -1234,13 +1254,14 @@
       }
       G.text(c.name, bx + bw / 2, 400, 17, on ? '#ffd88e' : '#cfc6b0', 'center', true);
       G.text(on ? '使用中' : '点击装备', bx + bw / 2, 424, 11.5, on ? '#ffd88e' : '#6d675c', 'center');
-      S['char' + c.id] = { x: bx + bw / 2, y: 250, r: 80, id: c.id };
+      S['chBtn' + c.id] = { x: bx + bw / 2, y: 250, r: 80, id: c.id };
     }
     G.text('人物造型', G.W / 2, G.H - 40, 11.5, '#6d675c', 'center');
   }
   function by0(y, h) { return y + 12; }
 
   function drawUpgrade() {
+    clearBtns();
     G.round(0, 0, G.W, G.H, 0, 'rgba(10,10,12,.97)');
     var it = S.save.equip[S.upSlot];
     if (!it) { S.state = 'bag'; return; }
@@ -1273,6 +1294,25 @@
       G.text('→', 108, y + 52, 13, '#6d675c', 'left');
       G.text(Math.round(it.atk * (1 + D.ENH_MUL)), 128, y + 52, 17, '#ffd23a', 'left', true);
       G.text('（+1 级）', 172, y + 52, 11.5, '#8a8272', 'left');
+    }
+
+    /* 技能升级 */
+    G.text('技能', 24, 414, 14, '#ffd88e', 'left', true);
+    G.text('每级 +' + Math.round(D.SK_DMG * 100) + '% 伤害', G.W - 32, 414, 11, '#8a8272', 'right');
+    for (var si = 0; si < 3; si++) {
+      var skd = D.SKILLS[si];
+      var slv = (S.save.skLv && S.save.skLv[si]) || 1;
+      var yy = 430 + si * 42;
+      G.round(20, yy, G.W - 40, 36, 8, 'rgba(255,255,255,.04)');
+      G.text(skd.name, 34, yy + 18, 13, skd.col, 'left', true);
+      G.text('Lv ' + slv + '/' + D.SK_MAX, 92, yy + 18, 12, slv > 1 ? '#ffd23a' : '#c9bda4');
+      G.text('伤害+' + Math.round((slv - 1) * D.SK_DMG * 100) + '%', 156, yy + 18, 11, '#8a8272');
+      /* 升级按钮 */
+      var canSk = slv < D.SK_MAX && S.save.coins >= D.SK_COIN(slv) && (S.save.essence || 0) >= D.SK_ESS(slv);
+      S['skUp' + si] = { x: G.W - 58, y: yy + 18, r: 16, idx: si };
+      G.round(G.W - 92, yy + 6, 52, 24, 12,
+        canSk ? 'rgba(90,70,40,.9)' : 'rgba(45,45,48,.8)', canSk ? 'rgba(255,190,90,.5)' : 'rgba(255,255,255,.1)', 1);
+      G.text(slv >= D.SK_MAX ? '满' : '升级', G.W - 58, yy + 18, 11.5, canSk ? '#ffe2b0' : '#6d675c', 'center', true);
     }
 
     /* 资源 */
@@ -1337,6 +1377,22 @@
     G.persist();
   }
 
+  function upSk(idx) {
+    if (idx === undefined || idx < 0 || idx > 2) return;
+    var s = S.save;
+    s.skLv = s.skLv || [1, 1, 1];
+    var lv = s.skLv[idx] || 1;
+    if (lv >= D.SK_MAX) { toast('技能已满级'); return; }
+    var coin = D.SK_COIN(lv), ess = D.SK_ESS(lv);
+    if (s.coins < coin) { toast('金币不够'); return; }
+    if ((s.essence || 0) < ess) { toast('精粹不够，去分解装备'); return; }
+    s.coins -= coin; s.essence -= ess;
+    s.skLv[idx] = lv + 1;
+    toast(D.SKILLS[idx].name + ' 升到 Lv ' + s.skLv[idx]);
+    if (G.sfx) G.sfx.play('upgrade');
+    G.persist();
+  }
+
   function sellEquipped() {
     var s = S.save, it = s.equip[S.upSlot];
     if (!it) return;
@@ -1394,6 +1450,7 @@
   }
 
   function drawBag() {
+    clearBtns();
     G.round(0, 0, G.W, G.H, 0, 'rgba(12,12,14,.96)');
     G.text('背包', 24, 40, 24, '#ffd88e', 'left', true);
     G.text('战力 ' + fmt(power()), G.W - 64, 40, 18, '#ffd23a', 'right', true);
@@ -1484,6 +1541,7 @@
 
   /* ============ 宠物界面 ============ */
   function drawPets() {
+    clearBtns();
     G.round(0, 0, G.W, G.H, 0, 'rgba(12,12,14,.96)');
     G.text('宠物', 24, 40, 24, '#ffd88e', 'left', true);
     G.text('战力 ' + fmt(power()), G.W - 64, 40, 18, '#ffd23a', 'right');
@@ -1531,6 +1589,7 @@
 
   /* ============ 排行 ============ */
   function drawRank() {
+    clearBtns();
     G.round(0, 0, G.W, G.H, 0, 'rgba(12,12,14,.96)');
     G.text('排行榜', 24, 40, 24, '#ffd88e', 'left', true);
     S.btnBack = { x: G.W - 40, y: 40, r: 17 };
@@ -1584,6 +1643,7 @@
 
   /* ============ 性别/皮肤选择 ============ */
   function drawPick() {
+    clearBtns();
     G.round(0, 0, G.W, G.H, 0, '#14161a');
     G.text('《妖刀录》', G.W / 2, 110, 34, '#ffd88e', 'center', true);
     G.text('休闲 Q 版仙侠 · 打怪爆装', G.W / 2, 146, 14, '#9c9484', 'center');
@@ -1687,7 +1747,7 @@
       if (S.tabWeapon && hit(x, y, S.tabWeapon)) { S.skinTab = 'weapon'; return; }
       /* 人物造型 */
       for (var ck in S) {
-        if (ck.indexOf('char') === 0 && ck !== 'charImg') {
+        if (ck.indexOf('chBtn') === 0) {
           var cb2 = S[ck];
           if (cb2 && hit(x, y, cb2)) {
             var cs2 = D.CHAR_SKIN.filter(function (x) { return x.id === cb2.id; })[0];
@@ -1701,7 +1761,7 @@
       }
       /* 武器造型 */
       for (var wsk in S) {
-        if (wsk.indexOf('skin') === 0 && wsk !== 'skinBox') {
+        if (wsk.indexOf('skBtn') === 0) {
           var wb = S[wsk];
           if (wb && hit(x, y, wb)) {
             S.save.wskin = wb.id;
@@ -1719,6 +1779,12 @@
       if (S.btnEnh && hit(x, y, S.btnEnh)) { doEnhance(); return; }
       if (S.btnSell && hit(x, y, S.btnSell)) { sellEquipped(); return; }
       if (S.btnGem && hit(x, y, S.btnGem)) { toggleGem(); return; }
+      for (var skk in S) {
+        if (skk.indexOf('skUp') === 0) {
+          var kb = S[skk];
+          if (kb && hit(x, y, kb)) { upSk(kb.idx); return; }
+        }
+      }
       return;
     }
     if (S.state === 'pets') {
@@ -1791,6 +1857,7 @@
 
   /* ============ 抽卡结果 ============ */
   function drawPull() {
+    clearBtns();
     G.round(0, 0, G.W, G.H, 0, 'rgba(12,12,14,.97)');
     var res = S.pullRes || [];
     /* 按品质从高到低排 —— 抽卡出史诗排在最前面才有仪式感 */
