@@ -105,17 +105,17 @@ window.DATA = (function () {
     { id: 1, name: '青石村外', waves: 5, mobs: ['m1', 'm1', 'm2', 'm3', 'm1'], elite: 'e1', boss: null, lv: 1,
       ground: '#5d4f38', ground2: '#6d5c40', deco: ['#4a3f2c', '#7f8a4e', '#8d8a7c'], pw: 400 },
     { id: 2, name: '乱葬岗', waves: 6, mobs: ['m2', 'm3', 'm1', 'e1'], elite: 'e1', boss: null, lv: 4,
-      ground: '#3f3c38', ground2: '#4a4641', deco: ['#575249', '#6d6558', '#8a8072'], pw: 1200 },
+      ground: '#3f3c38', ground2: '#4a4641', deco: ['#575249', '#6d6558', '#8a8072'], pw: 1200, fx: 'bone' },
     { id: 3, name: '黑风寨', waves: 7, mobs: ['m2', 'm3', 'e1', 'm1'], elite: 'e1', boss: 'b1', lv: 8,
       ground: '#332821', ground2: '#3d3128', deco: ['#241d17', '#5a4432', '#6d5b46'], pw: 3000 },
     { id: 4, name: '竹林幽径', waves: 6, mobs: ['m4', 'm7', 'm3', 'm6'], elite: 'e2', boss: null, lv: 12,
-      ground: '#2c3a26', ground2: '#35452d', deco: ['#1e2a19', '#5f8a44', '#7a9463'], pw: 4500 },
+      ground: '#2c3a26', ground2: '#35452d', deco: ['#1e2a19', '#5f8a44', '#7a9463'], pw: 4500, fx: 'leaf' },
     { id: 5, name: '寒霜地窟', waves: 7, mobs: ['m6', 'm5', 'm7', 'm4'], elite: 'e3', boss: null, lv: 16,
-      ground: '#3a4450', ground2: '#455060', deco: ['#252c36', '#8fa4b8', '#c9d8e4'], pw: 6800 },
+      ground: '#3a4450', ground2: '#455060', deco: ['#252c36', '#8fa4b8', '#c9d8e4'], pw: 6800, fx: 'frost' },
     { id: 6, name: '熔岩火谷', waves: 8, mobs: ['m2', 'm6', 'e2', 'm4'], elite: 'e2', boss: 'b2', lv: 20,
-      ground: '#3a1c16', ground2: '#48241b', deco: ['#26110c', '#a8402a', '#e0703a'], pw: 9500 },
+      ground: '#3a1c16', ground2: '#48241b', deco: ['#26110c', '#a8402a', '#e0703a'], pw: 9500, fx: 'ember' },
     { id: 7, name: '落星秘境', waves: 9, mobs: ['m3', 'm5', 'e3', 'm7'], elite: 'e3', boss: 'b3', lv: 26,
-      ground: '#1e2436', ground2: '#262e44', deco: ['#131828', '#4a5680', '#8f9ede'], pw: 14000 }
+      ground: '#1e2436', ground2: '#262e44', deco: ['#131828', '#4a5680', '#8f9ede'], pw: 14000, fx: 'star' }
   ];
 
   /* ---------- 装备部位图标（一张底图按品质染色）---------- */

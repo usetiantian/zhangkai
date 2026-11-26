@@ -172,6 +172,9 @@
   var BOOT = { onDown: null, onUp: null };
   G.BOOT = BOOT;
   G.setHandlers = function (h) { if (h.down) BOOT.onDown = h.down; if (h.up) BOOT.onUp = h.up; };
+  /* 调试通道：暴露主画布，CDP 验证时用 G.cv.toDataURL() 直接取画面
+     （微信截屏有时抓不到模拟器的合成层，从内部取才可靠） */
+  G.cv = cv; G.ctx = ctx;
 
   /* ---------- 音效 ----------
      微信小游戏用 wx.createInnerAudioContext()，浏览器用 new Audio()。

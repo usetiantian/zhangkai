@@ -514,9 +514,7 @@
     if (D.MONS) {
       D.MONS.forEach(function (m) { list.push({ key: m.id, path: 'assets/mob/' + m.id + '.png' }); });
     }
-    if (D.MAPS) {
-      D.MAPS.forEach(function (mp) { list.push({ key: 'map' + mp.id, path: 'assets/map/map' + mp.id + '.jpg' }); });
-    }
+    /* 地图不加载贴图：地面是程序化绘制的（无缝/零包体），贴图平铺方案已否掉 */
     /* 装备部位图标（一张底图按品质染色） */
     if (D.SLOT_ICON) {
       for (var ik in D.SLOT_ICON) {
@@ -532,23 +530,17 @@
       /* 宠物贴图 */
       S.petImg = {};
       if (D.PETS) for (var pk2 in D.PETS) S.petImg[D.PETS[pk2].id] = out['pet_' + D.PETS[pk2].id] || null;
-      /* 怪物和地图底单独拎出来，避免和武器的 key 混在一起 */
-      S.mobImg = {}; S.mapImg = {}; S.slotIcon = {};
+      /* 怪物贴图单独拎出来，避免和武器的 key 混在一起 */
+      S.mobImg = {}; S.slotIcon = {};
       for (var k in out) {
         if (D.MONS) {
           var isMob = false;
           D.MONS.forEach(function (m) { if (m.id === k) isMob = true; });
           if (isMob) { S.mobImg[k] = out[k]; continue; }
         }
-        if (k.indexOf('map') === 0) S.mapImg[k.slice(3)] = out[k];
-        else if (k.indexOf('ico_') === 0) S.slotIcon[k.slice(4)] = out[k];
+        if (k.indexOf('ico_') === 0) S.slotIcon[k.slice(4)] = out[k];
       }
       S.iconCache = {};
-      /* 地图底做成 pattern，跟着相机滚 */
-      S.mapPat = {};
-      for (var id in S.mapImg) {
-        try { S.mapPat[id] = ctx.createPattern(S.mapImg[id], 'repeat'); } catch (e) { }
-      }
     });
   }
   function deal(m, dmg, st, isBasic) {
@@ -734,6 +726,115 @@
           ctx.moveTo(kx - 7 * s2, ky);
           ctx.lineTo(kx + 8 * s2, ky + (hash2(dx, dy, 17) - 0.5) * 6);
           ctx.stroke();
+        }
+      }
+    }
+
+    /* 每张图的专属地面特征（mp.fx）—— 还是程序化（无缝/零包体/跟相机滚），
+       但让 7 张图一眼能分出来：白骨/竹叶/霜裂/余烬/星光。
+       ⚠️ 余烬和星光带呼吸动画，用 Date.now()，别用会倒退的计时器。 */
+    var fx = mp.fx;
+    if (fx) {
+      var FT = Date.now() / 1000;
+      var FCELL = 230;
+      var gx0 = Math.floor((-sx) / FCELL) - 1, gx1 = Math.ceil((G.W - sx) / FCELL) + 1;
+      var gy0 = Math.floor((-sy) / FCELL) - 1, gy1 = Math.ceil((G.H - sy) / FCELL) + 1;
+      for (var gx = gx0; gx <= gx1; gx++) {
+        for (var gy = gy0; gy <= gy1; gy++) {
+          if (hash2(gx, gy, 21) > 0.55) continue;
+          var qx = gx * FCELL + hash2(gx, gy, 22) * FCELL;
+          var qy = gy * FCELL + hash2(gx, gy, 23) * FCELL;
+          var fs = 0.7 + hash2(gx, gy, 24) * 0.7;
+          var ra = hash2(gx, gy, 25) * 6.2832;
+          if (fx === 'bone') {
+            /* 白骨：两三节淡色骨节 + 碎屑（乱葬岗） */
+            ctx.lineCap = 'round';
+            for (var bn = 0; bn < 2 + Math.floor(hash2(gx, gy, 26) * 2); bn++) {
+              var bl = (7 + hash2(gx + bn, gy, 27) * 7) * fs;
+              var ba = ra + bn * 0.9 - 0.45;
+              var bx2 = qx + (bn - 0.5) * 10 * fs;
+              ctx.strokeStyle = bn % 2 ? '#a8a294' : '#b8b2a4';
+              ctx.lineWidth = 3.4 * fs;
+              ctx.beginPath();
+              ctx.moveTo(bx2 - Math.cos(ba) * bl / 2, qy - Math.sin(ba) * bl / 2);
+              ctx.lineTo(bx2 + Math.cos(ba) * bl / 2, qy + Math.sin(ba) * bl / 2);
+              ctx.stroke();
+            }
+            ctx.fillStyle = '#8f8a7c';
+            ctx.globalAlpha = 0.6;
+            G.circle(qx + 12 * fs, qy + 8 * fs, 1.6 * fs, '#8f8a7c');
+            ctx.globalAlpha = 1;
+          } else if (fx === 'leaf') {
+            /* 竹叶：几片两头尖的细长叶，深浅两绿（竹林） */
+            for (var lf = 0; lf < 3; lf++) {
+              var la = ra + hash2(gx, gy + lf, 28) * 1.6 - 0.8;
+              var ll = (9 + hash2(gx + lf, gy, 29) * 7) * fs;
+              var lw = ll * 0.22;
+              var lx2 = qx + (hash2(gx * 5 + lf, gy, 30) - 0.5) * 34;
+              var ly2 = qy + (hash2(gx, gy * 5 + lf, 31) - 0.5) * 34;
+              ctx.save();
+              ctx.translate(lx2, ly2);
+              ctx.rotate(la);
+              ctx.fillStyle = lf % 2 ? '#4e7a36' : '#6f9a4c';
+              ctx.globalAlpha = 0.85;
+              ctx.beginPath();
+              ctx.moveTo(-ll / 2, 0);
+              ctx.quadraticCurveTo(0, -lw, ll / 2, 0);
+              ctx.quadraticCurveTo(0, lw, -ll / 2, 0);
+              ctx.fill();
+              ctx.restore();
+              ctx.globalAlpha = 1;
+            }
+          } else if (fx === 'frost') {
+            /* 霜裂：淡白折线裂纹 + 冰晶亮点（寒霜） */
+            ctx.strokeStyle = 'rgba(215,232,248,.34)';
+            ctx.lineWidth = 1.4 * fs;
+            ctx.lineCap = 'round';
+            ctx.beginPath();
+            var cx2 = qx, cy2 = qy;
+            ctx.moveTo(cx2, cy2);
+            for (var fr = 0; fr < 3; fr++) {
+              cx2 += Math.cos(ra + fr * 0.85) * (13 + hash2(gx + fr, gy, 32) * 9) * fs;
+              cy2 += Math.sin(ra + fr * 0.85) * (9 + hash2(gx, gy + fr, 33) * 7) * fs;
+              ctx.lineTo(cx2, cy2);
+            }
+            ctx.stroke();
+            ctx.fillStyle = 'rgba(224,240,252,.75)';
+            G.circle(qx, qy, 1.5 * fs, 'rgba(224,240,252,.75)');
+          } else if (fx === 'ember') {
+            /* 余烬：橙色光斑缓慢呼吸 + 两粒火星（熔岩） */
+            var pu = 0.45 + 0.32 * Math.sin(FT * 1.6 + hash2(gx, gy, 34) * 6.2832);
+            var er = 24 * fs;
+            var eg = ctx.createRadialGradient(qx, qy, 0, qx, qy, er);
+            eg.addColorStop(0, 'rgba(224,112,58,' + (0.30 * pu + 0.12).toFixed(3) + ')');
+            eg.addColorStop(1, 'rgba(224,112,58,0)');
+            ctx.fillStyle = eg;
+            ctx.beginPath();
+            ctx.arc(qx, qy, er, 0, 6.2832);
+            ctx.fill();
+            ctx.fillStyle = '#f0a060';
+            ctx.globalAlpha = 0.5 + pu * 0.4;
+            G.circle(qx - 8 * fs, qy - 5 * fs, 1.6 * fs, '#f0a060');
+            G.circle(qx + 7 * fs, qy + 6 * fs, 1.2 * fs, '#f0a060');
+            ctx.globalAlpha = 1;
+          } else if (fx === 'star') {
+            /* 星光：小亮点闪烁，偶尔一颗带十字光（落星） */
+            var tw = 0.35 + 0.55 * (0.5 + 0.5 * Math.sin(FT * 2.1 + hash2(gx, gy, 35) * 6.2832));
+            var big = hash2(gx, gy, 36) > 0.72;
+            var sr = (big ? 2.6 : 1.4) * fs;
+            ctx.fillStyle = 'rgba(216,228,255,' + (0.35 + tw * 0.55).toFixed(3) + ')';
+            ctx.beginPath();
+            ctx.arc(qx, qy, sr, 0, 6.2832);
+            ctx.fill();
+            if (big) {
+              ctx.strokeStyle = 'rgba(216,228,255,' + (tw * 0.5).toFixed(3) + ')';
+              ctx.lineWidth = 1;
+              ctx.beginPath();
+              ctx.moveTo(qx - sr * 4, qy); ctx.lineTo(qx + sr * 4, qy);
+              ctx.moveTo(qx, qy - sr * 4); ctx.lineTo(qx, qy + sr * 4);
+              ctx.stroke();
+            }
+          }
         }
       }
     }
@@ -1189,13 +1290,13 @@
     clearBtns();
     G.round(0, 0, G.W, G.H, 0, 'rgba(12,12,14,.97)');
     G.text('选择地图', 24, 40, 24, '#ffd88e', 'left', true);
-    /* 每日签到入口（有红点提示） */
+    /* 每日签到入口（有红点提示）。⚠️ 别放 x<150：标题「选择地图」24px 会伸到 x≈120 */
     var canSign = canSignIn();
-    S.btnSign = { x: 118, y: 40, r: 17 };
-    G.round(92, 26, 52, 28, 14, canSign ? 'rgba(160,70,40,.9)' : 'rgba(255,255,255,.08)',
+    S.btnSign = { x: 176, y: 40, r: 17 };
+    G.round(150, 26, 52, 28, 14, canSign ? 'rgba(160,70,40,.9)' : 'rgba(255,255,255,.08)',
       canSign ? 'rgba(255,190,90,.6)' : 'rgba(255,255,255,.15)', 1);
-    G.text('签到', 118, 40, 13, canSign ? '#ffe2b0' : '#6d675c', 'center', true);
-    if (canSign) G.circle(142, 24, 5, '#ff5a6e');
+    G.text('签到', 176, 40, 13, canSign ? '#ffe2b0' : '#6d675c', 'center', true);
+    if (canSign) G.circle(200, 24, 5, '#ff5a6e');
     S.btnBack = { x: G.W - 40, y: 40, r: 17 };
     G.circle(S.btnBack.x, S.btnBack.y, 16, 'rgba(255,255,255,.12)');
     G.text('✕', S.btnBack.x, S.btnBack.y, 14, '#fff', 'center', true);
@@ -1258,8 +1359,8 @@
       var gy = y + row2 * 20;
       G.text(dm.name, gx, gy, 12, cnt ? '#c9bda4' : '#4f4b45');
       G.text(cnt ? cnt + '只' : '—', gx + 74, gy, 11, cnt ? '#a89f8c' : '#413d38');
-      G.text(m.boss === 2 ? '妖王' : (m.boss === 1 ? '精英' : '小怪'), gx + 122, gy, 10.5,
-        m.boss === 2 ? '#ff5a6e' : (m.boss === 1 ? '#ffd23a' : '#5c574d'), 'right');
+      G.text(dm.boss === 2 ? '妖王' : (dm.boss === 1 ? '精英' : '小怪'), gx + 122, gy, 10.5,
+        dm.boss === 2 ? '#ff5a6e' : (dm.boss === 1 ? '#ffd23a' : '#5c574d'), 'right');
       col2++;
       if (col2 >= 2) { col2 = 0; row2++; }
     }

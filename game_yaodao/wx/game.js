@@ -105,17 +105,17 @@ window.DATA = (function () {
     { id: 1, name: '青石村外', waves: 5, mobs: ['m1', 'm1', 'm2', 'm3', 'm1'], elite: 'e1', boss: null, lv: 1,
       ground: '#5d4f38', ground2: '#6d5c40', deco: ['#4a3f2c', '#7f8a4e', '#8d8a7c'], pw: 400 },
     { id: 2, name: '乱葬岗', waves: 6, mobs: ['m2', 'm3', 'm1', 'e1'], elite: 'e1', boss: null, lv: 4,
-      ground: '#3f3c38', ground2: '#4a4641', deco: ['#575249', '#6d6558', '#8a8072'], pw: 1200 },
+      ground: '#3f3c38', ground2: '#4a4641', deco: ['#575249', '#6d6558', '#8a8072'], pw: 1200, fx: 'bone' },
     { id: 3, name: '黑风寨', waves: 7, mobs: ['m2', 'm3', 'e1', 'm1'], elite: 'e1', boss: 'b1', lv: 8,
       ground: '#332821', ground2: '#3d3128', deco: ['#241d17', '#5a4432', '#6d5b46'], pw: 3000 },
     { id: 4, name: '竹林幽径', waves: 6, mobs: ['m4', 'm7', 'm3', 'm6'], elite: 'e2', boss: null, lv: 12,
-      ground: '#2c3a26', ground2: '#35452d', deco: ['#1e2a19', '#5f8a44', '#7a9463'], pw: 4500 },
+      ground: '#2c3a26', ground2: '#35452d', deco: ['#1e2a19', '#5f8a44', '#7a9463'], pw: 4500, fx: 'leaf' },
     { id: 5, name: '寒霜地窟', waves: 7, mobs: ['m6', 'm5', 'm7', 'm4'], elite: 'e3', boss: null, lv: 16,
-      ground: '#3a4450', ground2: '#455060', deco: ['#252c36', '#8fa4b8', '#c9d8e4'], pw: 6800 },
+      ground: '#3a4450', ground2: '#455060', deco: ['#252c36', '#8fa4b8', '#c9d8e4'], pw: 6800, fx: 'frost' },
     { id: 6, name: '熔岩火谷', waves: 8, mobs: ['m2', 'm6', 'e2', 'm4'], elite: 'e2', boss: 'b2', lv: 20,
-      ground: '#3a1c16', ground2: '#48241b', deco: ['#26110c', '#a8402a', '#e0703a'], pw: 9500 },
+      ground: '#3a1c16', ground2: '#48241b', deco: ['#26110c', '#a8402a', '#e0703a'], pw: 9500, fx: 'ember' },
     { id: 7, name: '落星秘境', waves: 9, mobs: ['m3', 'm5', 'e3', 'm7'], elite: 'e3', boss: 'b3', lv: 26,
-      ground: '#1e2436', ground2: '#262e44', deco: ['#131828', '#4a5680', '#8f9ede'], pw: 14000 }
+      ground: '#1e2436', ground2: '#262e44', deco: ['#131828', '#4a5680', '#8f9ede'], pw: 14000, fx: 'star' }
   ];
 
   /* ---------- 装备部位图标（一张底图按品质染色）---------- */
@@ -399,6 +399,9 @@ window.DATA = (function () {
   var BOOT = { onDown: null, onUp: null };
   G.BOOT = BOOT;
   G.setHandlers = function (h) { if (h.down) BOOT.onDown = h.down; if (h.up) BOOT.onUp = h.up; };
+  /* 调试通道：暴露主画布，CDP 验证时用 G.cv.toDataURL() 直接取画面
+     （微信截屏有时抓不到模拟器的合成层，从内部取才可靠） */
+  G.cv = cv; G.ctx = ctx;
 
   /* ---------- 音效 ----------
      微信小游戏用 wx.createInnerAudioContext()，浏览器用 new Audio()。
@@ -1039,9 +1042,7 @@ window.DATA = (function () {
     if (D.MONS) {
       D.MONS.forEach(function (m) { list.push({ key: m.id, path: 'assets/mob/' + m.id + '.png' }); });
     }
-    if (D.MAPS) {
-      D.MAPS.forEach(function (mp) { list.push({ key: 'map' + mp.id, path: 'assets/map/map' + mp.id + '.jpg' }); });
-    }
+    /* 地图不加载贴图：地面是程序化绘制的（无缝/零包体），贴图平铺方案已否掉 */
     /* 装备部位图标（一张底图按品质染色） */
     if (D.SLOT_ICON) {
       for (var ik in D.SLOT_ICON) {
@@ -1057,23 +1058,17 @@ window.DATA = (function () {
       /* 宠物贴图 */
       S.petImg = {};
       if (D.PETS) for (var pk2 in D.PETS) S.petImg[D.PETS[pk2].id] = out['pet_' + D.PETS[pk2].id] || null;
-      /* 怪物和地图底单独拎出来，避免和武器的 key 混在一起 */
-      S.mobImg = {}; S.mapImg = {}; S.slotIcon = {};
+      /* 怪物贴图单独拎出来，避免和武器的 key 混在一起 */
+      S.mobImg = {}; S.slotIcon = {};
       for (var k in out) {
         if (D.MONS) {
           var isMob = false;
           D.MONS.forEach(function (m) { if (m.id === k) isMob = true; });
           if (isMob) { S.mobImg[k] = out[k]; continue; }
         }
-        if (k.indexOf('map') === 0) S.mapImg[k.slice(3)] = out[k];
-        else if (k.indexOf('ico_') === 0) S.slotIcon[k.slice(4)] = out[k];
+        if (k.indexOf('ico_') === 0) S.slotIcon[k.slice(4)] = out[k];
       }
       S.iconCache = {};
-      /* 地图底做成 pattern，跟着相机滚 */
-      S.mapPat = {};
-      for (var id in S.mapImg) {
-        try { S.mapPat[id] = ctx.createPattern(S.mapImg[id], 'repeat'); } catch (e) { }
-      }
     });
   }
   function deal(m, dmg, st, isBasic) {
@@ -1259,6 +1254,115 @@ window.DATA = (function () {
           ctx.moveTo(kx - 7 * s2, ky);
           ctx.lineTo(kx + 8 * s2, ky + (hash2(dx, dy, 17) - 0.5) * 6);
           ctx.stroke();
+        }
+      }
+    }
+
+    /* 每张图的专属地面特征（mp.fx）—— 还是程序化（无缝/零包体/跟相机滚），
+       但让 7 张图一眼能分出来：白骨/竹叶/霜裂/余烬/星光。
+       ⚠️ 余烬和星光带呼吸动画，用 Date.now()，别用会倒退的计时器。 */
+    var fx = mp.fx;
+    if (fx) {
+      var FT = Date.now() / 1000;
+      var FCELL = 230;
+      var gx0 = Math.floor((-sx) / FCELL) - 1, gx1 = Math.ceil((G.W - sx) / FCELL) + 1;
+      var gy0 = Math.floor((-sy) / FCELL) - 1, gy1 = Math.ceil((G.H - sy) / FCELL) + 1;
+      for (var gx = gx0; gx <= gx1; gx++) {
+        for (var gy = gy0; gy <= gy1; gy++) {
+          if (hash2(gx, gy, 21) > 0.55) continue;
+          var qx = gx * FCELL + hash2(gx, gy, 22) * FCELL;
+          var qy = gy * FCELL + hash2(gx, gy, 23) * FCELL;
+          var fs = 0.7 + hash2(gx, gy, 24) * 0.7;
+          var ra = hash2(gx, gy, 25) * 6.2832;
+          if (fx === 'bone') {
+            /* 白骨：两三节淡色骨节 + 碎屑（乱葬岗） */
+            ctx.lineCap = 'round';
+            for (var bn = 0; bn < 2 + Math.floor(hash2(gx, gy, 26) * 2); bn++) {
+              var bl = (7 + hash2(gx + bn, gy, 27) * 7) * fs;
+              var ba = ra + bn * 0.9 - 0.45;
+              var bx2 = qx + (bn - 0.5) * 10 * fs;
+              ctx.strokeStyle = bn % 2 ? '#a8a294' : '#b8b2a4';
+              ctx.lineWidth = 3.4 * fs;
+              ctx.beginPath();
+              ctx.moveTo(bx2 - Math.cos(ba) * bl / 2, qy - Math.sin(ba) * bl / 2);
+              ctx.lineTo(bx2 + Math.cos(ba) * bl / 2, qy + Math.sin(ba) * bl / 2);
+              ctx.stroke();
+            }
+            ctx.fillStyle = '#8f8a7c';
+            ctx.globalAlpha = 0.6;
+            G.circle(qx + 12 * fs, qy + 8 * fs, 1.6 * fs, '#8f8a7c');
+            ctx.globalAlpha = 1;
+          } else if (fx === 'leaf') {
+            /* 竹叶：几片两头尖的细长叶，深浅两绿（竹林） */
+            for (var lf = 0; lf < 3; lf++) {
+              var la = ra + hash2(gx, gy + lf, 28) * 1.6 - 0.8;
+              var ll = (9 + hash2(gx + lf, gy, 29) * 7) * fs;
+              var lw = ll * 0.22;
+              var lx2 = qx + (hash2(gx * 5 + lf, gy, 30) - 0.5) * 34;
+              var ly2 = qy + (hash2(gx, gy * 5 + lf, 31) - 0.5) * 34;
+              ctx.save();
+              ctx.translate(lx2, ly2);
+              ctx.rotate(la);
+              ctx.fillStyle = lf % 2 ? '#4e7a36' : '#6f9a4c';
+              ctx.globalAlpha = 0.85;
+              ctx.beginPath();
+              ctx.moveTo(-ll / 2, 0);
+              ctx.quadraticCurveTo(0, -lw, ll / 2, 0);
+              ctx.quadraticCurveTo(0, lw, -ll / 2, 0);
+              ctx.fill();
+              ctx.restore();
+              ctx.globalAlpha = 1;
+            }
+          } else if (fx === 'frost') {
+            /* 霜裂：淡白折线裂纹 + 冰晶亮点（寒霜） */
+            ctx.strokeStyle = 'rgba(215,232,248,.34)';
+            ctx.lineWidth = 1.4 * fs;
+            ctx.lineCap = 'round';
+            ctx.beginPath();
+            var cx2 = qx, cy2 = qy;
+            ctx.moveTo(cx2, cy2);
+            for (var fr = 0; fr < 3; fr++) {
+              cx2 += Math.cos(ra + fr * 0.85) * (13 + hash2(gx + fr, gy, 32) * 9) * fs;
+              cy2 += Math.sin(ra + fr * 0.85) * (9 + hash2(gx, gy + fr, 33) * 7) * fs;
+              ctx.lineTo(cx2, cy2);
+            }
+            ctx.stroke();
+            ctx.fillStyle = 'rgba(224,240,252,.75)';
+            G.circle(qx, qy, 1.5 * fs, 'rgba(224,240,252,.75)');
+          } else if (fx === 'ember') {
+            /* 余烬：橙色光斑缓慢呼吸 + 两粒火星（熔岩） */
+            var pu = 0.45 + 0.32 * Math.sin(FT * 1.6 + hash2(gx, gy, 34) * 6.2832);
+            var er = 24 * fs;
+            var eg = ctx.createRadialGradient(qx, qy, 0, qx, qy, er);
+            eg.addColorStop(0, 'rgba(224,112,58,' + (0.30 * pu + 0.12).toFixed(3) + ')');
+            eg.addColorStop(1, 'rgba(224,112,58,0)');
+            ctx.fillStyle = eg;
+            ctx.beginPath();
+            ctx.arc(qx, qy, er, 0, 6.2832);
+            ctx.fill();
+            ctx.fillStyle = '#f0a060';
+            ctx.globalAlpha = 0.5 + pu * 0.4;
+            G.circle(qx - 8 * fs, qy - 5 * fs, 1.6 * fs, '#f0a060');
+            G.circle(qx + 7 * fs, qy + 6 * fs, 1.2 * fs, '#f0a060');
+            ctx.globalAlpha = 1;
+          } else if (fx === 'star') {
+            /* 星光：小亮点闪烁，偶尔一颗带十字光（落星） */
+            var tw = 0.35 + 0.55 * (0.5 + 0.5 * Math.sin(FT * 2.1 + hash2(gx, gy, 35) * 6.2832));
+            var big = hash2(gx, gy, 36) > 0.72;
+            var sr = (big ? 2.6 : 1.4) * fs;
+            ctx.fillStyle = 'rgba(216,228,255,' + (0.35 + tw * 0.55).toFixed(3) + ')';
+            ctx.beginPath();
+            ctx.arc(qx, qy, sr, 0, 6.2832);
+            ctx.fill();
+            if (big) {
+              ctx.strokeStyle = 'rgba(216,228,255,' + (tw * 0.5).toFixed(3) + ')';
+              ctx.lineWidth = 1;
+              ctx.beginPath();
+              ctx.moveTo(qx - sr * 4, qy); ctx.lineTo(qx + sr * 4, qy);
+              ctx.moveTo(qx, qy - sr * 4); ctx.lineTo(qx, qy + sr * 4);
+              ctx.stroke();
+            }
+          }
         }
       }
     }
@@ -1714,13 +1818,13 @@ window.DATA = (function () {
     clearBtns();
     G.round(0, 0, G.W, G.H, 0, 'rgba(12,12,14,.97)');
     G.text('选择地图', 24, 40, 24, '#ffd88e', 'left', true);
-    /* 每日签到入口（有红点提示） */
+    /* 每日签到入口（有红点提示）。⚠️ 别放 x<150：标题「选择地图」24px 会伸到 x≈120 */
     var canSign = canSignIn();
-    S.btnSign = { x: 118, y: 40, r: 17 };
-    G.round(92, 26, 52, 28, 14, canSign ? 'rgba(160,70,40,.9)' : 'rgba(255,255,255,.08)',
+    S.btnSign = { x: 176, y: 40, r: 17 };
+    G.round(150, 26, 52, 28, 14, canSign ? 'rgba(160,70,40,.9)' : 'rgba(255,255,255,.08)',
       canSign ? 'rgba(255,190,90,.6)' : 'rgba(255,255,255,.15)', 1);
-    G.text('签到', 118, 40, 13, canSign ? '#ffe2b0' : '#6d675c', 'center', true);
-    if (canSign) G.circle(142, 24, 5, '#ff5a6e');
+    G.text('签到', 176, 40, 13, canSign ? '#ffe2b0' : '#6d675c', 'center', true);
+    if (canSign) G.circle(200, 24, 5, '#ff5a6e');
     S.btnBack = { x: G.W - 40, y: 40, r: 17 };
     G.circle(S.btnBack.x, S.btnBack.y, 16, 'rgba(255,255,255,.12)');
     G.text('✕', S.btnBack.x, S.btnBack.y, 14, '#fff', 'center', true);
@@ -1764,6 +1868,39 @@ window.DATA = (function () {
       S['mapBtn' + i] = { x: G.W / 2, y: y + 29, r: 29, idx: i, locked: !unlocked };
       y += 64;
     }
+    /* 图鉴：跟选关放一起（"走了哪些图、杀了哪些怪"是一件事） */
+    /* ---- 图鉴：击杀收集 ---- */
+    G.text('图鉴', 24, y, 13, '#8a8272', 'left');
+    G.text('图鉴点 ' + (S.save.dexP || 0) + ' / ' + D.DEX_GOAL, G.W - 36, y, 12, '#b9a8ff', 'right');
+    y += 18;
+    /* 两列排：已收录的在前，未遭遇的压暗 */
+    var dx = S.save.dex || {};
+    var gotN = 0;
+    for (var di2 = 0; di2 < D.MONS.length; di2++) if (dx[D.MONS[di2].id]) gotN++;
+    G.text('已收录 ' + gotN + ' / ' + D.MONS.length + ' 种', G.W - 36, y, 11, '#8a8272', 'right');
+    y += 16;
+    var col2 = 0, row2 = 0;
+    for (var di = 0; di < D.MONS.length && row2 < 3; di++) {
+      var dm = D.MONS[di];
+      var cnt = dx[dm.id] || 0;
+      var gx = 26 + col2 * 178;
+      var gy = y + row2 * 20;
+      G.text(dm.name, gx, gy, 12, cnt ? '#c9bda4' : '#4f4b45');
+      G.text(cnt ? cnt + '只' : '—', gx + 74, gy, 11, cnt ? '#a89f8c' : '#413d38');
+      G.text(dm.boss === 2 ? '妖王' : (dm.boss === 1 ? '精英' : '小怪'), gx + 122, gy, 10.5,
+        dm.boss === 2 ? '#ff5a6e' : (dm.boss === 1 ? '#ffd23a' : '#5c574d'), 'right');
+      col2++;
+      if (col2 >= 2) { col2 = 0; row2++; }
+    }
+    y += 3 * 20 + 8;
+    /* 兑换 */
+    var canDex = (s.dexP || 0) >= D.DEX_GOAL;
+    S.btnDex = { x: G.W / 2, y: y + 16, r: 40 };
+    G.round(G.W / 2 - 95, y - 6, 190, 42, 12,
+      canDex ? 'rgba(90,60,120,.9)' : 'rgba(45,45,48,.8)', canDex ? 'rgba(185,168,255,.55)' : 'rgba(255,255,255,.1)', 1.5);
+    G.text(canDex ? ('兑换奖励（精粹×' + D.DEX_ESS + ' 宝石×1）') : ('还差 ' + (D.DEX_GOAL - (s.dexP || 0)) + ' 图鉴点'),
+      G.W / 2, y + 16, 13, canDex ? '#e6dcff' : '#6d675c', 'center', true);
+
     G.text('低图掉低级装备、高图出好东西 —— 自由切换', G.W / 2, G.H - 34, 11.5, '#6d675c', 'center');
   }
 
@@ -2111,8 +2248,9 @@ window.DATA = (function () {
     clearBtns();
     G.round(0, 0, G.W, G.H, 0, 'rgba(12,12,14,.96)');
     G.text('背包', 24, 40, 24, '#ffd88e', 'left', true);
-    G.text('战力 ' + fmt(power()), G.W - 64, 40, 18, '#ffd23a', 'right', true);
-    G.text('点击装备即换上', G.W - 64, 62, 12, '#9c9484', 'right');
+    /* 战力挪到第二行 —— 原来和「造型」「改形象」两个按钮挤在一行，压在一起了 */
+    G.text('战力 ' + fmt(power()), G.W - 32, 66, 15, '#ffd23a', 'right', true);
+    G.text('点击装备即换上', G.W - 32, 84, 11.5, '#9c9484', 'right');
 
     /* 已装备 4 格 */
     var slots = D.SLOTS;
@@ -2182,11 +2320,11 @@ window.DATA = (function () {
     G.text('一键分解', G.W - 62, 168, 12.5, '#ffe2b0', 'center', true);
 
     /* 造型：换武器皮肤 */
-    S.btnSkin = { x: G.W - 196, y: 40, r: 17 };
+    S.btnSkin = { x: 128, y: 40, r: 17 };
     G.round(S.btnSkin.x - 34, S.btnSkin.y - 14, 68, 28, 14, 'rgba(255,255,255,.10)', 'rgba(255,255,255,.22)', 1);
     G.text('造型', S.btnSkin.x, S.btnSkin.y, 13, '#e6dcc6', 'center', true);
 
-    S.btnLook = { x: G.W - 118, y: 40, r: 17 };
+    S.btnLook = { x: 208, y: 40, r: 17 };
     G.round(S.btnLook.x - 38, S.btnLook.y - 14, 76, 28, 14, 'rgba(255,255,255,.10)', 'rgba(255,255,255,.22)', 1);
     G.text('改形象', S.btnLook.x, S.btnLook.y, 13, '#e6dcc6', 'center', true);
   }
@@ -2268,8 +2406,9 @@ window.DATA = (function () {
     list.sort(function (a, b) { return b.p - a.p; });
     var myRank = 0;
     for (var j = 0; j < list.length; j++) { if (list[j].me) { myRank = j + 1; break; } }
-    var from = Math.max(0, Math.min(myRank - 6, list.length - 10));
-    for (var k = from; k < Math.min(list.length, from + 10); k++) {
+    /* 只显示 6 名 —— 10 名会把下面的图鉴挤出屏幕 */
+    var from = Math.max(0, Math.min(myRank - 3, list.length - 6));
+    for (var k = from; k < Math.min(list.length, from + 6); k++) {
       var e = list[k], rk = k + 1;
       var medal = rk === 1 ? '#ffd23a' : rk === 2 ? '#d8d8d8' : rk === 3 ? '#d08a4a' : '#8a8272';
       G.round(20, y, G.W - 40, 40, 8, e.me ? 'rgba(255,220,150,.14)' : 'rgba(255,255,255,.04)',
@@ -2299,39 +2438,6 @@ window.DATA = (function () {
       G.text(rows[r][0], 28, y + r * 24, 12.5, '#9c9484');
       G.text(rows[r][1], G.W - 36, y + r * 24, 13, '#c9bda4', 'right');
     }
-    /* ---- 图鉴：击杀收集 ---- */
-    y += 16;
-    G.text('图鉴', 24, y, 13, '#8a8272', 'left');
-    G.text('图鉴点 ' + (s.dexP || 0) + ' / ' + D.DEX_GOAL, G.W - 36, y, 12, '#b9a8ff', 'right');
-    y += 18;
-    /* 两列排：已收录的在前，未遭遇的压暗 */
-    var dx = s.dex || {};
-    var gotN = 0;
-    for (var di2 = 0; di2 < D.MONS.length; di2++) if (dx[D.MONS[di2].id]) gotN++;
-    G.text('已收录 ' + gotN + ' / ' + D.MONS.length + ' 种', G.W - 36, y, 11, '#8a8272', 'right');
-    y += 18;
-    var col2 = 0, row2 = 0;
-    for (var di = 0; di < D.MONS.length && row2 < 6; di++) {
-      var dm = D.MONS[di];
-      var cnt = dx[dm.id] || 0;
-      var gx = 26 + col2 * 178;
-      var gy = y + row2 * 21;
-      G.text(dm.name, gx, gy, 12, cnt ? '#c9bda4' : '#4f4b45');
-      G.text(cnt ? cnt + '只' : '—', gx + 74, gy, 11, cnt ? '#a89f8c' : '#413d38');
-      G.text(m.boss === 2 ? '妖王' : (m.boss === 1 ? '精英' : '小怪'), gx + 122, gy, 10.5,
-        m.boss === 2 ? '#ff5a6e' : (m.boss === 1 ? '#ffd23a' : '#5c574d'), 'right');
-      col2++;
-      if (col2 >= 2) { col2 = 0; row2++; }
-    }
-    y += Math.ceil(Math.min(D.MONS.length, 12) / 2) * 21 + 10;
-    /* 兑换 */
-    var canDex = (s.dexP || 0) >= D.DEX_GOAL;
-    S.btnDex = { x: G.W / 2, y: y + 18, r: 40 };
-    G.round(G.W / 2 - 95, y - 4, 190, 44, 12,
-      canDex ? 'rgba(90,60,120,.9)' : 'rgba(45,45,48,.8)', canDex ? 'rgba(185,168,255,.55)' : 'rgba(255,255,255,.1)', 1.5);
-    G.text(canDex ? ('兑换奖励（精粹×' + D.DEX_ESS + ' 宝石×1）') : ('还差 ' + (D.DEX_GOAL - (s.dexP || 0)) + ' 图鉴点'),
-      G.W / 2, y + 18, 13, canDex ? '#e6dcff' : '#6d675c', 'center', true);
-
     G.text('（单机版：榜单为模拟数据，记录只存在本机）', G.W / 2, G.H - 26, 11, '#5c574d', 'center');
   }
 
