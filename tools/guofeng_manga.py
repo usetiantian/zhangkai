@@ -175,6 +175,7 @@ def make_script(novel, duration=0, asset_context="（参考资产库为空）", 
 # 这里做**确定性**修正，不依赖 LLM 自觉：按台词字数给每个 Shot 算出最小时长，
 # 再把富余时间按原比例摊回去，总时长守恒（导演台的守恒门禁不能破）。
 _SHOT_AT = re.compile(r'At\s+(\d+):(\d+):(\d+(?:\.\d+)?)')
+_AT_WITH_COMMA = re.compile(r'At\s+\d+:\d+:\d+(?:\.\d+)?\s*,?')
 _SHOT_HEAD = re.compile(r'\[Shot\s+(\d+)\]')
 _DIALOG = re.compile(r'<d>\[Chinese\](.*?)</d>', re.S)
 
@@ -273,7 +274,7 @@ def rebalance_shots(board, rate=3.5, floor=1.5, total=None):
     for idx, (num, body) in enumerate(shots):
         nb = body
         if idx > 0:
-            nb = _SHOT_AT.sub("At " + _fmt(t) + ",", nb, count=1)
+            nb = _AT_WITH_COMMA.sub("At " + _fmt(t) + ", ", nb, count=1)
         out.append(nb)
         if abs(new_durs[idx] - durs[idx]) > 0.05:
             report["moved"].append({"shot": num, "from": round(durs[idx], 2), "to": round(new_durs[idx], 2)})
@@ -829,6 +830,9 @@ def retime_batch(desc, start, end, first_of_episode=True):
         if deficit > 0:
             spare = sum(max(0.0, durs[i] - mins[i]) for i in range(len(shots)))
             take = min(deficit, spare)
+            # ⚠️ 没台词的镜头 mins=0，让到 0 就会和下一个 Shot 的 At 撞在一起
+            #    （实测 16/17、18/19 的 At 完全相同 → 导演台直接拒收）。保一个下限。
+            floor = span / (len(shots) * 2.0)
             for i in range(len(shots)):
                 if take <= 0:
                     break
@@ -837,7 +841,7 @@ def retime_batch(desc, start, end, first_of_episode=True):
                     durs[i] += add
                     take -= add
                 else:
-                    give = min(durs[i] - mins[i], take)
+                    give = min(max(0.0, durs[i] - mins[i]), take, max(0.0, durs[i] - floor))
                     durs[i] -= give
                     take -= give
     out = []
@@ -847,7 +851,7 @@ def retime_batch(desc, start, end, first_of_episode=True):
         # 官方格式：**全剧**第一个 Shot 不写 At，之后每个 Shot 必写且严格递增。
         # ⚠️ 分批生成时，每批的第一个（除第一批外）前面已经用掉时间了 → 必须写 At。
         if i > 0 or not first_of_episode:
-            nb = _SHOT_AT.sub("At " + _fmt(t) + ",", nb, count=1)
+            nb = _AT_WITH_COMMA.sub("At " + _fmt(t) + ", ", nb, count=1)
             if _at_sec(nb) is None:
                 nb = re.sub(r"(\[Shot\s+\d+\])", r"\1 At " + _fmt(t) + ",", nb, count=1)
         out.append(nb)
@@ -1017,6 +1021,35 @@ def trim_beats_to_budget(task, max_total=300.0, rate=3.5):
     msg = "台词装不下 → 删了 %d 个场次（%s），整集定为 %.1f 秒" % (
         len(dropped), "、".join("场次%d" % d for d in dropped) or "无", actual)
     return fixed, {"ok": True, "total": actual, "dropped": dropped, "msg": msg}
+
+
+def audit_at_monotonic(board):
+    """出片前的闸：除全剧第一个 Shot 外，每个都必须有 At，且严格递增、不重复。
+
+    这正是导演台拒收分批拼接结果的原因（Shot 缺 At / At 撞车），
+    自己先查一遍，免得白烧 LLM 调用。
+    """
+    head, shots, tail = split_shots(board)
+    if not shots:
+        return {"ok": False, "msg": "没解析到 Shot"}
+    bad = []
+    prev = None
+    for i, (num, body) in enumerate(shots):
+        v = _at_sec(body)
+        if i == 0:
+            if v is not None:
+                bad.append({"shot": num, "why": "全剧第一个 Shot 不该有 At"})
+            continue
+        if v is None:
+            bad.append({"shot": num, "why": "缺少 At 时间标记"})
+            continue
+        if prev is not None and v <= prev:
+            bad.append({"shot": num, "why": "At %.3f 不大于上一个的 %.3f" % (v, prev)})
+        prev = v
+    return {"ok": not bad, "bad": bad, "shots": len(shots),
+            "msg": ("✅ %d 个 Shot，At 全部齐且严格递增" % len(shots)) if not bad
+                   else ("❌ %d 处问题：%s" % (len(bad), "；".join(
+                       "Shot%d %s" % (b["shot"], b["why"]) for b in bad[:5])))}
 
 def parse_segments(board, original_input="", seed=0):
     """官方分镜 -> 导演台 segments_json 数组（复用插件解析器）。"""
