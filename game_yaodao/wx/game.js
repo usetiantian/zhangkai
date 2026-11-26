@@ -1269,6 +1269,37 @@ window.DATA = (function () {
     G.text(slotName(it.slot).slice(0, 1), x, y, size * 0.45, 'rgba(0,0,0,.45)', 'center', true);
   }
 
+  /* ============ 武器造型面板 ============ */
+  function drawSkins() {
+    G.round(0, 0, G.W, G.H, 0, 'rgba(12,12,14,.97)');
+    G.text('武器造型', 24, 40, 24, '#ffd88e', 'left', true);
+    S.btnBack = { x: G.W - 40, y: 40, r: 17 };
+    G.circle(S.btnBack.x, S.btnBack.y, 16, 'rgba(255,255,255,.12)');
+    G.text('✕', S.btnBack.x, S.btnBack.y, 14, '#fff', 'center', true);
+    G.text('只换外观，不加属性', G.W - 64, 64, 12, '#8a8272', 'right');
+
+    var list = D.WEAPON_SKIN;
+    var cols = 3, cw = (G.W - 32) / cols;
+    for (var i = 0; i < list.length; i++) {
+      var w = list[i];
+      var col = i % cols, row = Math.floor(i / cols);
+      var bx = 16 + col * cw, by = 88 + row * 152;
+      var on = S.save.wskin === w.id;
+      G.round(bx, by, cw - 10, 140, 10, on ? 'rgba(255,220,150,.10)' : 'rgba(255,255,255,.04)',
+        on ? w.col : 'rgba(255,255,255,.12)', on ? 2 : 1);
+      var img = S.wskinImg && S.wskinImg[w.id];
+      if (img) {
+        var ih = 84, iw = img.width / img.height * ih;
+        ctx.drawImage(img, bx + (cw - 10) / 2 - iw / 2, by + 14, iw, ih);
+      } else {
+        G.text('?', bx + (cw - 10) / 2, by + 50, 26, 'rgba(255,255,255,.2)', 'center', true);
+      }
+      G.text(w.name, bx + (cw - 10) / 2, by + 114, 14, on ? w.col : '#cfc6b0', 'center', true);
+      G.text(on ? '使用中' : '点击装备', bx + (cw - 10) / 2, by + 130, 10.5, on ? '#ffd88e' : '#6d675c', 'center');
+      S['skin' + w.id] = { x: bx + (cw - 10) / 2, y: by + 60, r: 46, id: w.id, name: w.name };
+    }
+  }
+
   function drawUpgrade() {
     G.round(0, 0, G.W, G.H, 0, 'rgba(10,10,12,.97)');
     var it = S.save.equip[S.upSlot];
@@ -1477,6 +1508,11 @@ window.DATA = (function () {
     G.round(G.W - 118, 154, 108, 28, 14, 'rgba(120,70,30,.85)', 'rgba(255,190,90,.45)', 1.5);
     G.text('一键分解', G.W - 62, 168, 12.5, '#ffe2b0', 'center', true);
 
+    /* 造型：换武器皮肤 */
+    S.btnSkin = { x: G.W - 196, y: 40, r: 17 };
+    G.round(S.btnSkin.x - 34, S.btnSkin.y - 14, 68, 28, 14, 'rgba(255,255,255,.10)', 'rgba(255,255,255,.22)', 1);
+    G.text('造型', S.btnSkin.x, S.btnSkin.y, 13, '#e6dcc6', 'center', true);
+
     S.btnLook = { x: G.W - 118, y: 40, r: 17 };
     G.round(S.btnLook.x - 38, S.btnLook.y - 14, 76, 28, 14, 'rgba(255,255,255,.10)', 'rgba(255,255,255,.22)', 1);
     G.text('改形象', S.btnLook.x, S.btnLook.y, 13, '#e6dcc6', 'center', true);
@@ -1606,6 +1642,7 @@ window.DATA = (function () {
       if (S.btnBack && hit(x, y, S.btnBack)) { S.state = 'battle'; return; }
       if (S.btnLook && hit(x, y, S.btnLook)) { S.pickPrev = 'bag'; S.state = 'pick'; return; }
       if (S.btnSalvage && hit(x, y, S.btnSalvage)) { salvageJunk(); return; }
+      if (S.btnSkin && hit(x, y, S.btnSkin)) { S.state = 'skin'; return; }
       /* 点已装备的格子 → 强化面板 */
       for (var sk in S) {
         if (sk.indexOf('slotBtn') === 0) {
@@ -1621,6 +1658,22 @@ window.DATA = (function () {
           var b = S[k];
           if (x > b.x - 8 && x < b.x + b.w + 8 && Math.abs(y - b.y) < b.h / 2 + 6) {
             equipItem(b.idx); return;
+          }
+        }
+      }
+      return;
+    }
+    if (S.state === 'skin') {
+      if (S.btnBack && hit(x, y, S.btnBack)) { S.state = 'bag'; return; }
+      for (var wsk in S) {
+        if (wsk.indexOf('skin') === 0 && wsk !== 'skinBox') {
+          var wb = S[wsk];
+          if (wb && hit(x, y, wb)) {
+            S.save.wskin = wb.id;
+            S.stats = stats();
+            toast('换上 ' + wb.name);
+            G.persist();
+            return;
           }
         }
       }
@@ -1776,6 +1829,7 @@ window.DATA = (function () {
     if (S.state === 'pick') return drawPick();
     if (S.state === 'bag') return drawBag();
     if (S.state === 'upgrade') return drawUpgrade();
+    if (S.state === 'skin') return drawSkins();
     if (S.state === 'pets') return drawPets();
     if (S.state === 'rank') return drawRank();
     if (S.state === 'pull') return drawPull();
