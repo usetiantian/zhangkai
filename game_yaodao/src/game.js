@@ -1239,6 +1239,39 @@
       S['mapBtn' + i] = { x: G.W / 2, y: y + 29, r: 29, idx: i, locked: !unlocked };
       y += 64;
     }
+    /* 图鉴：跟选关放一起（"走了哪些图、杀了哪些怪"是一件事） */
+    /* ---- 图鉴：击杀收集 ---- */
+    G.text('图鉴', 24, y, 13, '#8a8272', 'left');
+    G.text('图鉴点 ' + (S.save.dexP || 0) + ' / ' + D.DEX_GOAL, G.W - 36, y, 12, '#b9a8ff', 'right');
+    y += 18;
+    /* 两列排：已收录的在前，未遭遇的压暗 */
+    var dx = S.save.dex || {};
+    var gotN = 0;
+    for (var di2 = 0; di2 < D.MONS.length; di2++) if (dx[D.MONS[di2].id]) gotN++;
+    G.text('已收录 ' + gotN + ' / ' + D.MONS.length + ' 种', G.W - 36, y, 11, '#8a8272', 'right');
+    y += 16;
+    var col2 = 0, row2 = 0;
+    for (var di = 0; di < D.MONS.length && row2 < 3; di++) {
+      var dm = D.MONS[di];
+      var cnt = dx[dm.id] || 0;
+      var gx = 26 + col2 * 178;
+      var gy = y + row2 * 20;
+      G.text(dm.name, gx, gy, 12, cnt ? '#c9bda4' : '#4f4b45');
+      G.text(cnt ? cnt + '只' : '—', gx + 74, gy, 11, cnt ? '#a89f8c' : '#413d38');
+      G.text(m.boss === 2 ? '妖王' : (m.boss === 1 ? '精英' : '小怪'), gx + 122, gy, 10.5,
+        m.boss === 2 ? '#ff5a6e' : (m.boss === 1 ? '#ffd23a' : '#5c574d'), 'right');
+      col2++;
+      if (col2 >= 2) { col2 = 0; row2++; }
+    }
+    y += 3 * 20 + 8;
+    /* 兑换 */
+    var canDex = (s.dexP || 0) >= D.DEX_GOAL;
+    S.btnDex = { x: G.W / 2, y: y + 16, r: 40 };
+    G.round(G.W / 2 - 95, y - 6, 190, 42, 12,
+      canDex ? 'rgba(90,60,120,.9)' : 'rgba(45,45,48,.8)', canDex ? 'rgba(185,168,255,.55)' : 'rgba(255,255,255,.1)', 1.5);
+    G.text(canDex ? ('兑换奖励（精粹×' + D.DEX_ESS + ' 宝石×1）') : ('还差 ' + (D.DEX_GOAL - (s.dexP || 0)) + ' 图鉴点'),
+      G.W / 2, y + 16, 13, canDex ? '#e6dcff' : '#6d675c', 'center', true);
+
     G.text('低图掉低级装备、高图出好东西 —— 自由切换', G.W / 2, G.H - 34, 11.5, '#6d675c', 'center');
   }
 
@@ -1586,8 +1619,9 @@
     clearBtns();
     G.round(0, 0, G.W, G.H, 0, 'rgba(12,12,14,.96)');
     G.text('背包', 24, 40, 24, '#ffd88e', 'left', true);
-    G.text('战力 ' + fmt(power()), G.W - 64, 40, 18, '#ffd23a', 'right', true);
-    G.text('点击装备即换上', G.W - 64, 62, 12, '#9c9484', 'right');
+    /* 战力挪到第二行 —— 原来和「造型」「改形象」两个按钮挤在一行，压在一起了 */
+    G.text('战力 ' + fmt(power()), G.W - 32, 66, 15, '#ffd23a', 'right', true);
+    G.text('点击装备即换上', G.W - 32, 84, 11.5, '#9c9484', 'right');
 
     /* 已装备 4 格 */
     var slots = D.SLOTS;
@@ -1657,11 +1691,11 @@
     G.text('一键分解', G.W - 62, 168, 12.5, '#ffe2b0', 'center', true);
 
     /* 造型：换武器皮肤 */
-    S.btnSkin = { x: G.W - 196, y: 40, r: 17 };
+    S.btnSkin = { x: 128, y: 40, r: 17 };
     G.round(S.btnSkin.x - 34, S.btnSkin.y - 14, 68, 28, 14, 'rgba(255,255,255,.10)', 'rgba(255,255,255,.22)', 1);
     G.text('造型', S.btnSkin.x, S.btnSkin.y, 13, '#e6dcc6', 'center', true);
 
-    S.btnLook = { x: G.W - 118, y: 40, r: 17 };
+    S.btnLook = { x: 208, y: 40, r: 17 };
     G.round(S.btnLook.x - 38, S.btnLook.y - 14, 76, 28, 14, 'rgba(255,255,255,.10)', 'rgba(255,255,255,.22)', 1);
     G.text('改形象', S.btnLook.x, S.btnLook.y, 13, '#e6dcc6', 'center', true);
   }
@@ -1743,8 +1777,9 @@
     list.sort(function (a, b) { return b.p - a.p; });
     var myRank = 0;
     for (var j = 0; j < list.length; j++) { if (list[j].me) { myRank = j + 1; break; } }
-    var from = Math.max(0, Math.min(myRank - 6, list.length - 10));
-    for (var k = from; k < Math.min(list.length, from + 10); k++) {
+    /* 只显示 6 名 —— 10 名会把下面的图鉴挤出屏幕 */
+    var from = Math.max(0, Math.min(myRank - 3, list.length - 6));
+    for (var k = from; k < Math.min(list.length, from + 6); k++) {
       var e = list[k], rk = k + 1;
       var medal = rk === 1 ? '#ffd23a' : rk === 2 ? '#d8d8d8' : rk === 3 ? '#d08a4a' : '#8a8272';
       G.round(20, y, G.W - 40, 40, 8, e.me ? 'rgba(255,220,150,.14)' : 'rgba(255,255,255,.04)',
@@ -1774,39 +1809,6 @@
       G.text(rows[r][0], 28, y + r * 24, 12.5, '#9c9484');
       G.text(rows[r][1], G.W - 36, y + r * 24, 13, '#c9bda4', 'right');
     }
-    /* ---- 图鉴：击杀收集 ---- */
-    y += 16;
-    G.text('图鉴', 24, y, 13, '#8a8272', 'left');
-    G.text('图鉴点 ' + (s.dexP || 0) + ' / ' + D.DEX_GOAL, G.W - 36, y, 12, '#b9a8ff', 'right');
-    y += 18;
-    /* 两列排：已收录的在前，未遭遇的压暗 */
-    var dx = s.dex || {};
-    var gotN = 0;
-    for (var di2 = 0; di2 < D.MONS.length; di2++) if (dx[D.MONS[di2].id]) gotN++;
-    G.text('已收录 ' + gotN + ' / ' + D.MONS.length + ' 种', G.W - 36, y, 11, '#8a8272', 'right');
-    y += 18;
-    var col2 = 0, row2 = 0;
-    for (var di = 0; di < D.MONS.length && row2 < 6; di++) {
-      var dm = D.MONS[di];
-      var cnt = dx[dm.id] || 0;
-      var gx = 26 + col2 * 178;
-      var gy = y + row2 * 21;
-      G.text(dm.name, gx, gy, 12, cnt ? '#c9bda4' : '#4f4b45');
-      G.text(cnt ? cnt + '只' : '—', gx + 74, gy, 11, cnt ? '#a89f8c' : '#413d38');
-      G.text(m.boss === 2 ? '妖王' : (m.boss === 1 ? '精英' : '小怪'), gx + 122, gy, 10.5,
-        m.boss === 2 ? '#ff5a6e' : (m.boss === 1 ? '#ffd23a' : '#5c574d'), 'right');
-      col2++;
-      if (col2 >= 2) { col2 = 0; row2++; }
-    }
-    y += Math.ceil(Math.min(D.MONS.length, 12) / 2) * 21 + 10;
-    /* 兑换 */
-    var canDex = (s.dexP || 0) >= D.DEX_GOAL;
-    S.btnDex = { x: G.W / 2, y: y + 18, r: 40 };
-    G.round(G.W / 2 - 95, y - 4, 190, 44, 12,
-      canDex ? 'rgba(90,60,120,.9)' : 'rgba(45,45,48,.8)', canDex ? 'rgba(185,168,255,.55)' : 'rgba(255,255,255,.1)', 1.5);
-    G.text(canDex ? ('兑换奖励（精粹×' + D.DEX_ESS + ' 宝石×1）') : ('还差 ' + (D.DEX_GOAL - (s.dexP || 0)) + ' 图鉴点'),
-      G.W / 2, y + 18, 13, canDex ? '#e6dcff' : '#6d675c', 'center', true);
-
     G.text('（单机版：榜单为模拟数据，记录只存在本机）', G.W / 2, G.H - 26, 11, '#5c574d', 'center');
   }
 
