@@ -754,7 +754,7 @@ window.DATA = (function () {
           s.gems = s.gems || {};
           var gdw = D.GEMS.filter(function (x) { return x.id === 'gem_atk'; })[0];
           if (gdw) s.gems[gdw.id] = (s.gems[gdw.id] || 0) + S.map.id;
-          toast('首通奖励：金币 +' + rw + '　红宝石 +' + S.map.id);
+          toast('首通奖励：灵果 +' + rw + '　红宝石 +' + S.map.id);
         }
         s.maxWave = Math.max(s.maxWave, s.map + 1);
         s.map = Math.min(D.MAPS.length - 1, s.map + 1);
@@ -1641,7 +1641,7 @@ window.DATA = (function () {
         G.circle(bx + bw / 2, ry, 16, gd ? gd.col : '#888');
         G.text(gd ? gd.name : '宝石', bx + bw / 2, ry, 9, 'rgba(0,0,0,.6)', 'center', true);
       } else if (r.coin) {
-        G.text('金币', bx + bw / 2, ry - 8, 11, '#8a8272', 'center');
+        G.text('灵果', bx + bw / 2, ry - 8, 11, '#8a8272', 'center');
         G.text('+' + r.coin, bx + bw / 2, ry + 8, 16, '#ffd76a', 'center', true);
       } else {
         G.text('精粹', bx + bw / 2, ry - 8, 11, '#8a8272', 'center');
@@ -1798,7 +1798,7 @@ window.DATA = (function () {
     }
 
     /* 资源 */
-    G.text('金币 ' + Math.floor(S.save.coins), 24, G.H - 150, 13, '#ffd76a', 'left');
+    G.text('灵果 ' + Math.floor(S.save.coins), 24, G.H - 150, 13, '#ffd76a', 'left');
     G.text('精粹 ' + Math.floor(S.save.essence || 0), 24, G.H - 128, 13, '#b9a8ff', 'left');
 
     /* 宝石槽 */
@@ -1829,7 +1829,7 @@ window.DATA = (function () {
       can ? 'rgba(255,190,90,.75)' : 'rgba(255,255,255,.12)', 2);
     G.text(lv >= D.ENH_MAX ? '已满级' : '强化 +1', G.W / 2, G.H - 92, 20,
       can ? '#ffe2b0' : '#6d675c', 'center', true);
-    G.text(lv >= D.ENH_MAX ? '' : ('金币 ' + coin + ' · 精粹 ' + ess),
+    G.text(lv >= D.ENH_MAX ? '' : ('灵果 ' + coin + ' · 精粹 ' + ess),
       G.W / 2, G.H - 68, 12, can ? '#d9b98a' : '#5c574d', 'center');
 
     /* 分解（把这件卖了） */
@@ -1845,7 +1845,7 @@ window.DATA = (function () {
     var lv = it.lv || 0;
     if (lv >= D.ENH_MAX) { toast('已经满级了'); return; }
     var coin = D.ENH_COIN(lv), ess = D.ENH_ESS(lv);
-    if (s.coins < coin) { toast('金币不够'); return; }
+    if (s.coins < coin) { toast('灵果不够'); return; }
     if ((s.essence || 0) < ess) { toast('精粹不够，去分解装备'); return; }
     s.coins -= coin; s.essence -= ess;
     it.lv = lv + 1;
@@ -1866,7 +1866,7 @@ window.DATA = (function () {
     var lv = s.skLv[idx] || 1;
     if (lv >= D.SK_MAX) { toast('技能已满级'); return; }
     var coin = D.SK_COIN(lv), ess = D.SK_ESS(lv);
-    if (s.coins < coin) { toast('金币不够'); return; }
+    if (s.coins < coin) { toast('灵果不够'); return; }
     if ((s.essence || 0) < ess) { toast('精粹不够，去分解装备'); return; }
     s.coins -= coin; s.essence -= ess;
     s.skLv[idx] = lv + 1;
@@ -1989,8 +1989,8 @@ window.DATA = (function () {
     /* 抽卡按钮 */
     S.btnPull10 = { x: G.W / 2, y: G.H - 52, r: 62 };
     G.round(G.W / 2 - 130, G.H - 86, 260, 56, 12, 'rgba(120,70,30,.9)', 'rgba(255,190,90,.55)', 2);
-    G.text('看广告 · 十连抽', G.W / 2, G.H - 64, 17, '#ffe2b0', 'center', true);
-    G.text('每 8 次必出史诗以上（当前 ' + (S.save.pulls % 8) + '/8）', G.W / 2, G.H - 44, 11.5, '#d9b98a', 'center');
+    G.text('十连抽', G.W / 2, G.H - 64, 18, '#ffe2b0', 'center', true);
+    G.text('免费 · 每 8 次必出史诗以上（当前 ' + (S.save.pulls % 8) + '/8）', G.W / 2, G.H - 44, 11.5, '#d9b98a', 'center');
 
     S.btnBack = { x: G.W - 40, y: 40, r: 17 };
     G.circle(S.btnBack.x, S.btnBack.y, 16, 'rgba(255,255,255,.12)');
@@ -2065,7 +2065,7 @@ window.DATA = (function () {
     S.btnFeed = { x: G.W / 2, y: G.H - 92, r: 62 };
     G.round(G.W / 2 - 130, G.H - 124, 260, 56, 12, 'rgba(60,90,60,.9)', 'rgba(140,230,150,.5)', 2);
     G.text('喂食升级', G.W / 2, G.H - 102, 17, '#d9ffdd', 'center', true);
-    G.text('体力果×1 + 灵果' + need + '（当前 ' + s.coins + '）', G.W / 2, G.H - 82, 11.5, '#b6d9b8', 'center');
+    G.text('精粹×5 + 灵果' + need + '（灵果 ' + Math.floor(s.coins) + '）', G.W / 2, G.H - 82, 11.5, '#b6d9b8', 'center');
   }
   function moodTxt(m) { return m >= 80 ? '心情好' : m >= 50 ? '还行' : m >= 30 ? '有点闷' : '闷闷不乐'; }
 
@@ -2326,10 +2326,13 @@ window.DATA = (function () {
     var s = S.save;
     if (!s.pet) { toast('还没有宠物'); return; }
     if (s.petLv >= D.PET_MAX_LV) { toast('已经满级了'); return; }
+    /* ⚠️ 原来要"体力果"，但那资源全游戏 nowhere 拿得到 → 宠物只能喂两次。
+       改用真正拿得到的资源：精粹（分解装备来的）+ 灵果。 */
     var need = s.petLv * 50;
-    if ((s.ef || 0) < 1) { toast('没有体力果'); return; }
+    var needEss = 5;
+    if ((s.essence || 0) < needEss) { toast('精粹不够，去分解装备'); return; }
     if (s.coins < need) { toast('灵果不够（需 ' + need + '）'); return; }
-    s.coins -= need; s.ef--; s.petLv++;
+    s.coins -= need; s.essence -= needEss; s.petLv++;
     s.petMood = Math.min(D.MOOD_MAX, mood() + D.MOOD_FEED);
     s.petMoodAt = Date.now();
     S.stats = stats();
@@ -2447,9 +2450,6 @@ window.DATA = (function () {
       skillQueued: [0, 0, 0], toast: '', toastT: 0,
       anim: { power: 0, powerFrom: 0 }, pullRes: []
     };
-    /* 体力果库存（简单起见放在 save 里） */
-    if (s.ef == null) s.ef = 2;
-    s.farmInvEf = s.ef;
     S.stats = stats();          /* 必须在 S 赋值之后：stats() 读 S.save */
     if (S.state === 'battle') newBattle();
     preloadArt();
