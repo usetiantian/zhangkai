@@ -67,6 +67,14 @@ SHOT_RULES = """
 5. **镜头连贯优先于镜头数量**。不要插入与叙事无关的空镜（只有门缝、只有地面、只有特写），
    不要突然换轴线或跳视角，不要改变观众已经建立的空间关系。宁可少一个镜头，
    也不要让观众看不懂人在哪。
+8. **镜头长度由叙事决定，不由默认习惯决定。** 先判断这场戏"要不要一口气讲完"：
+   - 情绪需要连续的空间感与时间感（一口气的等待、压迫、发现、行云流水的动作、
+     人物从进门走到亮起来）→ 用**一个连续镜头**走完，中间不切；
+     运镜写清"起幅 — 触发 — 路径/幅度/速度 — 终止构图 — 戏剧结果"。
+   - 需要换视角、换信息、情绪要断 → 才切镜。
+   - **不要所有镜头都等长**。等长就说明没有逐镜判断。镜长应随戏走：
+     冲突紧的戏短、等待的戏长、情绪转折处给一个明显更长的镜头。
+     如果整场戏的镜头长度几乎一样，就重新按戏的内容重排。
 6. **台词时长自检**：每个 <d> 台词的汉字数（含标点）必须 ≤ 该 Shot 秒数 × 4；
    同时按不超过 3.5 字/秒 预留余量（一个 21 字的句子至少要 6 秒）。
    台词放不下时**加长这个 Shot**，不要塞进别的 Shot 里。
@@ -150,7 +158,7 @@ def split_shots(board):
     """把官方分镜正文切成 [(序号, 整块文本)]。只处理 integrated_multimodal_description 段。"""
     i = board.find("integrated_multimodal_description:")
     if i < 0:
-        return board, []
+        return board, [], board
     j = board.find("overall_soundscape:", i)
     if j < 0:
         j = len(board)
@@ -271,6 +279,60 @@ def audit_storyboard(board):
             bad.append({"shot": shots[idx][0], "chars": c, "sec": round(d, 2), "limit": round(d * 4, 2)})
     return bad
 
+
+
+def audit_uniformity(board, tol=0.6, min_shots=3):
+    """检测「机械等长」：镜头长度几乎一样 = 分镜没做逐镜判断。
+
+    为什么要查这个：张凯的原话「不是特意要长镜头，是一句剧情需要，也是导演的功底」
+    —— 长镜头是判断的结果，不是要追求的技术。判断的病征恰恰是**长度一样**：
+    清一色 6 秒/8 秒说明 LLM 套了默认习惯，没在想这场戏要多久。
+    """
+    head, shots, tail = split_shots(board)
+    if not shots or len(shots) < min_shots:
+        return {"uniform": False, "msg": "镜头太少，不判", "durations": []}
+    cur = []
+    for num, body in shots:
+        m = _SHOT_AT.search(body)
+        cur.append(_sec(*m.groups()) if m else 0.0)
+    total = storyboard_total(board)
+    durs = []
+    for i in range(len(shots)):
+        end = cur[i + 1] if i + 1 < len(shots) else total
+        durs.append(round(max(0.0, end - cur[i]), 2))
+    # 最常见的长度及其占比
+    from collections import Counter
+    cnt = Counter(round(d, 1) for d in durs)
+    common, n = cnt.most_common(1)[0]
+    ratio = n / float(len(durs))
+    return {"uniform": ratio >= tol, "ratio": round(ratio, 2), "common_len": common,
+            "n": n, "total_shots": len(durs), "durations": durs,
+            "msg": ("%d/%d 个镜头都是 %.1f 秒（%.0f%%）—— 等长，说明没逐镜判断"
+                    % (n, len(durs), common, ratio * 100)) if ratio >= tol
+                   else "镜头长度有变化（最长 %.1f / 最短 %.1f 秒），判断过" % (max(durs), min(durs))}
+
+
+def audit_uniformity_beats(task, tol=0.6):
+    """场次层的机械等长检测（同上，作用在分镜任务书上）。"""
+    head, blocks = beat_blocks(task)
+    if not blocks:
+        return {"uniform": False, "msg": "没解析到场次", "durations": []}
+    durs = []
+    for num, block in blocks:
+        m = _BEAT_TIME.search(block)
+        if m:
+            durs.append(round(float(m.group(2)) - float(m.group(1)), 2))
+    if len(durs) < 3:
+        return {"uniform": False, "msg": "场次太少，不判", "durations": durs}
+    from collections import Counter
+    cnt = Counter(round(d, 1) for d in durs)
+    common, n = cnt.most_common(1)[0]
+    ratio = n / float(len(durs))
+    return {"uniform": ratio >= tol, "ratio": round(ratio, 2), "common_len": common,
+            "n": n, "total_shots": len(durs), "durations": durs,
+            "msg": ("%d/%d 个场次都是 %.1f 秒（%.0f%%）—— 等长，说明没逐场判断"
+                    % (n, len(durs), common, ratio * 100)) if ratio >= tol
+                   else "场次长度有变化（最长 %.1f / 最短 %.1f 秒），判断过" % (max(durs), min(durs))}
 
 def audit_segments(segments):
     """检查导演台段表里每条台词的时长（出片前自检用）。"""
