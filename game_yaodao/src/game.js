@@ -234,6 +234,7 @@
     };
     S.mobs = []; S.drops = []; S.nums = []; S.eff = [];
     S.waveT = 1.2; S.spawned = 0; S.map = D.MAPS[S.save.map] || D.MAPS[0];
+    S.deaths = 0;
     S.anim = { power: 0, powerFrom: 0 };
     /* 新手提示：只提示一次 */
     if (!S.save.tipMove) {
@@ -277,6 +278,12 @@
     /* 自愈：进战斗时 hero 必须在（改形象返回/强制切状态等路径会漏建）——
        漏了就现场重建，否则每帧炸 TypeError 画面冻住（张凯"点了没反应"根因） */
     if (!h) { newBattle(); h = S.hero; }
+    /* 倒地：被击倒的惩罚期 —— 不动、不打、技能停转 */
+    if (h.down > 0) {
+      h.down -= dt;
+      if (h.down <= 0) toast('重伤起身，稳住！');
+      return;   /* 本帧跳过全部战斗逻辑（怪也停？怪继续走但不打 —— invuln 罩着） */
+    }
 
     /* —— 自动战斗：10 秒无操作接管 —— */
     var idle = (Date.now() - G.T.lastInput) > 10000;
@@ -400,10 +407,25 @@
         m.y += Math.sin(a) * m.spd * dt;
         m.face = Math.cos(a) >= 0 ? 1 : -1;
       }
-      if (d < m.r + 22 && h.invuln <= 0) {
+      if (d < m.r + 22 && h.invuln <= 0 && !(h.down > 0)) {
         h.invuln = 0.55; h.hp -= m.atk; h.hurt = 0.22;
         S.nums.push({ x: h.x, y: h.y - 30, v: -18, t: 0.9, txt: '-' + Math.round(m.atk), col: '#ff6b6b' });
-        if (h.hp <= 0) { h.hp = h.maxhp; toast('被击倒，妖气散尽'); }
+        /* 死亡规则：倒地 3 秒 → 半血起身，本波重刷 —— 战力不足就过不了波，
+           躺尸磨图的口子彻底关死（张凯 2026-11-27 点名的玩法漏洞） */
+        if (h.hp <= 0) {
+          h.hp = Math.round(h.maxhp * 0.5);
+          h.down = 3; h.invuln = 3.6;
+          S.mobs = []; S.spawned = 0; S.waveT = 1.6;
+          S.deaths = (S.deaths || 0) + 1;
+          if (S.deaths >= 3) {
+            toast('战力不足 · 回低图刷装备吧');
+            S.deaths = 0;
+            S.state = 'maps';
+          } else {
+            toast('被击倒！' + (3 - S.deaths) + ' 次机会 · 本波重来');
+          }
+          if (G.sfx) G.sfx.play('boss');
+        }
       }
     });
     h.invuln = Math.max(0, h.invuln - dt);
@@ -1090,8 +1112,19 @@
       var hw = heroImg.width / heroImg.height * hh;
       ctx.save();
       if (h.hurt > 0) ctx.globalAlpha = 0.75;
-      ctx.drawImage(heroImg, h.x - hw / 2, h.y - hh + 6, hw, hh);
-      ctx.restore();
+      /* 倒地：旋转 78° 躺平 + 起身倒计时（死亡惩罚的可视化） */
+      if (h.down > 0) {
+        ctx.translate(h.x, h.y);
+        ctx.rotate(h.face * 1.36);
+        ctx.drawImage(heroImg, -hw / 2, -hh + 6, hw, hh);
+        ctx.restore();
+        ctx.save();
+        G.shadowText(Math.ceil(h.down) + 's 起身', h.x, h.y - 44, 15, '#ff9a8a', 'rgba(0,0,0,.8)');
+        ctx.restore();
+      } else {
+        ctx.drawImage(heroImg, h.x - hw / 2, h.y - hh + 6, hw, hh);
+        ctx.restore();
+      }
     } else {
       /* 没图（包还没带图 / 图加载失败）→ 回退程序化小人，不能黑屏 */
       G.circle(h.x, h.y, 17, h.hurt > 0 ? '#fff' : sk.col);
