@@ -157,11 +157,11 @@
         if (gd) st[gd.main] += gd.v;
       }
     });
-    // 宠物
+    // 宠物（进化阶段乘系数）
     if (s.pet) {
       var p = D.PETS.filter(function (x) { return x.id === s.pet.slot; })[0];
       var m = mood();
-      var mul = 1 + (s.petLv - 1) * 0.05 + (m >= 80 ? 0.10 : 0);
+      var mul = (1 + (s.petLv - 1) * 0.05 + (m >= 80 ? 0.10 : 0)) * (PET_EVO[petStage(s.petLv)] ? PET_EVO[petStage(s.petLv)].mul : 1);
       st[p.main] = Math.round((st[p.main] || 0) + p.base * 10 * mul);
       st.atk = Math.round(st.atk * (1 + (s.petLv - 1) * 0.04 * (m >= 80 ? 1.2 : 1)));
     }
@@ -194,6 +194,9 @@
     st = st || stats();
     return Math.round(st.atk * 2 + st.def * 1.5 + st.hp * 0.6 + st.crit * 12 + st.critDmg * 8 + st.aspd * 10 + st.luck * 14 + st.vamp * 9 + st.drop * 6);
   }
+  /* 宠物进化：Lv5 一阶(×1.6)、Lv10 二阶(×2.4) —— 词条数值跳档 */
+  var PET_EVO = [null, { lv: 5, mul: 1.6, suffix: '·觉醒', col: '#b45cff' }, { lv: 10, mul: 2.4, suffix: '·真身', col: '#ff9a2e' }];
+  function petStage(lv) { return lv >= 10 ? 2 : lv >= 5 ? 1 : 0; }
   function mood() {
     var s = S.save;
     var dt = Date.now() - (s.petMoodAt || Date.now());
@@ -389,7 +392,13 @@
           h.skCd[i] = sk.cd * (1 - (skLv - 1) * D.SK_CD);
           if (S.skillQueued[i]) S.skillQueued[i] = false;
           if (sk.aoe) {
-            S.mobs.forEach(function (m) { if (dist(m, h) <= sk.range) deal(m, sk.dmg * (st.atk * 0.22) * skMul, st, false); });
+            S.mobs.forEach(function (m) {
+              if (dist(m, h) <= sk.range) {
+                deal(m, sk.dmg * (st.atk * 0.22) * skMul, st, false);
+                /* 妖火(2)：灼烧 debuff —— 4 秒持续掉血，可刷新 */
+                if (i === 2) m.burn = { t: 4, dps: Math.max(2, st.atk * 0.12) };
+              }
+            });
             /* 旋风(1) = 风环扩散；妖火(2) = 火球爆开 */
             S.eff.push({ x: h.x, y: h.y, r: 0, r2: sk.range, t: 0.5, dur: 0.5, col: sk.col, kind: i === 1 ? 'wind' : 'fire' });
           } else {
@@ -404,6 +413,13 @@
     /* —— 怪物行为 —— */
     S.mobs.forEach(function (m) {
       m.hit = Math.max(0, m.hit - dt);
+      /* 灼烧 dot */
+      if (m.burn && m.burn.t > 0) {
+        m.burn.t -= dt;
+        var bd = m.burn.dps * dt;
+        m.hp -= bd;
+        if (Math.random() < dt * 2.2) S.nums.push({ x: m.x + rnd(-10, 10), y: m.y - m.r - 6, v: -14, t: 0.6, txt: Math.max(1, Math.round(m.burn.dps)), col: '#ff9a4a' });
+      }
       var d = dist(m, h);
       if (d > m.r + 20) {
         var a = Math.atan2(h.y - m.y, h.x - m.x);
@@ -2035,9 +2051,18 @@
     } else {
       G.circle(88, cy + 76, 34, '#6a7f9a');
     }
-    G.text(p.name, 168, cy + 38, 18, TH.ink, 'left', true);
+    var pstg = petStage(s.petLv);
+    var pevo = PET_EVO[pstg];
+    card(20, cy + 6, G.W - 40, 178, pevo ? pevo.col : null, pevo ? pevo.col : null);
+    G.text(p.name + (pevo ? pevo.suffix : ''), 168, cy + 38, 17, pevo ? pevo.col : TH.ink, 'left', true);
     G.round(300, cy + 22, 56, 20, 10, 'rgba(212,169,78,.16)', 'rgba(212,169,78,.5)', 1);
     G.text('Lv ' + s.petLv + '/' + D.PET_MAX_LV, 328, cy + 32, 11, TH.gold, 'center', true);
+    if (pevo) {
+      G.round(168, cy + 48, 64, 17, 8, 'rgba(180,92,255,.18)', pevo.col, 1);
+      G.text(pstg === 2 ? '二阶进化' : '一阶进化', 200, cy + 56, 9.5, pevo.col, 'center', true);
+    } else {
+      G.text('Lv5 进化一阶', 168, cy + 56, 10, TH.ink3, 'left');
+    }
     G.text('心情', 168, cy + 66, 11.5, TH.ink3);
     G.bar(210, cy + 60, 140, 12, m / 100, m >= 80 ? TH.jade : (m < 30 ? TH.red : TH.gold), 'rgba(0,0,0,.45)');
     G.text(moodTxt(m), 358, cy + 66, 11.5, m >= 80 ? TH.jade : TH.ink2, 'right');
@@ -2107,8 +2132,23 @@
   }
 
   /* ============ 性别/皮肤选择 ============ */
+  /* 健康游戏忠告（审核合规硬项，果子乐园同款）：首启一次性 */
+  function drawHealthTip() {
+    ctx.fillStyle = 'rgba(0,0,0,.78)';
+    ctx.fillRect(0, 0, G.W, G.H);
+    card(30, G.H * 0.24, G.W - 60, G.H * 0.44, TH.goldD);
+    G.text('健康游戏忠告', G.W / 2, G.H * 0.24 + 44, 20, TH.gold, 'center', true);
+    var lines = ['抵制不良游戏，拒绝盗版游戏。', '注意自我保护，谨防受骗上当。', '适度游戏益脑，沉迷游戏伤身。', '合理安排时间，享受健康生活。'];
+    for (var i = 0; i < lines.length; i++) G.text(lines[i], G.W / 2, G.H * 0.24 + 92 + i * 26, 13, TH.ink2, 'center');
+    G.text('本游戏为单机休闲玩法，无付费内容', G.W / 2, G.H * 0.24 + 210, 11, TH.ink3, 'center');
+    S.btnH18 = { x: G.W / 2, y: G.H * 0.24 + 262, r: 56 };
+    btnGold(G.W / 2 - 130, G.H * 0.24 + 236, 260, 52, '我已满 18 周岁', '');
+    S.btnHNo = { x: G.W / 2, y: G.H * 0.24 + 328, r: 56 };
+    btnGhost(G.W / 2 - 130, G.H * 0.24 + 306, 260, 44, '我未满 18 周岁');
+  }
   function drawPick() {
     clearBtns();
+    if (!S.save.healthTip) { drawHealthTip(); return; }
     G.round(0, 0, G.W, G.H, 0, '#14161a');
     G.text('《妖刀录》', G.W / 2, 110, 34, '#ffd88e', 'center', true);
     G.text('休闲 Q 版仙侠 · 打怪爆装', G.W / 2, 146, 14, '#9c9484', 'center');
@@ -2145,6 +2185,15 @@
     /* 列表滚动：按下即记录锚点（拖动在 update 里轮询 G.T） */
     if (S.state === 'bag') { S._sy = y; S._sdown = true; S.bagV = 0; }
     if (S.state === 'maps') { S._sy = y; S.mapV = 0; }
+    if (S.state === 'pick' && !S.save.healthTip) {
+      if (S.btnH18 && hit(x, y, S.btnH18)) {
+        S.save.healthTip = 1; G.persist(); return;
+      }
+      if (S.btnHNo && hit(x, y, S.btnHNo)) {
+        S.save.healthTip = 1; G.persist(); toast('未成年人请注意适度游戏'); return;
+      }
+      return;
+    }
     if (S.state === 'pick') {
       if (S.btnBack && hit(x, y, S.btnBack)) { S.state = S.pickPrev || 'battle'; return; }
       ['m', 'f'].forEach(function (k) {
@@ -2353,6 +2402,11 @@
     if ((s.essence || 0) < needEss) { toast('精粹不够，去分解装备'); return; }
     if (s.coins < need) { toast('灵果不够（需 ' + need + '）'); return; }
     s.coins -= need; s.essence -= needEss; s.petLv++;
+    var stg = petStage(s.petLv);
+    if ((s.petLv === 5 || s.petLv === 10) && PET_EVO[stg]) {
+      toast('宠物进化！' + (D.PETS.filter(function (x) { return x.id === s.pet.slot; })[0] || {}).name + PET_EVO[stg].suffix + '（词条 ×' + PET_EVO[stg].mul + '）');
+      if (G.sfx) G.sfx.play('rare');
+    }
     s.petMood = Math.min(D.MOOD_MAX, mood() + D.MOOD_FEED);
     s.petMoodAt = Date.now();
     S.stats = stats();
