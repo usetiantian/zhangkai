@@ -1974,7 +1974,7 @@ window.DATA = (function () {
     S.btnMap = { x: 70, y: hty + 14, r: 60 };
     G.text(S.map.name, 24, hty + 14, 16, '#ffd88e', 'left', true);
     G.text('▾', 24 + String(S.map.name).length * 16 + 4, hty + 15, 12, '#ffd88e', 'left');
-    G.text('第 ' + (S.wave + 1) + '/' + S.map.waves + ' 波　妖 ' + S.mobs.length, 24, hty + 32, 12.5, '#c9bda4');
+    G.text('妖 ' + S.mobs.length, 24 + (S.map.name || '').length * 16 + 22, hty + 32, 12, '#8a8272', 'left');
 
     /* 等级 + 经验条（跟 HUD 顶栏一起吃安全区偏移） */
     G.round(12, hty + 46, 92, 24, 6, 'rgba(0,0,0,.5)');
@@ -1999,7 +1999,7 @@ window.DATA = (function () {
     }
 
     /* 自动战斗开关 */
-    S.btnAuto = { x: G.W - 44, y: 74, r: 17 };
+    S.btnAuto = { x: G.W - 44, y: hty + 118, r: 17 };
     G.circle(S.btnAuto.x, S.btnAuto.y, 17, S.autoOn ? '#3f7f4f' : 'rgba(30,30,30,.65)', 'rgba(255,255,255,.35)', 1.5);
     G.text('自动', S.btnAuto.x, S.btnAuto.y, 12, S.autoOn ? '#c9ffd0' : '#c8c0b0', 'center', true);
 
@@ -2007,8 +2007,8 @@ window.DATA = (function () {
     if (S.autoOn) {
       /* 放在顶部第二行下面 —— 原来压着 XP 条和静音键 */
       G.round(G.W / 2 - 130, 100, 260, 32, 8, 'rgba(20,40,25,.82)');
-      G.text('自动战斗中 · 触碰屏幕切回', G.W / 2 - 8, 116, 13.5, '#b8f5c4', 'center');
-      S.btnAutoX = { x: G.W / 2 + 116, y: 116, r: 13 };
+      G.text('自动战斗中·触屏切回', 24, hty + 118, 12, '#b8f5c4', 'left');
+      S.btnAutoX = { x: 24 + 118, y: hty + 118, r: 13 };
       G.circle(S.btnAutoX.x, S.btnAutoX.y, 12, 'rgba(255,255,255,.14)');
       G.text('✕', S.btnAutoX.x, S.btnAutoX.y, 13, '#fff', 'center', true);
     }
@@ -2059,6 +2059,40 @@ window.DATA = (function () {
     S.btnMute = { x: 260, y: G.H - 46, r: 21 };
     G.circle(S.btnMute.x, S.btnMute.y, 21, 'rgba(30,32,38,.8)', 'rgba(255,255,255,.3)', 1.5);
     G.text(S.save.muted ? '🔇' : '🔊', S.btnMute.x, S.btnMute.y, 13, '#e8e0d0', 'center');
+    /* 2倍速（借鉴小小英雄） */
+    S.btnSpeed = { x: 314, y: G.H - 46, r: 21 };
+    G.circle(S.btnSpeed.x, S.btnSpeed.y, 21, (S.speed || 1) > 1 ? 'rgba(120,70,30,.9)' : 'rgba(30,32,38,.8)',
+      (S.speed || 1) > 1 ? 'rgba(255,190,90,.6)' : 'rgba(255,255,255,.3)', 1.5);
+    G.text((S.speed || 1) > 1 ? '2x' : '1x', S.btnSpeed.x, S.btnSpeed.y, 12, (S.speed || 1) > 1 ? '#ffe2b0' : '#e8e0d0', 'center', true);
+    /* 资源胶囊（借鉴小小英雄：顶栏常显灵果/精粹） */
+    G.round(G.W - 128, hty + 64, 116, 19, 9, 'rgba(0,0,0,.5)');
+    G.text('灵果 ' + fmt(Math.floor(S.save.coins)), G.W - 70, hty + 74, 10.5, '#ffd76a', 'center', true);
+    G.round(G.W - 128, hty + 86, 116, 19, 9, 'rgba(0,0,0,.5)');
+    G.text('精粹 ' + fmt(Math.floor(S.save.essence || 0)), G.W - 70, hty + 96, 10.5, '#b9a8ff', 'center', true);
+    /* 波次节点链（借鉴小小英雄的关卡进度条：绿点=已过 波 骷髅=终点） */
+    var wn = S.map.waves || 5, nw = Math.min(wn, 9);
+    var nx0 = 24, nxs = Math.min(26, (pd - 40) / nw);
+    for (var wi = 0; wi < nw; wi++) {
+      var ncx = nx0 + 10 + wi * nxs;
+      var done2 = wi < S.wave, cur2 = wi === S.wave;
+      if (wi === nw - 1) {
+        G.text('💀', ncx, hty + 52, 11, 'center');
+      } else {
+        G.circle(ncx, hty + 52, done2 ? 4 : 3, done2 ? '#7dff9b' : (cur2 ? '#ffd23a' : 'rgba(255,255,255,.25)'));
+      }
+    }
+    G.text((S.wave + 1) + '/' + wn + ' 波', 24, hty + 72, 10, 'rgba(201,189,164,.75)', 'left');
+    /* Boss/精英血条（借鉴小小英雄：存活时顶部中央大血条+百分比） */
+    var bossM = null;
+    for (var bi = 0; bi < S.mobs.length; bi++) if (S.mobs[bi].boss && S.mobs[bi].hp > 0) { bossM = S.mobs[bi]; break; }
+    if (bossM) {
+      var bw2 = 220, bx2 = G.W / 2 - bw2 / 2, by2 = hty + 96;
+      G.round(bx2 - 6, by2 - 14, bw2 + 12, 34, 8, 'rgba(0,0,0,.55)', 'rgba(255,90,110,.5)', 1);
+      G.text(bossM.boss === 2 ? '妖王' : '精英', bx2 + 8, by2 - 3, 10, '#ff8a9a', 'left', true);
+      var bhp = Math.max(0, bossM.hp / bossM.maxhp);
+      G.bar(bx2, by2 + 8, bw2, 9, bhp, '#ff4a5a', 'rgba(0,0,0,.6)');
+      G.text(Math.round(bhp * 100) + '%', G.W / 2, by2 + 13, 8.5, '#fff', 'center', true);
+    }
 
     /* toast */
     if (S.toastT > 0) {
@@ -2953,6 +2987,11 @@ window.DATA = (function () {
       G.persist();
       return;
     }
+    if (S.btnSpeed && hit(x, y, S.btnSpeed)) {
+      S.speed = (S.speed || 1) > 1 ? 1 : 2;
+      toast((S.speed > 1 ? '2' : '1') + ' 倍速');
+      return;
+    }
     if (S.btnPull && hit(x, y, S.btnPull)) { S.pullRes = pull10(); S.state = 'pull'; return; }
     for (var i = 0; i < 3; i++) {
       var b2 = S['btnS' + i];
@@ -3133,6 +3172,7 @@ window.DATA = (function () {
 
   /* ============ 主循环 ============ */
   function update(dt) {
+    dt *= (S.speed || 1);   /* 2倍速（借鉴小小英雄）：全局时间加速 */
     if (!S) return;
     if (S.shake > 0) S.shake = Math.max(0, S.shake - dt);
     if (S.hint && S.hint.t > 0) S.hint.t -= dt;
@@ -3214,7 +3254,7 @@ window.DATA = (function () {
       wave: 0, waveT: 1.2, map: D.MAPS[s.map] || D.MAPS[0],
       stats: null, autoOn: false, autoManual: false, pickPrev: null,
       combo: 0, comboT: 0, comboBest: 0,   /* 连击 */
-      skillQueued: [0, 0, 0], toast: '', toastT: 0, bagScroll: 0, bagV: 0, bagMax: 0, mapScroll: 0, mapV: 0, mapMax: 0,
+      skillQueued: [0, 0, 0], toast: '', toastT: 0, bagScroll: 0, bagV: 0, bagMax: 0, mapScroll: 0, mapV: 0, mapMax: 0, speed: 1,
       anim: { power: 0, powerFrom: 0 }, pullRes: []
     };
     S.stats = stats();          /* 必须在 S 赋值之后：stats() 读 S.save */
