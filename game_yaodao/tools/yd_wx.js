@@ -75,9 +75,18 @@ async function main() {
   // ② 点「编译」重开游戏（编译按钮有时点不动，重试到游戏真的重启为止）
   const compile = async () => {
     const l = await (await fetch(`http://127.0.0.1:${PORT}/json/list`)).json();
-    const t = l.find(x => (x.url || '').includes('electron-project.html'));
-    if (!t) return 'NO WINDOW';
-    const c = connect(t.webSocketDebuggerUrl); await c.ready;
+    const ts = l.filter(x => (x.url || '').includes('electron-project.html'));
+    if (!ts.length) return 'NO WINDOW';
+    let c = null;
+    /* 多个 IDE 窗口（工程列表窗/残留窗）——找真正带模拟器工具栏的那个 */
+    for (const t of ts) {
+      const c2 = connect(t.webSocketDebuggerUrl); await c2.ready;
+      const probe = await c2.send('Runtime.evaluate', {
+        expression: '!!document.querySelector(".ui-icon-refresh")', returnByValue: true });
+      if (probe.result && probe.result.result && probe.result.result.value) { c = c2; break; }
+      c2.ws.close();
+    }
+    if (!c) return 'NO TOOLBAR';
     const r = await c.send('Runtime.evaluate', {
       expression: `(function(){
           var els=[].slice.call(document.querySelectorAll('.simulator-toolbar-item'));
@@ -93,8 +102,10 @@ async function main() {
   {
     let ok = false;
     for (let i = 1; i <= 4 && !ok; i++) {
-      console.log('② 编译 第' + i + '次:', await compile());
-      await sleep(6000);
+      /* 文件监视器重载（编译点击在多窗口/重载后会遇到输入域挂死，文件触发最稳） */
+      require('fs').appendFileSync('C:/Users/87999/claude-workspace/game_yaodao/wx/game.js', String.fromCharCode(10));
+      console.log('② 文件触发重载 第' + i + '次');
+      await sleep(9000);
       const { c: c2, cid: id2 } = await findGame();
       const st = await c2.send('Runtime.evaluate', {
         expression: 'GAME.S().state', contextId: id2, returnByValue: true
@@ -146,6 +157,8 @@ async function main() {
     console.log('   截图', n);
   };
 
+  try { await c.send('Input.enable'); } catch (e) { }
+  await sleep(1500);
   await calibrate();
   console.log('③ 开局 state =', await ev('GAME.S().state'), '| sex =', JSON.stringify(await ev('GAME.S().save.sex')));
   await shot('wx01_选性别');

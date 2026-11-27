@@ -54,8 +54,9 @@
     if (WX.getMenuButtonBoundingClientRect) { try { mb = WX.getMenuButtonBoundingClientRect(); } catch (e2) { } }
     var topCss = Math.max(sa ? sa.top : 0, mb ? (mb.bottom + 6) : 0);
     var botCss = sa ? Math.max(0, (SYS.screenHeight || H) - sa.bottom) : 0;
-    SAFE.dTop = Math.ceil(topCss / SCALE);
-    SAFE.dBottom = Math.ceil(botCss / SCALE);
+    /* ⚠️ UI/触摸坐标空间 = CSS 像素（G.W≈393），不是 750 设计宽 —— 别除以 SCALE */
+    SAFE.dTop = Math.ceil(topCss);
+    SAFE.dBottom = Math.ceil(botCss);
   } catch (e) { }
 
   var cv = WX.createCanvas();

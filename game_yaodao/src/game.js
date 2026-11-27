@@ -1432,7 +1432,11 @@
 
     var s = S.save;
     var pw2 = power();
-    var y = cy + 6;
+    /* 整块内容可滚动（7 卡 + 图鉴 + 兑换超过一屏） */
+    var listTop = cy + 4, listBot = G.H - 72;
+    ctx.save();
+    ctx.beginPath(); ctx.rect(0, listTop, G.W, listBot - listTop); ctx.clip();
+    var y = cy + 8 - (S.mapScroll || 0);
     for (var i = 0; i < D.MAPS.length; i++) {
       var mp = D.MAPS[i];
       var unlocked = (i <= s.maxWave);
@@ -1512,7 +1516,9 @@
     if (canDex) btnGold(G.W / 2 - 165, y, 330, 52, '兑换奖励', '精粹×' + D.DEX_ESS + ' 宝石×1');
     else btnGhost(G.W / 2 - 165, y, 330, 52, '还差 ' + (D.DEX_GOAL - (s.dexP || 0)) + ' 图鉴点可兑换');
 
-    G.text('低图掉低级装备 · 高图出好东西 · 自由切换', G.W / 2, G.H - Math.max(64, (G.SAFE ? G.SAFE.dBottom : 0) + 54), 11, TH.ink3, 'center');
+    S.mapMax = Math.max(0, (y - cy - 8) - (listBot - listTop) + 16);
+    ctx.restore();
+    G.text('低图掉低级装备 · 高图出好东西 · 自由切换', G.W / 2, G.H - Math.max(58, (G.SAFE ? G.SAFE.dBottom : 0) + 48), 11, TH.ink3, 'center');
     drawBackBar();
   }
 
@@ -1528,7 +1534,6 @@
     var cy = panelChrome('每日签到');
     drawBackBar();
     G.text('连签 ' + S.save.signDay + ' 天', G.W - 28, cy - 24, 13, '#c9bda4', 'right');
-    G.text('连签 ' + S.save.signDay + ' 天', G.W - 64, 64, 13, '#c9bda4', 'right');
 
     var can = canSignIn();
     var cur = S.save.signDay % D.SIGN.length;
@@ -1852,16 +1857,16 @@
   function drawBag() {
     clearBtns();
     var cy = panelChrome('背 包');
-    /* 第二行：战力（左）· 造型 / 改形象 / 一键分解（右，幽灵小钮） */
+    /* 第二行（CSS 像素空间，屏宽≈393）：战力（左）· 造型 / 改形象 / 一键分解（右） */
     var ry = cy + 6;
-    G.text('战力', 24, ry, 11, TH.ink3, 'left');
-    G.text(fmt(power()), 24, ry + 22, 21, TH.gold, 'left', true);
-    S.btnSkin = { x: 414, y: ry + 12, r: 46 };
-    btnGhost(376, ry - 4, 76, 32, '造型');
-    S.btnLook = { x: 502, y: ry + 12, r: 46 };
-    btnGhost(464, ry - 4, 76, 32, '改形象');
-    S.btnSalvage = { x: 648, y: ry + 12, r: 46 };
-    btnGhost(600, ry - 4, 96, 32, '一键分解');
+    G.text('战力', 16, ry, 10, TH.ink3, 'left');
+    G.text(fmt(power()), 16, ry + 18, 17, TH.gold, 'left', true);
+    S.btnSkin = { x: 152, y: ry + 11, r: 42 };
+    btnGhost(126, ry - 3, 52, 28, '造型');
+    S.btnLook = { x: 218, y: ry + 11, r: 42 };
+    btnGhost(186, ry - 3, 64, 28, '改形象');
+    S.btnSalvage = { x: 320, y: ry + 11, r: 42 };
+    btnGhost(258, ry - 3, 124, 28, '一键分解');
 
     /* 已装备 4 卡（品质色描边 + 强化徽章 + 套装点） */
     var slots = D.SLOTS;
@@ -1901,36 +1906,44 @@
     var gemTot = 0;
     if (S.save.gems) for (var gk in S.save.gems) gemTot += S.save.gems[gk];
     G.text('持有 ' + S.save.bag.length + ' 件' + (gemTot ? ' · 宝石 ' + gemTot : ''), 24, y, 12.5, TH.ink2);
-    G.text('点装备穿上', G.W - 24, y, 11, TH.ink3, 'right');
+    G.text('点装备穿上 · 上下滑动', G.W - 24, y, 11, TH.ink3, 'right');
     y += 20;
-    for (var j = S.save.bag.length - 1; j >= 0 && n < 40 && y < G.H - 208; j--) {
-      var it2 = S.save.bag[j];
-      card(20, y, G.W - 40, 50, null);
-      /* 品质左竖条 */
-      G.round(20, y + 6, 4, 38, 2, it2.col);
-      var iw2 = null;
-      if (it2.wtype) {
-        var sk2 = D.WEAPON_SKIN.filter(function (w) { return w.w === it2.wtype; })[0];
-        if (sk2 && S.wskinImg) iw2 = S.wskinImg[sk2.id];
+    /* 可滚动的物品列表：裁剪区 + 滚动偏移（拖动在 update 里轮询 G.T） */
+    var listTop = y - 6, listBot = G.H - 196;
+    ctx.save();
+    ctx.beginPath(); ctx.rect(0, listTop, G.W, listBot - listTop); ctx.clip();
+    var yy = y - (S.bagScroll || 0);
+    for (var j = S.save.bag.length - 1; j >= 0 && n < 60; j--) {
+      if (yy > listTop - 62 && yy < listBot) {
+        var it2 = S.save.bag[j];
+        card(20, yy, G.W - 40, 50, null);
+        G.round(20, yy + 6, 4, 38, 2, it2.col);
+        var iw2 = null;
+        if (it2.wtype) {
+          var sk2 = D.WEAPON_SKIN.filter(function (w) { return w.w === it2.wtype; })[0];
+          if (sk2 && S.wskinImg) iw2 = S.wskinImg[sk2.id];
+        }
+        var ti2 = tintedIcon(it2.slot, it2.col);
+        if (iw2) {
+          var bhh2 = 34, bww2 = iw2.width / iw2.height * bhh2;
+          ctx.drawImage(iw2, 34 + (34 - bww2) / 2, yy + 8, bww2, bhh2);
+        } else if (ti2) {
+          ctx.drawImage(ti2, 34, yy + 8, 34, 34);
+        } else {
+          G.round(34, yy + 8, 28, 34, 6, 'rgba(255,255,255,.05)', it2.col, 1.2);
+          G.circle(48, yy + 25, 8, it2.col);
+        }
+        G.text(it2.qn + (it2.lv ? ' +' + it2.lv : ''), 80, yy + 16, 13.5, it2.col, 'left', true);
+        var sdi = setD(it2);
+        G.text(slotName(it2.slot) + (it2.wtype ? '·' + D.WEAPONS[it2.wtype].name : '') + (sdi ? ' · ' + sdi.name : ''),
+          80, yy + 34, 11, sdi ? sdi.col : TH.ink3);
+        G.text(affixTxt(it2), G.W - 32, yy + 26, 11, TH.ink2, 'right');
+        S['bagItem' + j] = { x: 24, y: yy + 25, r: 0, w: G.W - 48, h: 26, idx: j };
       }
-      var ti2 = tintedIcon(it2.slot, it2.col);
-      if (iw2) {
-        var bhh2 = 34, bww2 = iw2.width / iw2.height * bhh2;
-        ctx.drawImage(iw2, 34 + (34 - bww2) / 2, y + 8, bww2, bhh2);
-      } else if (ti2) {
-        ctx.drawImage(ti2, 34, y + 8, 34, 34);
-      } else {
-        G.round(34, y + 8, 28, 34, 6, 'rgba(255,255,255,.05)', it2.col, 1.2);
-        G.circle(48, y + 25, 8, it2.col);
-      }
-      G.text(it2.qn + (it2.lv ? ' +' + it2.lv : ''), 80, y + 16, 13.5, it2.col, 'left', true);
-      var sdi = setD(it2);
-      G.text(slotName(it2.slot) + (it2.wtype ? '·' + D.WEAPONS[it2.wtype].name : '') + (sdi ? ' · ' + sdi.name : ''),
-        80, y + 34, 11, sdi ? sdi.col : TH.ink3);
-      G.text(affixTxt(it2), G.W - 32, y + 26, 11, TH.ink2, 'right');
-      S['bagItem' + j] = { x: 24, y: y + 25, r: 0, w: G.W - 48, h: 26, idx: j };
-      y += 58; n++;
+      yy += 58; n++;
     }
+    S.bagMax = Math.max(0, (yy - y) - (listBot - listTop) + 12);
+    ctx.restore();
     if (!S.save.bag.length) G.text('还没有装备 · 去打怪爆', G.W / 2, y + 60, 15, TH.ink3, 'center');
 
     /* 底部：十连抽（金主按钮）+ 返回条 */
@@ -2086,6 +2099,9 @@
     if (S.state !== 'battle' && S.state !== 'pick' && S.btnBack2 && hitRect(x, y, S.btnBack2)) {
       S.state = S.btnBack2.to || 'battle'; return;
     }
+    /* 列表滚动：按下即记录锚点（拖动在 update 里轮询 G.T） */
+    if (S.state === 'bag') { S._sy = y; S._sdown = true; S.bagV = 0; }
+    if (S.state === 'maps') { S._sy = y; S.mapV = 0; }
     if (S.state === 'pick') {
       if (S.btnBack && hit(x, y, S.btnBack)) { S.state = S.pickPrev || 'battle'; return; }
       ['m', 'f'].forEach(function (k) {
@@ -2108,24 +2124,8 @@
       if (S.btnLook && hit(x, y, S.btnLook)) { S.pickPrev = 'bag'; S.state = 'pick'; return; }
       if (S.btnSalvage && hit(x, y, S.btnSalvage)) { salvageJunk(); return; }
       if (S.btnSkin && hit(x, y, S.btnSkin)) { S.state = 'skin'; return; }
-      /* 点已装备的格子 → 强化面板 */
-      for (var sk in S) {
-        if (sk.indexOf('slotBtn') === 0) {
-          var sb = S[sk];
-          if (sb && hit(x, y, sb) && S.save.equip[sb.slot]) {
-            S.upSlot = sb.slot; S.state = 'upgrade'; return;
-          }
-        }
-      }
       if (S.btnPull10 && hit(x, y, S.btnPull10)) { S.pullRes = pull10(); S.state = 'pull'; return; }
-      for (var k in S) {
-        if (k.indexOf('bagItem') === 0) {
-          var b = S[k];
-          if (x > b.x - 8 && x < b.x + b.w + 8 && Math.abs(y - b.y) < b.h / 2 + 6) {
-            equipItem(b.idx); return;
-          }
-        }
-      }
+      /* 装备格/物品行的点击挪到 onUp：拖动滚列表不该误触穿装备 */
       return;
     }
     if (S.state === 'sign') {
@@ -2136,27 +2136,7 @@
     if (S.state === 'maps') {
       if (S.btnBack && hit(x, y, S.btnBack)) { S.state = 'battle'; return; }
       if (S.btnSign && hit(x, y, S.btnSign)) { S.state = 'sign'; return; }
-      for (var mk in S) {
-        if (mk.indexOf('mapBtn') === 0) {
-          var mb = S[mk];
-          if (mb && hit(x, y, mb)) {
-            if (mb.locked) {
-              var mp2 = D.MAPS[mb.idx];
-              var prev = mb.idx > 0 ? D.MAPS[mb.idx - 1] : null;
-              toast('通关「' + (prev ? prev.name : '前一图') + '」后解锁');
-              return;
-            }
-            S.save.map = mb.idx;
-            S.map = D.MAPS[mb.idx];
-            S.wave = 0; S.waveT = 1.0;
-            S.mobs = []; S.drops = []; S.nums = []; S.eff = [];
-            S.state = 'battle';
-            toast('进入 ' + S.map.name);
-            G.persist();
-            return;
-          }
-        }
-      }
+      /* 地图卡在滚动区里，点击挪到 onUp 判定 */
       return;
     }
     if (S.state === 'skin') {
@@ -2248,6 +2228,53 @@
     }
   }
 
+  /* 松手才判定的点击：拖动滚列表（G.T.moved）不算点击 */
+  function onUp(x, y) {
+    if (G.T.moved) return;
+    if (S.state === 'maps') {
+      if (S.btnDex && hit(x, y, S.btnDex)) { claimDex(); return; }
+      for (var mk in S) {
+        if (mk.indexOf('mapBtn') === 0) {
+          var mb = S[mk];
+          if (mb && hit(x, y, mb)) {
+            if (mb.locked) {
+              var mp2 = D.MAPS[mb.idx];
+              var prev = mb.idx > 0 ? D.MAPS[mb.idx - 1] : null;
+              toast('通关「' + (prev ? prev.name : '前一图') + '」后解锁');
+              return;
+            }
+            S.save.map = mb.idx;
+            S.map = D.MAPS[mb.idx];
+            S.wave = 0; S.waveT = 1.0;
+            S.mobs = []; S.drops = []; S.nums = []; S.eff = [];
+            S.state = 'battle';
+            toast('进入 ' + S.map.name);
+            G.persist();
+            return;
+          }
+        }
+      }
+      return;
+    }
+    if (S.state === 'bag') {
+      for (var sk in S) {
+        if (sk.indexOf('slotBtn') === 0) {
+          var sb = S[sk];
+          if (sb && hit(x, y, sb) && S.save.equip[sb.slot]) {
+            S.upSlot = sb.slot; S.state = 'upgrade'; return;
+          }
+        }
+      }
+      for (var k in S) {
+        if (k.indexOf('bagItem') === 0) {
+          var b = S[k];
+          if (x > b.x - 8 && x < b.x + b.w + 8 && Math.abs(y - b.y) < b.h / 2 + 6) {
+            equipItem(b.idx); return;
+          }
+        }
+      }
+    }
+  }
   function equipItem(idx) {
     var s = S.save, it = s.bag[idx];
     if (!it) return;
@@ -2384,6 +2411,31 @@
     if (S.comboBuff > 0) S.comboBuff -= dt;
     if (S.lvFx > 0) S.lvFx -= dt;
     if (S.banner && S.banner.t > 0) S.banner.t -= dt;
+    /* 背包列表滚动：拖动跟随 + 松手惯性 */
+    if (S.state === 'bag') {
+      if (G.T.down && G.T.moved) {
+        var sdy = G.T.y - (S._sy !== undefined ? S._sy : G.T.y);
+        S._sy = G.T.y;
+        S.bagScroll = Math.max(0, Math.min(S.bagMax || 0, (S.bagScroll || 0) - sdy));
+        S.bagV = -sdy;
+      } else if (S.bagV) {
+        S.bagScroll = Math.max(0, Math.min(S.bagMax || 0, (S.bagScroll || 0) + S.bagV));
+        S.bagV *= 0.9;
+        if (Math.abs(S.bagV) < 0.4) S.bagV = 0;
+      }
+    }
+    if (S.state === 'maps') {
+      if (G.T.down && G.T.moved) {
+        var mdy = G.T.y - (S._sy !== undefined ? S._sy : G.T.y);
+        S._sy = G.T.y;
+        S.mapScroll = Math.max(0, Math.min(S.mapMax || 0, (S.mapScroll || 0) - mdy));
+        S.mapV = -mdy;
+      } else if (S.mapV) {
+        S.mapScroll = Math.max(0, Math.min(S.mapMax || 0, (S.mapScroll || 0) + S.mapV));
+        S.mapV *= 0.9;
+        if (Math.abs(S.mapV) < 0.4) S.mapV = 0;
+      }
+    }
     if (S.state === 'pull' && S.pullT !== undefined) S.pullT += dt;
     if (S.state === 'battle') {
       updateBattle(dt);
@@ -2418,7 +2470,7 @@
       wave: 0, waveT: 1.2, map: D.MAPS[s.map] || D.MAPS[0],
       stats: null, autoOn: false, autoManual: false, pickPrev: null,
       combo: 0, comboT: 0, comboBest: 0,   /* 连击 */
-      skillQueued: [0, 0, 0], toast: '', toastT: 0,
+      skillQueued: [0, 0, 0], toast: '', toastT: 0, bagScroll: 0, bagV: 0, bagMax: 0, mapScroll: 0, mapV: 0, mapMax: 0,
       anim: { power: 0, powerFrom: 0 }, pullRes: []
     };
     S.stats = stats();          /* 必须在 S 赋值之后：stats() 读 S.save */
@@ -2433,7 +2485,7 @@
     }
     G.update = update;      /* ⚠️ 必须挂上去：boot.js 的主循环只认 G.update / G.draw */
     G.draw = draw;
-    G.setHandlers({ down: onDown, up: null });
+    G.setHandlers({ down: onDown, up: onUp });
     G.loop();
   }
 
