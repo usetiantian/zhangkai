@@ -473,9 +473,10 @@ window.DATA = (function () {
      ⚠️ 微信有「静音键不出声」的合规要求，obeyMuteCompliance=false 才能正常响。 */
   var SFX_POOL = {};
   G.sfx = {
-    mute: false,
+    mute: true,
     _i: 0,
     play: function (name, vol) {
+      return;   /* 声音系统已下线（张凯 2026-11-27） */
       if (G.sfx.mute) return;
       var pool = SFX_POOL[name];
       if (!pool || !pool.length) return;
@@ -492,6 +493,7 @@ window.DATA = (function () {
     },
     /* 浏览器要"用户手势"才允许出声：第一次点击时先偷偷播一个极轻的声音解锁 */
     unlock: function () {
+      return;   /* 下线 */
       if (G.sfx._unlocked) return;
       G.sfx._unlocked = true;
       try {
@@ -506,6 +508,11 @@ window.DATA = (function () {
     }
   };
   function loadSfx(names) {
+    /* 2026-11-27 张凯指示：音效全部下线（刺耳/噪音）。文件保留在
+       assets/raw/sfx_removed_20261127/，要复活改回加载即可 */
+    return;
+  }
+  function _loadSfxOrig(names) {
     names.forEach(function (n) {
       SFX_POOL[n] = [];
       for (var i = 0; i < 3; i++) {
@@ -2415,9 +2422,7 @@ window.DATA = (function () {
     S.btnPull = { x: 206, y: G.H - 46, r: 21 };
     G.circle(S.btnPull.x, S.btnPull.y, 21, 'rgba(120,70,30,.85)', 'rgba(255,190,90,.5)', 1.5);
     G.text('抽卡', S.btnPull.x, S.btnPull.y, 12.5, '#ffe2b0', 'center', true);
-    S.btnMute = { x: 260, y: G.H - 46, r: 21 };
-    G.circle(S.btnMute.x, S.btnMute.y, 21, 'rgba(30,32,38,.8)', 'rgba(255,255,255,.3)', 1.5);
-    G.text(S.save.muted ? '🔇' : '🔊', S.btnMute.x, S.btnMute.y, 13, '#e8e0d0', 'center');
+
     /* 2倍速（借鉴小小英雄） */
     S.btnSpeed = { x: 314, y: G.H - 46, r: 21 };
     G.circle(S.btnSpeed.x, S.btnSpeed.y, 21, (S.speed || 1) > 1 ? 'rgba(120,70,30,.9)' : 'rgba(30,32,38,.8)',
@@ -3352,13 +3357,6 @@ window.DATA = (function () {
     if (S.btnBag && hit(x, y, S.btnBag)) { S.state = 'bag'; return; }
     if (S.btnPet && hit(x, y, S.btnPet)) { S.state = 'pets'; return; }
     if (S.btnRank && hit(x, y, S.btnRank)) { S.state = 'rank'; return; }
-    if (S.btnMute && hit(x, y, S.btnMute)) {
-      if (G.sfx) G.sfx.mute = !G.sfx.mute;
-      S.save.muted = G.sfx && G.sfx.mute;
-      toast(G.sfx && G.sfx.mute ? '已静音' : '音效开启');
-      G.persist();
-      return;
-    }
     if (S.btnSpeed && hit(x, y, S.btnSpeed)) {
       S.speed = (S.speed || 1) > 1 ? 1 : 2;
       toast((S.speed > 1 ? '2' : '1') + ' 倍速');

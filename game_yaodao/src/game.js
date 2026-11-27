@@ -1823,9 +1823,7 @@
     S.btnPull = { x: 206, y: G.H - 46, r: 21 };
     G.circle(S.btnPull.x, S.btnPull.y, 21, 'rgba(120,70,30,.85)', 'rgba(255,190,90,.5)', 1.5);
     G.text('抽卡', S.btnPull.x, S.btnPull.y, 12.5, '#ffe2b0', 'center', true);
-    S.btnMute = { x: 260, y: G.H - 46, r: 21 };
-    G.circle(S.btnMute.x, S.btnMute.y, 21, 'rgba(30,32,38,.8)', 'rgba(255,255,255,.3)', 1.5);
-    G.text(S.save.muted ? '🔇' : '🔊', S.btnMute.x, S.btnMute.y, 13, '#e8e0d0', 'center');
+
     /* 2倍速（借鉴小小英雄） */
     S.btnSpeed = { x: 314, y: G.H - 46, r: 21 };
     G.circle(S.btnSpeed.x, S.btnSpeed.y, 21, (S.speed || 1) > 1 ? 'rgba(120,70,30,.9)' : 'rgba(30,32,38,.8)',
@@ -2760,13 +2758,6 @@
     if (S.btnBag && hit(x, y, S.btnBag)) { S.state = 'bag'; return; }
     if (S.btnPet && hit(x, y, S.btnPet)) { S.state = 'pets'; return; }
     if (S.btnRank && hit(x, y, S.btnRank)) { S.state = 'rank'; return; }
-    if (S.btnMute && hit(x, y, S.btnMute)) {
-      if (G.sfx) G.sfx.mute = !G.sfx.mute;
-      S.save.muted = G.sfx && G.sfx.mute;
-      toast(G.sfx && G.sfx.mute ? '已静音' : '音效开启');
-      G.persist();
-      return;
-    }
     if (S.btnSpeed && hit(x, y, S.btnSpeed)) {
       S.speed = (S.speed || 1) > 1 ? 1 : 2;
       toast((S.speed > 1 ? '2' : '1') + ' 倍速');

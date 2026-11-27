@@ -236,9 +236,10 @@
      ⚠️ 微信有「静音键不出声」的合规要求，obeyMuteCompliance=false 才能正常响。 */
   var SFX_POOL = {};
   G.sfx = {
-    mute: false,
+    mute: true,
     _i: 0,
     play: function (name, vol) {
+      return;   /* 声音系统已下线（张凯 2026-11-27） */
       if (G.sfx.mute) return;
       var pool = SFX_POOL[name];
       if (!pool || !pool.length) return;
@@ -255,6 +256,7 @@
     },
     /* 浏览器要"用户手势"才允许出声：第一次点击时先偷偷播一个极轻的声音解锁 */
     unlock: function () {
+      return;   /* 下线 */
       if (G.sfx._unlocked) return;
       G.sfx._unlocked = true;
       try {
@@ -269,6 +271,11 @@
     }
   };
   function loadSfx(names) {
+    /* 2026-11-27 张凯指示：音效全部下线（刺耳/噪音）。文件保留在
+       assets/raw/sfx_removed_20261127/，要复活改回加载即可 */
+    return;
+  }
+  function _loadSfxOrig(names) {
     names.forEach(function (n) {
       SFX_POOL[n] = [];
       for (var i = 0; i < 3; i++) {
