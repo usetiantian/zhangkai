@@ -129,6 +129,11 @@ const INJECT = `(function(){
   }
   console.log('异常:', c.logs.length ? c.logs.slice(0, 3).join(' || ') : '(无)');
   c.ws.close();
-  if (proc) proc.kill();
+  /* ⚠️ proc.kill() 杀不掉 Edge 子进程树 —— 残留的 headless Edge 会在后台
+     循环播放游戏音效（张凯听了一下午的"打鼓声"就是它们）。必须 taskkill /T */
+  if (proc) {
+    try { require('child_process').execSync('taskkill /PID ' + proc.pid + ' /T /F', { stdio: 'ignore' }); } catch (e) { }
+    try { proc.kill(); } catch (e) { }
+  }
   process.exit(0);
 })().catch(e => { console.log('FATAL', e.message); process.exit(9); });

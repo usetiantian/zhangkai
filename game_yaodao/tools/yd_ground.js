@@ -46,5 +46,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
     await shot('map'+(idx+1));
   }
   console.log('异常:',logs.length?logs.join(' || '):'(无)');
+  /* ⚠️ proc.kill() 杀不掉 Edge 子进程树（残留 headless Edge 会循环放游戏音效）*/
+  try { require('child_process').execSync('taskkill /PID ' + proc.pid + ' /T /F', { stdio: 'ignore' }); } catch (e) { }
   proc.kill();process.exit(0);
 })().catch(e=>{console.log('FATAL',e.message);process.exit(9);});
