@@ -815,6 +815,12 @@ window.DATA = (function () {
       toast('升级！Lv ' + s.lv);
       if (G.sfx) G.sfx.play('upgrade');
       S.lvFx = 1.6;      /* 升级特效计时 */
+      /* 冲击波：两圈金色扩散环 + 大字 */
+      if (S.hero) {
+        S.eff.push({ kind: 'ring', x: S.hero.x, y: S.hero.y - 14, t: 0.5, dur: 0.5, r: 8, col: 'rgba(255,214,90,.9)' });
+        S.eff.push({ kind: 'ring', x: S.hero.x, y: S.hero.y - 14, t: 0.7, dur: 0.7, r: 4, col: 'rgba(255,240,180,.6)' });
+        S.nums.push({ x: S.hero.x, y: S.hero.y - 60, v: -34, t: 1.2, dur: 1.2, txt: 'Lv ' + s.lv, col: '#ffd23a', big: true });
+      }
     }
     return ups;
   }
@@ -1121,6 +1127,8 @@ window.DATA = (function () {
       /* 击杀爆散：8 颗品质色粒子向外炸开（打击感核心） */
       S.eff.push({ kind: 'burst', x: m.x, y: m.y - m.r * 0.5, t: 0.32, dur: 0.32,
         col: m.boss === 2 ? '#ff5a6e' : m.boss === 1 ? '#ffd23a' : m.col, r: m.r });
+      /* 死亡残影：怪物色圆环放大淡出（离场感） */
+      S.eff.push({ kind: 'ghost', x: m.x, y: m.y, t: 0.38, dur: 0.38, r: m.r, col: m.col });
       /* 图鉴点：普通怪 1、精英 5、妖王 20；首次击杀额外 +10
          （借鉴咸鱼之王的「微星」收集机制，但按休闲游戏的思路做轻） */
       s.dex = s.dex || {};
@@ -1179,11 +1187,18 @@ window.DATA = (function () {
       d.t += dt;
       var a = Math.atan2(h.y - d.y, h.x - d.x);
       var dd = dist(d, h);
-      if (dd > 46) { d.x += Math.cos(a) * 420 * dt; d.y += Math.sin(a) * 420 * dt; }
+      /* 真空吸取：越近吸得越快（加速度感），46 内直接入包 */
+      if (dd > 46) {
+        var pull = 300 + Math.max(0, (240 - dd)) * 5;
+        d.x += Math.cos(a) * pull * dt; d.y += Math.sin(a) * pull * dt;
+      }
     });
     var before = S.drops.length;
     S.drops = S.drops.filter(function (d) { return dist(d, h) > 40; });
-    if (S.drops.length !== before) { /* 吸满自动进背包（rollItem 已 push） */ }
+    if (S.drops.length !== before) {
+      /* 拾取闪光：一圈白色冲击环（拾取反馈） */
+      S.eff.push({ kind: 'ring', x: h.x, y: h.y - 10, t: 0.26, dur: 0.26, r: 6, col: 'rgba(255,240,200,.9)' });
+    }
 
     /* —— 飘字 / 特效 —— */
     S.nums.forEach(function (n) { n.t -= dt; n.y += n.v * dt; });
@@ -1317,6 +1332,18 @@ window.DATA = (function () {
   function deal(m, dmg, st, isBasic) {
     dmg *= suppress();
     var crit = Math.random() * 100 < st.crit;
+    /* 技能/暴击命中环：目标处炸开一圈色环 */
+    if (!isBasic || crit) {
+      S.eff.push({ kind: 'ring', x: m.x, y: m.y - m.r * 0.4, t: 0.22, dur: 0.22, r: m.r * 0.5,
+        col: crit ? 'rgba(255,210,90,.85)' : 'rgba(160,210,255,.7)' });
+    }
+    /* 受击后坐：沿攻击方向击退（精英/妖王减半） */
+    if (S.hero) {
+      var kba = Math.atan2(m.y - S.hero.y, m.x - S.hero.x);
+      var kb = (crit ? 15 : 8) * (m.boss ? 0.4 : 1);
+      m.x += Math.cos(kba) * kb;
+      m.y += Math.sin(kba) * kb;
+    }
     if (crit) dmg *= (1 + st.critDmg / 100);
     if (isBasic) {
       /* 打击音节流：自动战斗 ~2次/秒连放就是噪音（张凯点名），280ms 内只放一声 */
@@ -1854,9 +1881,14 @@ window.DATA = (function () {
       }
       ctx.save();
       ctx.globalAlpha = pop;
+      var bob = Math.sin(d.t * 4.5) * 3;      /* 浮动：上下轻飘 */
+      var rot = Math.sin(d.t * 2.2) * 0.12;   /* 轻微摇摆 */
+      ctx.translate(d.x, d.y - 22 * sc + bob);
+      ctx.rotate(rot);
+      d.x = d.x; d.y = d.y;
       if (img) {
         var ww = img.width / img.height * 30 * sc;
-        ctx.drawImage(img, d.x - ww / 2, d.y - 26 * sc, ww, 30 * sc);
+        ctx.drawImage(img, -ww / 2, -15 * sc, ww, 30 * sc);
       } else {
         G.circle(d.x, d.y - 9 * sc, 9 * sc, d.it.col, 'rgba(255,255,255,.5)', 1.5);
         G.circle(d.x - 3 * sc, d.y - 12 * sc, 2.4 * sc, 'rgba(255,255,255,.75)');
@@ -1881,8 +1913,17 @@ window.DATA = (function () {
         var ww = img.width / img.height * hh;
         top = m.y - hh + r * 0.55;
         ctx.save();
-        if (m.hit > 0) ctx.globalAlpha = 0.8;
-        ctx.drawImage(img, m.x - ww / 2, top, ww, hh);
+        /* 受击挤压：命中 0.14s 内 Y 压到 0.78 再弹回（果冻感） */
+        var sqy = 1, sqx = 1;
+        if (m.hit > 0) {
+          var hsq = m.hit / 0.14;
+          sqy = 1 - 0.22 * hsq;
+          sqx = 1 + 0.16 * hsq;
+          ctx.globalAlpha = 0.8;
+        }
+        ctx.translate(m.x, top + hh);
+        ctx.scale(sqx, sqy);
+        ctx.drawImage(img, -ww / 2, -hh, ww, hh);
         ctx.restore();
         if (m.hit > 0) {              /* 受击闪白 */
           ctx.save();
@@ -2003,6 +2044,19 @@ window.DATA = (function () {
     S.eff.forEach(function (e) {
       var dur = e.dur || 0.45;
       var k = 1 - e.t / dur;                 /* 1 → 0 */
+      if (e.kind === 'ghost') {
+        /* 死亡残影：放大+淡出的色圈 */
+        ctx.save();
+        ctx.globalAlpha = k * 0.5;
+        ctx.strokeStyle = e.col;
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.arc(e.x, e.y, (e.r || 14) * (1.2 + (1 - k) * 1.4), 0, 6.2832);
+        ctx.stroke();
+        ctx.restore();
+        ctx.globalAlpha = 1;
+        return;
+      }
       if (e.kind === 'burst') {
         /* 击杀爆散：8 颗粒子径向飞散 + 淡出 */
         var br = (e.r || 14) * (0.6 + k * 0.9);
@@ -2118,6 +2172,15 @@ window.DATA = (function () {
       ctx.globalAlpha = Math.min(1, S.comboBuff / 1.2);
       G.shadowText('伤害 +10%', G.W - 100, G.H * 0.34 + 28, 13, '#ffd23a', 'rgba(0,0,0,.85)');
       ctx.globalAlpha = 1;
+    }
+    /* 低血警示：hp<30% 屏幕边缘红色脉冲呼吸（无音版心跳感） */
+    if (h.hp < h.maxhp * 0.3) {
+      var pulse = 0.5 + 0.5 * Math.sin(Date.now() / 300);
+      var vg2 = ctx.createRadialGradient(G.W / 2, G.H / 2, G.H * 0.30, G.W / 2, G.H / 2, G.H * 0.62);
+      vg2.addColorStop(0, 'rgba(200,30,30,0)');
+      vg2.addColorStop(1, 'rgba(220,30,30,' + (0.26 + pulse * 0.22).toFixed(2) + ')');
+      ctx.fillStyle = vg2;
+      ctx.fillRect(0, 0, G.W, G.H);
     }
     /* 受击红闪 */
     if (h.hurt > 0) {
