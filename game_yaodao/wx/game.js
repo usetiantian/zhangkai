@@ -335,6 +335,7 @@ window.DATA = (function () {
     T.x = T.sx = p.x; T.y = T.sy = p.y;
     T.dx = 0; T.dy = 0;
     T.lastInput = Date.now();
+    lastTouchAt = Date.now();
     BOOT.onDown && BOOT.onDown(p.x, p.y);
   });
   WX.onTouchMove(function (e) {
@@ -349,8 +350,39 @@ window.DATA = (function () {
     var p = pt(e);
     T.down = false;
     T.lastInput = Date.now();
+    lastTouchAt = Date.now();
     BOOT.onUp && BOOT.onUp(p ? p.x : T.x, p ? p.y : T.y);
   });
+
+  /* ---------- 鼠标兜底（2026-11-27 张凯"点了没反应"的根因修复）----------
+     开发者工具里真实鼠标点击不产生 wx.onTouchStart（运行时的鼠标→触摸
+     桥接层会失灵：鼠标事件无效、触摸事件有效）。自己把 mouse 事件翻译成
+     同一条触摸流。真机上鼠标事件不会触发，无副作用；触摸后 600ms 内的
+     合成鼠标事件忽略，防双发。 */
+  var lastTouchAt = 0;
+  if (typeof document !== 'undefined' && document.addEventListener) {
+    document.addEventListener('mousedown', function (e) {
+      if (Date.now() - lastTouchAt < 600) return;
+      T.down = true; T.moved = false;
+      T.x = T.sx = e.clientX; T.y = T.sy = e.clientY;
+      T.dx = 0; T.dy = 0;
+      T.lastInput = Date.now();
+      BOOT.onDown && BOOT.onDown(e.clientX, e.clientY);
+    }, true);
+    document.addEventListener('mousemove', function (e) {
+      if (!T.down) return;
+      T.x = e.clientX; T.y = e.clientY;
+      T.dx = (e.clientX - T.sx) / SCALE; T.dy = (e.clientY - T.sy) / SCALE;
+      if (Math.abs(T.dx) > 4 || Math.abs(T.dy) > 4) T.moved = true;
+      T.lastInput = Date.now();
+    }, true);
+    document.addEventListener('mouseup', function (e) {
+      if (Date.now() - lastTouchAt < 600) return;
+      T.down = false;
+      T.lastInput = Date.now();
+      BOOT.onUp && BOOT.onUp(e.clientX, e.clientY);
+    }, true);
+  }
 
   /* ---------- 存档 ---------- */
   var SAVE_KEY = 'yaodao_save_v1';
@@ -834,6 +866,9 @@ window.DATA = (function () {
   function updateBattle(dt) {
     var s = S.save, h = S.hero, st = S.stats;
     if (!st) st = S.stats = stats();
+    /* 自愈：进战斗时 hero 必须在（改形象返回/强制切状态等路径会漏建）——
+       漏了就现场重建，否则每帧炸 TypeError 画面冻住（张凯"点了没反应"根因） */
+    if (!h) { newBattle(); h = S.hero; }
 
     /* —— 自动战斗：10 秒无操作接管 —— */
     var idle = (Date.now() - G.T.lastInput) > 10000;
@@ -1536,6 +1571,7 @@ window.DATA = (function () {
 
   function drawBattle() {
     var h = S.hero, st = S.stats;
+    if (!h) { newBattle(); h = S.hero; }   /* 同 updateBattle 的自愈 */
     var camX = h.x, camY = h.y;
     var sx = G.W / 2 - camX * G.SCALE, sy = G.H / 2 - camY * G.SCALE;
 
@@ -2652,6 +2688,7 @@ window.DATA = (function () {
         var b = S['btnSex' + k]; if (!b) return;
         if (hit(x, y, b)) {
           var first = !S.save.sex;
+          if (!S.hero) newBattle();   /* 改形象回来也保证 hero 在 */
           S.save.sex = k;
           S.save.skin = k === 'm' ? 'cs1' : 'cs3';
           S.save.wskin = D.WEAPON_SKIN[0].id;   /* 不能再写死老 id，否则贴图查不到 */

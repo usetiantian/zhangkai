@@ -274,6 +274,9 @@
   function updateBattle(dt) {
     var s = S.save, h = S.hero, st = S.stats;
     if (!st) st = S.stats = stats();
+    /* 自愈：进战斗时 hero 必须在（改形象返回/强制切状态等路径会漏建）——
+       漏了就现场重建，否则每帧炸 TypeError 画面冻住（张凯"点了没反应"根因） */
+    if (!h) { newBattle(); h = S.hero; }
 
     /* —— 自动战斗：10 秒无操作接管 —— */
     var idle = (Date.now() - G.T.lastInput) > 10000;
@@ -976,6 +979,7 @@
 
   function drawBattle() {
     var h = S.hero, st = S.stats;
+    if (!h) { newBattle(); h = S.hero; }   /* 同 updateBattle 的自愈 */
     var camX = h.x, camY = h.y;
     var sx = G.W / 2 - camX * G.SCALE, sy = G.H / 2 - camY * G.SCALE;
 
@@ -2092,6 +2096,7 @@
         var b = S['btnSex' + k]; if (!b) return;
         if (hit(x, y, b)) {
           var first = !S.save.sex;
+          if (!S.hero) newBattle();   /* 改形象回来也保证 hero 在 */
           S.save.sex = k;
           S.save.skin = k === 'm' ? 'cs1' : 'cs3';
           S.save.wskin = D.WEAPON_SKIN[0].id;   /* 不能再写死老 id，否则贴图查不到 */
