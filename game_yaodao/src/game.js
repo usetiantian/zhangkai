@@ -1464,6 +1464,9 @@
     S.btnPull = { x: 206, y: G.H - 46, r: 21 };
     G.circle(S.btnPull.x, S.btnPull.y, 21, 'rgba(120,70,30,.85)', 'rgba(255,190,90,.5)', 1.5);
     G.text('抽卡', S.btnPull.x, S.btnPull.y, 12.5, '#ffe2b0', 'center', true);
+    S.btnMute = { x: 260, y: G.H - 46, r: 21 };
+    G.circle(S.btnMute.x, S.btnMute.y, 21, 'rgba(30,32,38,.8)', 'rgba(255,255,255,.3)', 1.5);
+    G.text(S.save.muted ? '🔇' : '🔊', S.btnMute.x, S.btnMute.y, 13, '#e8e0d0', 'center');
 
     /* toast */
     if (S.toastT > 0) {
@@ -2092,7 +2095,7 @@
     var list = [];
     for (var i = 0; i < FAKE_NAMES.length; i++) list.push({ n: FAKE_NAMES[i], p: FAKE_LADDER[i], me: false });
     var myP = power();
-    list.push({ n: '我', p: myP, me: true });
+    list.push({ n: (s.name || '无名侠客'), p: myP, me: true });
     list.sort(function (a, b) { return b.p - a.p; });
     var myRank = 0;
     for (var j = 0; j < list.length; j++) { if (list[j].me) { myRank = j + 1; break; } }
@@ -2132,6 +2135,39 @@
   }
 
   /* ============ 性别/皮肤选择 ============ */
+  /* ---------- 起名（选完性别进入；canvas 调键盘不可靠，行业标准=随机三选一） ---------- */
+  var SURNAME = ['李', '王', '张', '叶', '萧', '林', '秦', '顾', '沈', '云', '楚', '洛', '燕', '温'];
+  var GIVEN = ['乘风', '听雨', '无极', '青霜', '断岳', '流云', '惊鸿', '问天', '踏雪', '千山', '孤鸿', '御风', '拔山', '卷云', '枕霞', '扶摇', '斩秋', '忘忧', '逐月', '斩风'];
+  function genNames() {
+    var out = [], used = {};
+    while (out.length < 3) {
+      var n = SURNAME[Math.floor(Math.random() * SURNAME.length)] + GIVEN[Math.floor(Math.random() * GIVEN.length)];
+      if (!used[n]) { used[n] = 1; out.push(n); }
+    }
+    return out;
+  }
+  function drawName() {
+    clearBtns();
+    var cy = panelChrome('起 个 名 号');
+    G.text('行走江湖，总得有个称呼', G.W / 2, cy + 4, 12.5, TH.ink2, 'center');
+    if (!S.nameOpts) S.nameOpts = genNames();
+    for (var i = 0; i < 3; i++) {
+      var ny = cy + 36 + i * 76;
+      var sel = S.nameSel === i;
+      card(40, ny, G.W - 80, 64, sel ? TH.goldD : null, sel ? 'rgba(255,216,142,.4)' : null);
+      G.text(S.nameOpts[i], G.W / 2, ny + 32, 20, sel ? TH.gold : TH.ink, 'center', true);
+      S['btnName' + i] = { x: G.W / 2, y: ny + 32, r: 40, idx: i };
+    }
+    S.btnReroll = { x: G.W / 2, y: cy + 296, r: 42 };
+    btnGhost(G.W / 2 - 90, cy + 272, 180, 46, '换 一 批');
+    S.btnNameOk = { x: G.W / 2, y: cy + 372, r: 52 };
+    if (S.nameSel !== undefined) {
+      btnGold(G.W / 2 - 120, cy + 344, 240, 56, '就叫这个', '');
+    } else {
+      btnGhost(G.W / 2 - 120, cy + 344, 240, 56, '先选一个名号');
+    }
+  }
+
   /* 健康游戏忠告（审核合规硬项，果子乐园同款）：首启一次性 */
   function drawHealthTip() {
     ctx.fillStyle = 'rgba(0,0,0,.78)';
@@ -2185,6 +2221,22 @@
     /* 列表滚动：按下即记录锚点（拖动在 update 里轮询 G.T） */
     if (S.state === 'bag') { S._sy = y; S._sdown = true; S.bagV = 0; }
     if (S.state === 'maps') { S._sy = y; S.mapV = 0; }
+    if (S.state === 'name') {
+      for (var ni = 0; ni < 3; ni++) {
+        var nb = S['btnName' + ni];
+        if (nb && hit(x, y, nb)) { S.nameSel = ni; if (G.sfx) G.sfx.play('click'); return; }
+      }
+      if (S.btnReroll && hit(x, y, S.btnReroll)) { S.nameOpts = genNames(); S.nameSel = undefined; return; }
+      if (S.btnNameOk && S.nameSel !== undefined && hit(x, y, S.btnNameOk)) {
+        S.save.name = S.nameOpts[S.nameSel];
+        S.nameOpts = null; S.nameSel = undefined;
+        toast('江湖人称「' + S.save.name + '」');
+        S.state = 'battle';
+        G.persist();
+        return;
+      }
+      return;
+    }
     if (S.state === 'pick' && !S.save.healthTip) {
       if (S.btnH18 && hit(x, y, S.btnH18)) {
         S.save.healthTip = 1; G.persist(); return;
@@ -2204,7 +2256,9 @@
           S.save.sex = k;
           S.save.skin = k === 'm' ? 'cs1' : 'cs3';
           S.save.wskin = D.WEAPON_SKIN[0].id;   /* 不能再写死老 id，否则贴图查不到 */
-          S.state = S.pickPrev || 'battle';
+          /* 首次选完性别 → 起名；已有名（改形象）→ 原路返回 */
+          if (!S.save.name && !S.pickPrev) { S.nameSel = undefined; S.state = 'name'; }
+          else S.state = S.pickPrev || 'battle';
           S.pickPrev = null;
           if (first) newBattle();      /* 改形象不该重开一局 */
           G.persist();
@@ -2547,7 +2601,7 @@
     if (S.state === 'battle') { S.panelA = 0; drawBattle(); return; }
     /* 面板统一走打开动画（上滑渐入 ~0.15s）——学成熟游戏的进场反馈 */
     var fn = { bag: drawBag, upgrade: drawUpgrade, skin: drawSkins, maps: drawMaps,
-      sign: drawSign, pets: drawPets, rank: drawRank, pull: drawPull }[S.state];
+      sign: drawSign, pets: drawPets, rank: drawRank, pull: drawPull, name: drawName }[S.state];
     if (!fn) { drawBattle(); return; }
     if (S.panelState !== S.state) { S.panelState = S.state; S.panelA = 1; }
     if (S.panelA > 0) S.panelA = Math.max(0, S.panelA - (G.dt || 0.016) * 7);
