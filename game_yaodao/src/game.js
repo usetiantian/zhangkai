@@ -228,6 +228,38 @@
   }
 
   /* ============ 战斗 ============ */
+  /* ============ 镇妖塔（借鉴小小英雄千绝塔）============
+     无限层，血量 ×1.32/层、攻击 ×1.16/层；5层精英、10层妖王；
+     死亡=本次登塔结束（无三次机会），记录最高层；逐层发奖 ×1.22/层 */
+  var TOWER_MOBS = ['m1', 'm2', 'm3', 'm4', 'm5', 'm6', 'm7'];
+  var TOWER_BOSSES = ['b1', 'b2', 'b3'];
+  function towerMap(floor) {
+    return { id: 900 + floor, name: '镇妖塔 ' + floor + ' 层', waves: 1, lv: 1,
+      mobs: [TOWER_MOBS[(floor - 1) % TOWER_MOBS.length]], elite: null, boss: null,
+      ground: '#1a1626', ground2: '#241e33', deco: ['#141020', '#5a4a8a', '#8a7ab8'], pw: 0, tower: floor };
+  }
+  function enterTower() {
+    S.towerOn = true;
+    S.towerFloor = 1;
+    S.map = towerMap(1);
+    S.wave = 0; S.waveT = 1.6; S.mobs = []; S.drops = []; S.nums = []; S.eff = [];
+    S.state = 'battle';
+    if (!S.hero) newBattle();
+    S.deaths = 0;
+    toast('镇妖塔 · 第 1 层');
+  }
+  function exitTower(died) {
+    var fl = S.towerFloor - (died ? 1 : 0);
+    var s = S.save;
+    s.towerBest = Math.max(s.towerBest || 0, fl);
+    S.towerOn = false;
+    S.map = D.MAPS[s.map] || D.MAPS[0];
+    S.wave = 0; S.waveT = 1.6; S.mobs = [];
+    S.state = 'maps';
+    toast(died ? ('登塔结束 · 最高 ' + fl + ' 层') : ('离开镇妖塔 · 本次 ' + fl + ' 层'));
+    G.persist();
+  }
+
   function newBattle() {
     var st = stats();
     S.hero = {
@@ -262,6 +294,21 @@
        玩家战力的指数增长，墙没有咬合力，低战力躺进高图（张凯点名））
        血量 ×2.1/图、攻击 ×1.7/图、奖励 ×1.8/图 */
     var tier = Math.max(0, (S.map.id || 1) - 1);
+    if (S.towerOn) {
+      var f = S.towerFloor || 1;
+      tier = 0;
+      var thp = Math.round(m.hp * Math.pow(1.32, f - 1));
+      var tatk = Math.round(m.atk * Math.pow(1.16, f - 1));
+      var txp = Math.round(m.xp * Math.pow(1.22, f));
+      var tcoin = Math.round(m.coin * Math.pow(1.22, f));
+      S.mobs.push({
+        id: id, x: Math.cos(a) * r, y: Math.sin(a) * r,
+        hp: thp, maxhp: thp, atk: tatk, spd: m.spd,
+        xp: txp, coin: tcoin, r: m.r, col: m.col, boss: m.boss, drop: Math.min(0.65, m.drop + f * 0.01),
+        hit: 0, face: 1
+      });
+      return;
+    }
     var hp = Math.round(m.hp * Math.pow(2.1, tier));
     S.mobs.push({
       id: id, x: Math.cos(a) * r, y: Math.sin(a) * r,
@@ -273,8 +320,13 @@
   }
 
   function waveMobList() {
+    if (S.towerOn) {
+      var f = S.towerFloor;
+      if (f % 10 === 0 && Math.random() < 0.5) return TOWER_BOSSES[(f / 10 - 1) % TOWER_BOSSES.length];
+      if (f % 5 === 0 && Math.random() < 0.35) return 'e' + (1 + (Math.floor(f / 5) % 3));
+      return TOWER_MOBS[(f - 1) % TOWER_MOBS.length];
+    }
     var m = S.map;
-    var list = [];
     var n = m.mobs[Math.min(m.mobs.length - 1, Math.floor(S.wave / 2))] || m.mobs[0];
     return n;
   }
@@ -331,7 +383,20 @@
     /* —— 波次 —— */
     S.waveT -= dt;
     if (S.waveT <= 0 && S.mobs.length === 0) {
-      if (S.wave >= S.map.waves) {
+      if (S.towerOn) {
+        /* 过层：发奖 → 下一层（5层精英 10层妖王） */
+        var tf = S.towerFloor;
+        var rw2 = Math.round(30 * Math.pow(1.22, tf));
+        s.coins += rw2;
+        if (tf % 5 === 0) { s.essence = (s.essence || 0) + Math.round(3 * Math.pow(1.15, tf / 5)); }
+        if (tf % 10 === 0) { s.gems = s.gems || {}; s.gems.gem_atk = (s.gems.gem_atk || 0) + 1; }
+        s.towerBest = Math.max(s.towerBest || 0, tf);
+        S.towerFloor = tf + 1;
+        S.map = towerMap(tf + 1);
+        S.wave = 0; S.waveT = 1.8;
+        toast('第 ' + tf + ' 层过！灵果+' + rw2 + (tf % 5 === 0 ? ' · 精粹+' + Math.round(3 * Math.pow(1.15, tf / 5)) : '') + (tf % 10 === 0 ? ' · 宝石+1' : ''));
+        G.persist();
+      } else if (S.wave >= S.map.waves) {
         /* 通关 → 记录 + 首通奖励 → 下一张图 */
         s.cleared = s.cleared || {};
         if (!s.cleared[S.map.id]) {
@@ -433,6 +498,11 @@
         /* 死亡规则：倒地 3 秒 → 半血起身，本波重刷 —— 战力不足就过不了波，
            躺尸磨图的口子彻底关死（张凯 2026-11-27 点名的玩法漏洞） */
         if (h.hp <= 0) {
+          if (S.towerOn) {
+            h.hp = Math.round(h.maxhp * 0.5);
+            exitTower(true);
+            return;
+          }
           h.hp = Math.round(h.maxhp * 0.5);
           h.down = 3; h.invuln = 3.6;
           S.mobs = []; S.spawned = 0; S.waveT = 1.6;
@@ -641,6 +711,7 @@
      没有这个，躺高图照样拿击杀经验 → 升级飞快 → 墙自己融化（张凯点名）。
      有压制后：打不死怪 = 没收益 = 必须回低图练级刷装，闭环才成立 */
   function suppress() {
+    if (S.towerOn) return 1;   /* 塔内不压制：纯战力试金石 */
     var diff = (S.map.lv || 1) - (S.save.lv || 1);
     if (diff <= 0) return 1;
     if (diff <= 2) return 0.8;
@@ -1380,7 +1451,7 @@
     G.round(12, hty, pd - 24, 42, 8, 'rgba(0,0,0,.5)');
     /* 地图名可点 → 选关（加 ▾ 提示玩家能点） */
     S.btnMap = { x: 70, y: hty + 14, r: 60 };
-    G.text(S.map.name, 24, hty + 14, 16, '#ffd88e', 'left', true);
+    G.text(S.map.name + (S.towerOn ? '（最高 ' + (S.save.towerBest || 0) + '）' : ''), 24, hty + 14, S.towerOn ? 14 : 16, S.towerOn ? '#b8a8ff' : '#ffd88e', 'left', true);
     G.text('▾', 24 + String(S.map.name).length * 16 + 4, hty + 15, 12, '#ffd88e', 'left');
     G.text('妖 ' + S.mobs.length, 24 + (S.map.name || '').length * 16 + 22, hty + 32, 12, '#8a8272', 'left');
 
@@ -1479,6 +1550,7 @@
     G.text('精粹 ' + fmt(Math.floor(S.save.essence || 0)), G.W - 70, hty + 96, 10.5, '#b9a8ff', 'center', true);
     /* 波次节点链（借鉴小小英雄的关卡进度条：绿点=已过 波 骷髅=终点） */
     var wn = S.map.waves || 5, nw = Math.min(wn, 9);
+    if (S.towerOn) nw = 1;
     var nx0 = 24, nxs = Math.min(26, (pd - 40) / nw);
     for (var wi = 0; wi < nw; wi++) {
       var ncx = nx0 + 10 + wi * nxs;
@@ -1543,11 +1615,21 @@
 
     var s = S.save;
     var pw2 = power();
-    /* 整块内容可滚动（7 卡 + 图鉴 + 兑换超过一屏） */
-    var listTop = cy + 4, listBot = G.H - 72;
+    /* 镇妖塔入口（借鉴千绝塔：无限层验证战力） */
+    card(20, cy + 4, G.W - 40, 64, '#5a4a8a', 'rgba(138,122,184,.35)');
+    ctx.save();
+    ctx.shadowColor = 'rgba(138,122,184,.5)'; ctx.shadowBlur = 12;
+    G.text('塔', 52, cy + 36, 24, '#b8a8ff', 'center', true);
+    ctx.restore();
+    G.text('镇妖塔', 84, cy + 26, 16, '#cfc4f2', 'left', true);
+    G.text('无限层 · 5层精英 · 10层妖王 · 死亡结束', 84, cy + 48, 10, '#8a7ab8', 'left');
+    G.text('最高 ' + (s.towerBest || 0) + ' 层', G.W - 34, cy + 36, 13, '#b8a8ff', 'right', true);
+    S.btnTower = { x: G.W / 2, y: cy + 36, r: 34 };
+    /* 整块内容可滚动（塔卡 + 7 图 + 图鉴 + 兑换超过一屏） */
+    var listTop = cy + 72, listBot = G.H - 72;
     ctx.save();
     ctx.beginPath(); ctx.rect(0, listTop, G.W, listBot - listTop); ctx.clip();
-    var y = cy + 8 - (S.mapScroll || 0);
+    var y = cy + 76 - (S.mapScroll || 0);
     for (var i = 0; i < D.MAPS.length; i++) {
       var mp = D.MAPS[i];
       var unlocked = (i <= s.maxWave);
@@ -2159,6 +2241,7 @@
       ['最远地图', (s.maxWave + 1) + ' 图'],
       ['累计击杀', s.kills + ' 只'],
       ['累计抽卡', s.pulls + ' 次'],
+      ['镇妖塔', (s.towerBest || 0) + ' 层'],
       ['爆装总数', s.items + ' 件']
     ];
     for (var r = 0; r < rows.length; r++) {
@@ -2315,8 +2398,9 @@
       return;
     }
     if (S.state === 'maps') {
-      if (S.btnBack && hit(x, y, S.btnBack)) { S.state = 'battle'; return; }
+      if (S.btnBack && hit(x, y, S.btnBack)) { if (S.towerOn) exitTower(false); else S.state = 'battle'; return; }
       if (S.btnSign && hit(x, y, S.btnSign)) { S.state = 'sign'; return; }
+      if (S.btnTower && hit(x, y, S.btnTower)) { enterTower(); return; }
       /* 地图卡在滚动区里，点击挪到 onUp 判定 */
       return;
     }
