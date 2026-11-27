@@ -255,12 +255,16 @@
       S.shake = 0.45;
     }
     var a = rnd(0, 6.2832), r = rnd(300, 390);   /* 别刷太远，开局 1 秒就能接上 */
-    var lv = S.map.lv;
-    var hp = m.hp * (1 + lv * 0.34);
+    /* 指数难度曲线（行业标准做法，替代原来的线性 +34%/图 —— 线性曲线追不上
+       玩家战力的指数增长，墙没有咬合力，低战力躺进高图（张凯点名））
+       血量 ×2.1/图、攻击 ×1.7/图、奖励 ×1.8/图 */
+    var tier = Math.max(0, (S.map.id || 1) - 1);
+    var hp = Math.round(m.hp * Math.pow(2.1, tier));
     S.mobs.push({
       id: id, x: Math.cos(a) * r, y: Math.sin(a) * r,
-      hp: hp, maxhp: hp, atk: m.atk * (1 + lv * 0.3), spd: m.spd,
-      xp: m.xp, coin: m.coin, r: m.r, col: m.col, boss: m.boss, drop: m.drop,
+      hp: hp, maxhp: hp, atk: Math.round(m.atk * Math.pow(1.7, tier)), spd: m.spd,
+      xp: Math.round(m.xp * Math.pow(1.8, tier)), coin: Math.round(m.coin * Math.pow(1.8, tier)),
+      r: m.r, col: m.col, boss: m.boss, drop: m.drop,
       hit: 0, face: 1
     });
   }
@@ -418,7 +422,7 @@
           S.mobs = []; S.spawned = 0; S.waveT = 1.6;
           S.deaths = (S.deaths || 0) + 1;
           if (S.deaths >= 3) {
-            toast('战力不足 · 回低图刷装备吧');
+            toast('战力不足（推荐 ' + fmt(S.map.pw) + ' · 你 ' + fmt(power()) + '）· 回低图刷装备');
             S.deaths = 0;
             S.state = 'maps';
           } else {

@@ -112,19 +112,19 @@ window.DATA = (function () {
      程序化地面是无限、无缝、零包体、跟着相机完美滚动的。 */
   var MAPS = [
     { id: 1, name: '青石村外', waves: 5, mobs: ['m1', 'm1', 'm2', 'm3', 'm1'], elite: 'e1', boss: null, lv: 1,
-      ground: '#5d4f38', ground2: '#6d5c40', deco: ['#4a3f2c', '#7f8a4e', '#8d8a7c'], pw: 400 },
+      ground: '#5d4f38', ground2: '#6d5c40', deco: ['#4a3f2c', '#7f8a4e', '#8d8a7c'], pw: 350 },
     { id: 2, name: '乱葬岗', waves: 6, mobs: ['m2', 'm3', 'm1', 'e1'], elite: 'e1', boss: null, lv: 4,
-      ground: '#3f3c38', ground2: '#4a4641', deco: ['#575249', '#6d6558', '#8a8072'], pw: 1200, fx: 'bone' },
+      ground: '#3f3c38', ground2: '#4a4641', deco: ['#575249', '#6d6558', '#8a8072'], pw: 750, fx: 'bone' },
     { id: 3, name: '黑风寨', waves: 7, mobs: ['m2', 'm3', 'e1', 'm1'], elite: 'e1', boss: 'b1', lv: 8,
-      ground: '#332821', ground2: '#3d3128', deco: ['#241d17', '#5a4432', '#6d5b46'], pw: 3000 },
+      ground: '#332821', ground2: '#3d3128', deco: ['#241d17', '#5a4432', '#6d5b46'], pw: 1550 },
     { id: 4, name: '竹林幽径', waves: 6, mobs: ['m4', 'm7', 'm3', 'm6'], elite: 'e2', boss: null, lv: 12,
-      ground: '#2c3a26', ground2: '#35452d', deco: ['#1e2a19', '#5f8a44', '#7a9463'], pw: 4500, fx: 'leaf' },
+      ground: '#2c3a26', ground2: '#35452d', deco: ['#1e2a19', '#5f8a44', '#7a9463'], pw: 3250, fx: 'leaf' },
     { id: 5, name: '寒霜地窟', waves: 7, mobs: ['m6', 'm5', 'm7', 'm4'], elite: 'e3', boss: null, lv: 16,
       ground: '#3a4450', ground2: '#455060', deco: ['#252c36', '#8fa4b8', '#c9d8e4'], pw: 6800, fx: 'frost' },
     { id: 6, name: '熔岩火谷', waves: 8, mobs: ['m2', 'm6', 'e2', 'm4'], elite: 'e2', boss: 'b2', lv: 20,
-      ground: '#3a1c16', ground2: '#48241b', deco: ['#26110c', '#a8402a', '#e0703a'], pw: 9500, fx: 'ember' },
+      ground: '#3a1c16', ground2: '#48241b', deco: ['#26110c', '#a8402a', '#e0703a'], pw: 14300, fx: 'ember' },
     { id: 7, name: '落星秘境', waves: 9, mobs: ['m3', 'm5', 'e3', 'm7'], elite: 'e3', boss: 'b3', lv: 26,
-      ground: '#1e2436', ground2: '#262e44', deco: ['#131828', '#4a5680', '#8f9ede'], pw: 14000, fx: 'star' }
+      ground: '#1e2436', ground2: '#262e44', deco: ['#131828', '#4a5680', '#8f9ede'], pw: 30000, fx: 'star' }
   ];
 
   /* ---------- 装备部位图标（一张底图按品质染色）---------- */
@@ -847,12 +847,16 @@ window.DATA = (function () {
       S.shake = 0.45;
     }
     var a = rnd(0, 6.2832), r = rnd(300, 390);   /* 别刷太远，开局 1 秒就能接上 */
-    var lv = S.map.lv;
-    var hp = m.hp * (1 + lv * 0.34);
+    /* 指数难度曲线（行业标准做法，替代原来的线性 +34%/图 —— 线性曲线追不上
+       玩家战力的指数增长，墙没有咬合力，低战力躺进高图（张凯点名））
+       血量 ×2.1/图、攻击 ×1.7/图、奖励 ×1.8/图 */
+    var tier = Math.max(0, (S.map.id || 1) - 1);
+    var hp = Math.round(m.hp * Math.pow(2.1, tier));
     S.mobs.push({
       id: id, x: Math.cos(a) * r, y: Math.sin(a) * r,
-      hp: hp, maxhp: hp, atk: m.atk * (1 + lv * 0.3), spd: m.spd,
-      xp: m.xp, coin: m.coin, r: m.r, col: m.col, boss: m.boss, drop: m.drop,
+      hp: hp, maxhp: hp, atk: Math.round(m.atk * Math.pow(1.7, tier)), spd: m.spd,
+      xp: Math.round(m.xp * Math.pow(1.8, tier)), coin: Math.round(m.coin * Math.pow(1.8, tier)),
+      r: m.r, col: m.col, boss: m.boss, drop: m.drop,
       hit: 0, face: 1
     });
   }
@@ -1010,7 +1014,7 @@ window.DATA = (function () {
           S.mobs = []; S.spawned = 0; S.waveT = 1.6;
           S.deaths = (S.deaths || 0) + 1;
           if (S.deaths >= 3) {
-            toast('战力不足 · 回低图刷装备吧');
+            toast('战力不足（推荐 ' + fmt(S.map.pw) + ' · 你 ' + fmt(power()) + '）· 回低图刷装备');
             S.deaths = 0;
             S.state = 'maps';
           } else {
