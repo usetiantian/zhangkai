@@ -1118,6 +1118,9 @@ window.DATA = (function () {
       if (m.hp > 0) return true;
       s.kills++; s.coins += m.coin;
       addXp(s, m.xp || 0);
+      /* 击杀爆散：8 颗品质色粒子向外炸开（打击感核心） */
+      S.eff.push({ kind: 'burst', x: m.x, y: m.y - m.r * 0.5, t: 0.32, dur: 0.32,
+        col: m.boss === 2 ? '#ff5a6e' : m.boss === 1 ? '#ffd23a' : m.col, r: m.r });
       /* 图鉴点：普通怪 1、精英 5、妖王 20；首次击杀额外 +10
          （借鉴咸鱼之王的「微星」收集机制，但按休闲游戏的思路做轻） */
       s.dex = s.dex || {};
@@ -1316,7 +1319,12 @@ window.DATA = (function () {
     var crit = Math.random() * 100 < st.crit;
     if (crit) dmg *= (1 + st.critDmg / 100);
     if (isBasic) {
-      if (G.sfx) G.sfx.play(crit ? 'crit' : 'hit');
+      /* 打击音节流：自动战斗 ~2次/秒连放就是噪音（张凯点名），280ms 内只放一声 */
+      var nowMs = Date.now();
+      if (!S._lastHitSfx || nowMs - S._lastHitSfx > 280) {
+        S._lastHitSfx = nowMs;
+        if (G.sfx) G.sfx.play(crit ? 'crit' : 'hit', crit ? 0.5 : 0.35);
+      }
       /* 连击：2 秒内连续命中就累加 —— 这类游戏最经典的爽点机制 */
       S.combo = (S.combo || 0) + 1;
       S.comboT = 2.0;
@@ -1554,7 +1562,85 @@ window.DATA = (function () {
         var kind = Math.floor(hash2(dx, dy, 10) * 3);
         var col = dec[kind] || dec[0];
         var s2 = 0.7 + hash2(dx, dy, 11) * 0.8;
-        if (kind === 0) {
+        /* 主题道具：按图替换通用装饰（借鉴小小英雄的场景叙事感） */
+      var propId = S.towerOn ? 'soulfire' : (mp.id || 1);
+      if (propId === 4) {
+        var bh2 = (46 + hash2(dx, dy, 18) * 30) * s2;
+        ctx.strokeStyle = '#3e6b2e'; ctx.lineWidth = 3.2 * s2; ctx.lineCap = 'round';
+        ctx.beginPath(); ctx.moveTo(kx, ky); ctx.lineTo(kx + (hash2(dx, dy, 19) - 0.5) * 8, ky - bh2); ctx.stroke();
+        ctx.strokeStyle = '#5f8a44'; ctx.lineWidth = 1.4;
+        for (var bn2 = 1; bn2 <= 3; bn2++) {
+          var ny2 = ky - bh2 * bn2 / 4;
+          ctx.beginPath(); ctx.moveTo(kx - 3 * s2, ny2); ctx.lineTo(kx + 3 * s2, ny2); ctx.stroke();
+        }
+        for (var lf2 = 0; lf2 < 2; lf2++) {
+          ctx.fillStyle = lf2 ? '#6f9a4c' : '#4e7a36';
+          var la2 = hash2(dx + lf2, dy, 20) * 6.28;
+          ctx.beginPath();
+          ctx.ellipse(kx + Math.cos(la2) * 8, ky - bh2 + lf2 * 8, 7 * s2, 2.2 * s2, la2, 0, 6.2832);
+          ctx.fill();
+        }
+      } else if (propId === 2) {
+        var tw = 10 * s2, th2 = 16 * s2;
+        G.round(kx - tw / 2, ky - th2, tw, th2, 3, '#5a5a5f');
+        ctx.strokeStyle = '#3e3e44'; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(kx - tw * 0.3, ky - th2 * 0.62); ctx.lineTo(kx + tw * 0.3, ky - th2 * 0.62); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(kx, ky - th2 * 0.8); ctx.lineTo(kx, ky - th2 * 0.4); ctx.stroke();
+      } else if (propId === 5) {
+        for (var ic = 0; ic < 3; ic++) {
+          var ia = -1.57 + (ic - 1) * 0.5 + hash2(dx + ic, dy, 21) * 0.3;
+          var il = (10 + hash2(dx, dy + ic, 22) * 9) * s2;
+          ctx.fillStyle = ic === 1 ? 'rgba(200,230,250,.75)' : 'rgba(170,210,240,.5)';
+          ctx.beginPath();
+          ctx.moveTo(kx + Math.cos(ia - 0.25) * il * 0.35, ky + Math.sin(ia - 0.25) * il * 0.35);
+          ctx.lineTo(kx + Math.cos(ia) * il, ky + Math.sin(ia) * il);
+          ctx.lineTo(kx + Math.cos(ia + 0.25) * il * 0.35, ky + Math.sin(ia + 0.25) * il * 0.35);
+          ctx.closePath(); ctx.fill();
+        }
+      } else if (propId === 6) {
+        var AT2 = Date.now() / 1000;
+        var glow2 = 0.35 + 0.25 * Math.sin(AT2 * 1.8 + hash2(dx, dy, 23) * 6.28);
+        var cx3 = kx, cy3 = ky;
+        var crackPts = [[cx3, cy3]];
+        for (var seg = 0; seg < 3; seg++) {
+          cx3 += (hash2(dx + seg, dy, 24) - 0.5) * 26;
+          cy3 += (hash2(dx, dy + seg, 25) - 0.5) * 16;
+          crackPts.push([cx3, cy3]);
+        }
+        function drawCrack(lw, col) {
+          ctx.strokeStyle = col; ctx.lineWidth = lw; ctx.lineCap = 'round';
+          ctx.beginPath(); ctx.moveTo(crackPts[0][0], crackPts[0][1]);
+          for (var q2 = 1; q2 < crackPts.length; q2++) ctx.lineTo(crackPts[q2][0], crackPts[q2][1]);
+          ctx.stroke();
+        }
+        drawCrack(4.5 * s2, 'rgba(200,70,20,' + (glow2 * 0.7).toFixed(2) + ')');
+        drawCrack(1.6 * s2, 'rgba(255,200,90,' + glow2.toFixed(2) + ')');
+      } else if (propId === 7) {
+        var cr2 = (7 + hash2(dx, dy, 26) * 6) * s2;
+        ctx.fillStyle = 'rgba(10,12,22,.55)';
+        ctx.beginPath(); ctx.ellipse(kx, ky, cr2, cr2 * 0.45, 0, 0, 6.2832); ctx.fill();
+        ctx.strokeStyle = 'rgba(143,158,222,.35)'; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.ellipse(kx, ky, cr2, cr2 * 0.45, 0, 0, 6.2832); ctx.stroke();
+      } else if (propId === 3) {
+        ctx.strokeStyle = '#4a3527'; ctx.lineWidth = 2 * s2; ctx.lineCap = 'round';
+        for (var sp = -1; sp <= 1; sp++) {
+          ctx.beginPath();
+          ctx.moveTo(kx + sp * 5 * s2, ky + 4 * s2);
+          ctx.lineTo(kx + sp * 8 * s2, ky - (12 + hash2(dx + sp, dy, 27) * 7) * s2);
+          ctx.stroke();
+        }
+        ctx.beginPath(); ctx.moveTo(kx - 9 * s2, ky - 4 * s2); ctx.lineTo(kx + 9 * s2, ky - 8 * s2); ctx.stroke();
+      } else if (propId === 'soulfire') {
+        var AT3 = Date.now() / 1000;
+        var fl = 0.4 + 0.35 * Math.sin(AT3 * 2.2 + hash2(dx, dy, 28) * 6.28);
+        var fr2 = 4.5 * s2;
+        var fg2 = ctx.createRadialGradient(kx, ky - 4, 0, kx, ky - 4, fr2 * 3);
+        fg2.addColorStop(0, 'rgba(184,168,255,' + (fl * 0.5).toFixed(2) + ')');
+        fg2.addColorStop(1, 'rgba(184,168,255,0)');
+        ctx.fillStyle = fg2;
+        ctx.beginPath(); ctx.arc(kx, ky - 4, fr2 * 3, 0, 6.2832); ctx.fill();
+        G.circle(kx, ky - 4, fr2 * 0.5, 'rgba(220,210,255,' + (fl * 0.7).toFixed(2) + ')');
+      } else if (kind === 0) {
           /* 碎石：两三个小圆 */
           for (var q = 0; q < 3; q++) {
             var ox = (hash2(dx * 3 + q, dy, 12) - 0.5) * 22;
@@ -1582,6 +1668,39 @@ window.DATA = (function () {
           ctx.stroke();
         }
       }
+    }
+
+    /* ============ 氛围层（借鉴小小英雄的"红月荒野"场景感）============
+       屏幕空间：顶部天光渐变（每图色调）+ 漂浮粒子（雪/火星/竹光/星闪/魂火）。
+       不跟相机，纯氛围打底。 */
+    var AMB = {
+      1: { tint: '216,176,106', p: 'dust' },  2: { tint: '138,154,176', p: 'ash' },
+      3: { tint: '176,106,74', p: 'dust' },   4: { tint: '125,196,74', p: 'leaf' },
+      5: { tint: '188,216,240', p: 'snow' },  6: { tint: '255,122,58', p: 'spark' },
+      7: { tint: '143,158,222', p: 'star' },  900: { tint: '184,168,255', p: 'soul' }
+    };
+    var ambKey = S.towerOn ? 900 : (mp.id || 1);
+    var amb = AMB[ambKey] || AMB[1];
+    var skyH = G.H * 0.36;
+    var skyG = ctx.createLinearGradient(0, -sy, 0, -sy + skyH);
+    skyG.addColorStop(0, 'rgba(' + amb.tint + ',0.34)');
+    skyG.addColorStop(1, 'rgba(' + amb.tint + ',0)');
+    ctx.fillStyle = skyG;
+    ctx.fillRect(-sx, -sy, G.W, skyH);
+    var AT = Date.now() / 1000;
+    for (var ai = 0; ai < 12; ai++) {
+      var seed = ai * 137.51;
+      var driftX = amb.p === 'snow' ? 6 : (amb.p === 'spark' ? -14 : 10);
+      var px2 = ((seed * 7.3 + AT * driftX) % (G.W + 40) + (G.W + 40)) % (G.W + 40) - 20 - sx;
+      var driftY = amb.p === 'snow' ? AT * 24 : (amb.p === 'spark' ? -AT * 30 : Math.sin(AT * 0.5 + seed) * 18);
+      var py2 = ((seed * 11.7 + driftY) % (G.H + 40) + (G.H + 40)) % (G.H + 40) - 20 - sy;
+      var al = 0.10 + 0.14 * (0.5 + 0.5 * Math.sin(AT * 1.4 + seed));
+      if (amb.p === 'star' || amb.p === 'soul') al *= (0.4 + 0.6 * Math.abs(Math.sin(AT * 2 + seed)));
+      ctx.fillStyle = 'rgba(' + amb.tint + ',' + al.toFixed(3) + ')';
+      var pr = amb.p === 'snow' ? 2.4 : (amb.p === 'spark' ? 1.6 : 1.9);
+      ctx.beginPath();
+      ctx.arc(px2, py2, pr, 0, 6.2832);
+      ctx.fill();
     }
 
     /* 每张图的专属地面特征（mp.fx）—— 还是程序化（无缝/零包体/跟相机滚），
@@ -1752,6 +1871,11 @@ window.DATA = (function () {
       var r = m.r * (m.boss === 2 ? 1.5 : m.boss === 1 ? 1.15 : 1);
       var img = S.mobImg && S.mobImg[m.id];
       var top = m.y - r;              /* 血条和标签的基准高度 */
+      /* 软阴影：所有怪都有，落地感 */
+      ctx.fillStyle = 'rgba(0,0,0,.22)';
+      ctx.beginPath();
+      ctx.ellipse(m.x, m.y + r * 0.35, r * 0.85, r * 0.3, 0, 0, 6.2832);
+      ctx.fill();
       if (img) {
         var hh = r * 2.6;             /* 贴图高度 */
         var ww = img.width / img.height * hh;
@@ -1799,6 +1923,11 @@ window.DATA = (function () {
       ctx.beginPath(); ctx.arc(h.x, h.y - 16, 34, 0, 6.2832); ctx.fill();
       ctx.restore();
     }
+    /* 主角软阴影 */
+    ctx.fillStyle = 'rgba(0,0,0,.25)';
+    ctx.beginPath();
+    ctx.ellipse(h.x, h.y + 5, 20, 7, 0, 0, 6.2832);
+    ctx.fill();
     /* 优先用当前人物皮肤的贴图，没有才回退到性别定妆图 */
     var heroImg = (S.charImg && S.charImg[S.save.skin]) || (S.heroImg && S.heroImg[S.save.sex]);
     if (heroImg) {
@@ -1874,6 +2003,20 @@ window.DATA = (function () {
     S.eff.forEach(function (e) {
       var dur = e.dur || 0.45;
       var k = 1 - e.t / dur;                 /* 1 → 0 */
+      if (e.kind === 'burst') {
+        /* 击杀爆散：8 颗粒子径向飞散 + 淡出 */
+        var br = (e.r || 14) * (0.6 + k * 0.9);
+        ctx.save();
+        ctx.globalAlpha = k;
+        for (var bp = 0; bp < 8; bp++) {
+          var ba = bp * 0.785 + (e.x % 7) * 0.1;
+          var bx3 = e.x + Math.cos(ba) * br, by3 = e.y + Math.sin(ba) * br * 0.7;
+          G.circle(bx3, by3, 1.5 + k * 2.5, e.col);
+        }
+        ctx.restore();
+        ctx.globalAlpha = 1;
+        return;
+      }
       if (k <= 0) { ctx.globalAlpha = 1; return; }
       ctx.save();
       if (e.kind === 'beam') {
@@ -1934,8 +2077,15 @@ window.DATA = (function () {
 
     /* 飘字 */
     S.nums.forEach(function (n) {
+      /* 弹入缩放：出生 0.15s 从 1.6 倍缩到 1（打击感） */
+      var age = (n.dur || 0.9) - n.t;
+      var pop = age < 0.15 ? 1.6 - age / 0.15 * 0.6 : 1;
+      ctx.save();
+      ctx.translate(n.x, n.y);
+      ctx.scale(pop, pop);
       ctx.globalAlpha = Math.min(1, n.t * 2);
-      G.shadowText(n.txt, n.x, n.y, n.big ? 18 : 14, n.col, 'rgba(0,0,0,.8)');
+      G.shadowText(n.txt, 0, 0, n.big ? 19 : 14, n.col, 'rgba(0,0,0,.85)');
+      ctx.restore();
       ctx.globalAlpha = 1;
     });
     ctx.restore();
@@ -3375,4 +3525,3 @@ window.DATA = (function () {
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
   else boot();
 })();
-
