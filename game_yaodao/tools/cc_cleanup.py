@@ -53,6 +53,19 @@ def main():
              "ForEach-Object { Write-Output ($_.ProcessId.ToString() + ' ' + "
              "[Math]::Round($_.WorkingSetSize/1MB).ToString() + 'MB ' + "
              "($_.CommandLine -replace '.*wmpf-render-type=(\\d+).*','rt=$1')) }"])
+    # ④ msedgewebview2（内嵌 Edge 内核）：不是我的 msedge.exe 残留，是别的
+    #    app 内嵌的网页（2026-11-27 实锤：wetype_update 输入法更新在放带声内容）。
+    #    报告宿主，让人判断杀不杀
+    r2 = run(['powershell', '-NoProfile', '-Command',
+              "Get-CimInstance Win32_Process -Filter \"Name='msedgewebview2.exe'\" | "
+              "ForEach-Object { $p = Get-CimInstance Win32_Process -Filter ('ProcessId=' + $_.ParentProcessId); "
+              "$pn = if ($p) { $p.Name } else { 'dead' }; "
+              "Write-Output ($pn) } | Sort-Object -Unique"])
+    if r2 and r2.stdout and r2.stdout.strip():
+        print('[WebView2 宿主]（内嵌Edge内核的app，杀宿主才停声）:')
+        for line in r2.stdout.strip().splitlines():
+            if line.strip():
+                print('   ', line.strip())
     print('[WeChatAppEx renderer] 存活（微信自用，勿全杀；大内存+rt≠7 可能是小游戏残留）:')
     if r and r.stdout:
         for line in r.stdout.strip().splitlines():
