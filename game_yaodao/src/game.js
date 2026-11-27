@@ -422,7 +422,10 @@
       } else {
         S.wave++; S.waveT = 2.2;
         var alive = S.mobs.length;
-        if (alive === 0) toast('第 ' + S.wave + ' 波');
+        if (alive === 0) {
+          /* 波次横幅：大字滑入淡出（替代小 toast） */
+          S.banner = { txt: '第 ' + S.wave + ' 波', t: 1.4, col: '#ffd88e', wave: true };
+        }
       }
     }
     if (S.waveT > 1.6 && S.mobs.length < 14) {
@@ -1482,35 +1485,107 @@
       if (k <= 0) { ctx.globalAlpha = 1; return; }
       ctx.save();
       if (e.kind === 'beam') {
-        /* 剑气：一道从主角射向目标的光刃 */
+        /* 剑气：光刃 + 白芯 + 端部光爆 + 淡蓝拖尾 */
         ctx.globalAlpha = k;
         var dx = e.tx - e.x, dy = e.ty - e.y, len = Math.sqrt(dx * dx + dy * dy);
         var ux = dx / len, uy = dy / len;
+        var prog = Math.min(1, (1 - k) * 3.2);
+        var ex2 = e.x + ux * len * prog, ey2 = e.y + uy * len * prog;
+        /* 外层光晕（宽+低透明） */
         ctx.strokeStyle = e.col;
-        ctx.lineWidth = 5 + 12 * k;
+        ctx.globalAlpha = k * 0.4;
+        ctx.lineWidth = 14 + 10 * k;
         ctx.lineCap = 'round';
         ctx.beginPath();
         ctx.moveTo(e.x, e.y);
-        ctx.lineTo(e.x + ux * len * Math.min(1, (1 - k) * 3.2), e.y + uy * len * Math.min(1, (1 - k) * 3.2));
+        ctx.lineTo(ex2, ey2);
         ctx.stroke();
-        ctx.globalAlpha = k * 0.85;
+        /* 中层刃身 */
+        ctx.globalAlpha = k * 0.9;
+        ctx.lineWidth = 5 + 6 * k;
+        ctx.strokeStyle = e.col;
+        ctx.beginPath();
+        ctx.moveTo(e.x, e.y);
+        ctx.lineTo(ex2, ey2);
+        ctx.stroke();
+        /* 白芯 */
+        ctx.globalAlpha = k;
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = '#fff';
+        ctx.beginPath();
+        ctx.moveTo(e.x, e.y);
+        ctx.lineTo(ex2, ey2);
+        ctx.stroke();
+        /* 端部光爆 */
+        var tipR = (6 + 14 * (1 - k)) * (prog > 0.2 ? 1 : 0);
+        if (tipR > 0) {
+          var tg = ctx.createRadialGradient(ex2, ey2, 0, ex2, ey2, tipR);
+          tg.addColorStop(0, '#fff');
+          tg.addColorStop(0.4, e.col);
+          tg.addColorStop(1, 'rgba(0,0,0,0)');
+          ctx.fillStyle = tg;
+          ctx.beginPath(); ctx.arc(ex2, ey2, tipR, 0, 6.2832); ctx.fill();
+        }
         ctx.strokeStyle = '#fff';
         ctx.lineWidth = 2.5;
         ctx.stroke();
       } else if (e.kind === 'wind') {
-        /* 旋风：一圈扩散的风弧 */
+        /* 旋风：双环反向弧刃 + 中心风眼 + 地面尘圈 */
         var rr = e.r2 * Math.min(1, (1 - k) * 2.6);
+        /* 地面尘圈（椭圆，透视感） */
+        ctx.globalAlpha = k * 0.3;
+        ctx.strokeStyle = '#c9b98a';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.ellipse(e.x, e.y + 6, rr * 1.05, rr * 0.4, 0, 0, 6.2832);
+        ctx.stroke();
+        /* 外环：四段大弧（顺时针扩散） */
         ctx.globalAlpha = Math.min(1, k * 1.15);
         ctx.strokeStyle = e.col;
         ctx.lineWidth = 4 + 6 * k;
+        ctx.lineCap = 'round';
         for (var a = 0; a < 4; a++) {
           ctx.beginPath();
           ctx.arc(e.x, e.y, rr, a * 2.09 + (1 - k) * 1.6, a * 2.09 + (1 - k) * 1.6 + 1.1);
           ctx.stroke();
         }
+        /* 内环：三段小弧（反向旋转） */
+        if (rr > 20) {
+          ctx.globalAlpha = k * 0.7;
+          ctx.lineWidth = 3;
+          ctx.strokeStyle = '#fff';
+          for (var a2 = 0; a2 < 3; a2++) {
+            ctx.beginPath();
+            ctx.arc(e.x, e.y, rr * 0.55, a2 * 2.09 - (1 - k) * 2.2, a2 * 2.09 - (1 - k) * 2.2 + 0.9);
+            ctx.stroke();
+          }
+        }
+        /* 中心风眼 */
+        if (k > 0.3) {
+          ctx.globalAlpha = (k - 0.3) * 1.2;
+          var wg = ctx.createRadialGradient(e.x, e.y, 0, e.x, e.y, 12);
+          wg.addColorStop(0, '#fff');
+          wg.addColorStop(1, 'rgba(255,255,255,0)');
+          ctx.fillStyle = wg;
+          ctx.beginPath(); ctx.arc(e.x, e.y, 12, 0, 6.2832); ctx.fill();
+        }
       } else if (e.kind === 'fire') {
-        /* 妖火：一团炸开的火 */
+        /* 妖火：蘑菇云爆燃 —— 冲击环 + 火球 + 升腾粒子 */
         var fr = (e.r2 || 120) * 0.52 * (0.4 + k * 0.9);
+        /* 冲击环（最外层扩散） */
+        ctx.globalAlpha = k * 0.6;
+        ctx.strokeStyle = '#ffb066';
+        ctx.lineWidth = 3 + 4 * k;
+        ctx.beginPath();
+        ctx.arc(e.x, e.y, fr * 1.35, 0, 6.2832);
+        ctx.stroke();
+        /* 升腾火粒（8颗，向上抛物散开） */
+        ctx.globalAlpha = k;
+        for (var fp = 0; fp < 8; fp++) {
+          var fx = e.x + Math.cos(fp * 0.785) * fr * (0.3 + (fp % 4) * 0.22);
+          var fy = e.y + Math.sin(fp * 0.785) * fr * 0.4 - (1 - k) * 26;
+          G.circle(fx, fy, 2 + (1 - k) * 3, fp % 2 ? '#ff9a4a' : '#ffd06a');
+        }
         ctx.globalAlpha = k * 0.85;
         var fg = ctx.createRadialGradient(e.x, e.y, 2, e.x, e.y, fr);
         fg.addColorStop(0, '#fff3c4');
