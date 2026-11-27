@@ -706,7 +706,7 @@
   }
   function hitRect(x, y, b) {
     if (!b) return false;
-    return x > b.x - b.w / 2 - 8 && x < b.x + b.w / 2 + 8 && Math.abs(y - b.y) < b.h / 2 + 10;
+    return x > b.x - b.w / 2 - 10 && x < b.x + b.w / 2 + 10 && Math.abs(y - b.y) < b.h / 2 + 14;
   }
 
   /* ---------- 面板公共件（学成熟放置游戏的规范）----------
@@ -722,10 +722,10 @@
     return ty + 30;   /* 内容起始基准 */
   }
   function drawBackBar(toState) {
-    var by = G.H - Math.max(34, ((G.SAFE ? G.SAFE.dBottom : 0) + 26));
-    S.btnBack2 = { x: G.W / 2, y: by, r: 0, w: 300, h: 32, to: toState || 'battle' };
-    G.round(G.W / 2 - 150, by - 16, 300, 32, 16, 'rgba(255,255,255,.07)', 'rgba(255,255,255,.22)', 1);
-    G.text('▲  返回主界面', G.W / 2, by, 12.5, '#c9bda4', 'center', true);
+    var by = G.H - Math.max(34, ((G.SAFE ? G.SAFE.dBottom : 0) + 28));
+    S.btnBack2 = { x: G.W / 2, y: by, r: 0, w: 320, h: 42, to: toState || 'battle' };
+    G.round(G.W / 2 - 160, by - 21, 320, 42, 21, 'rgba(255,255,255,.07)', 'rgba(255,255,255,.22)', 1);
+    G.text('▲  返回主界面', G.W / 2, by, 13.5, '#c9bda4', 'center', true);
   }
 
   /* ---------- 视觉设计系统（对标咸鱼之王/寻道大千档次的仙侠风）----------
