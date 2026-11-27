@@ -98,6 +98,7 @@
     T.x = T.sx = p.x; T.y = T.sy = p.y;
     T.dx = 0; T.dy = 0;
     T.lastInput = Date.now();
+    lastTouchAt = Date.now();
     BOOT.onDown && BOOT.onDown(p.x, p.y);
   });
   WX.onTouchMove(function (e) {
@@ -112,8 +113,39 @@
     var p = pt(e);
     T.down = false;
     T.lastInput = Date.now();
+    lastTouchAt = Date.now();
     BOOT.onUp && BOOT.onUp(p ? p.x : T.x, p ? p.y : T.y);
   });
+
+  /* ---------- 鼠标兜底（2026-11-27 张凯"点了没反应"的根因修复）----------
+     开发者工具里真实鼠标点击不产生 wx.onTouchStart（运行时的鼠标→触摸
+     桥接层会失灵：鼠标事件无效、触摸事件有效）。自己把 mouse 事件翻译成
+     同一条触摸流。真机上鼠标事件不会触发，无副作用；触摸后 600ms 内的
+     合成鼠标事件忽略，防双发。 */
+  var lastTouchAt = 0;
+  if (typeof document !== 'undefined' && document.addEventListener) {
+    document.addEventListener('mousedown', function (e) {
+      if (Date.now() - lastTouchAt < 600) return;
+      T.down = true; T.moved = false;
+      T.x = T.sx = e.clientX; T.y = T.sy = e.clientY;
+      T.dx = 0; T.dy = 0;
+      T.lastInput = Date.now();
+      BOOT.onDown && BOOT.onDown(e.clientX, e.clientY);
+    }, true);
+    document.addEventListener('mousemove', function (e) {
+      if (!T.down) return;
+      T.x = e.clientX; T.y = e.clientY;
+      T.dx = (e.clientX - T.sx) / SCALE; T.dy = (e.clientY - T.sy) / SCALE;
+      if (Math.abs(T.dx) > 4 || Math.abs(T.dy) > 4) T.moved = true;
+      T.lastInput = Date.now();
+    }, true);
+    document.addEventListener('mouseup', function (e) {
+      if (Date.now() - lastTouchAt < 600) return;
+      T.down = false;
+      T.lastInput = Date.now();
+      BOOT.onUp && BOOT.onUp(e.clientX, e.clientY);
+    }, true);
+  }
 
   /* ---------- 存档 ---------- */
   var SAVE_KEY = 'yaodao_save_v1';
