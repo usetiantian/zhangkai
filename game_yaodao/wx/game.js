@@ -1213,7 +1213,19 @@ window.DATA = (function () {
       S.iconCache = {};
     });
   }
+  /* 等级压制（传奇系标配）：图的有效等级高于玩家等级 → 伤害打折。
+     没有这个，躺高图照样拿击杀经验 → 升级飞快 → 墙自己融化（张凯点名）。
+     有压制后：打不死怪 = 没收益 = 必须回低图练级刷装，闭环才成立 */
+  function suppress() {
+    var diff = (S.map.lv || 1) - (S.save.lv || 1);
+    if (diff <= 0) return 1;
+    if (diff <= 2) return 0.8;
+    if (diff <= 4) return 0.55;
+    if (diff <= 7) return 0.3;
+    return 0.12;
+  }
   function deal(m, dmg, st, isBasic) {
+    dmg *= suppress();
     var crit = Math.random() * 100 < st.crit;
     if (crit) dmg *= (1 + st.critDmg / 100);
     if (isBasic) {
@@ -1959,6 +1971,11 @@ window.DATA = (function () {
     G.round(G.W - 12 - 118, hty + 2, 118, 30, 8, 'rgba(0,0,0,.5)');
     var pw = power(st);
     G.text('战力 ' + fmt(pw), G.W - 24, hty + 17, 16, '#ffd23a', 'right', true);
+    var sup = suppress();
+    if (sup < 1) {
+      G.round(G.W - 128, hty + 40, 116, 20, 10, 'rgba(160,60,40,.85)', 'rgba(255,120,90,.6)', 1);
+      G.text('等级压制 伤害-' + Math.round((1 - sup) * 100) + '%', G.W - 70, hty + 50, 10.5, '#ffcbb0', 'center', true);
+    }
     if (S.anim.power > 0) {
       ctx.globalAlpha = Math.min(1, S.anim.power);
       G.text('+' + (pw - S.anim.powerFrom), G.W - 24, hty + 38, 14, '#7dff9b', 'right', true);
@@ -2115,7 +2132,8 @@ window.DATA = (function () {
       G.round(G.W - 118, y + 10, 88, 22, 11, cur ? 'rgba(212,169,78,.20)' : 'rgba(255,255,255,.05)',
         cur ? 'rgba(212,169,78,.55)' : 'rgba(255,255,255,.14)', 1);
       G.text(stTxt, G.W - 74, y + 21, 11.5, stCol, 'center', true);
-      G.text('推荐 ' + fmt(mp.pw), G.W - 74, y + 48, 11, strong ? TH.jade : TH.red, 'center', true);
+      G.text('推荐 ' + fmt(mp.pw), G.W - 74, y + 44, 11, strong ? TH.jade : TH.red, 'center', true);
+      G.text('Lv' + mp.lv + '+', G.W - 74, y + 60, 10, (S.save.lv || 1) >= mp.lv - 2 ? TH.ink3 : TH.red, 'center');
       S['mapBtn' + i] = { x: G.W / 2, y: y + 37, r: 39, idx: i, locked: !unlocked };
       y += 84;
     }
