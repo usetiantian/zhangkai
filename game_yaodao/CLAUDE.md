@@ -224,9 +224,12 @@ python build.py --wx               # 打包并报告主包体积
 29. **【打鼓声二犯】验证完别把游戏留着自动战斗响**——开发者工具里游戏
     会通过模拟器扬声器播 SFX，清档会把 muted 一起清掉。**每次验证收尾：
     静音（save.muted=true）或把 state 切到面板**，再离开
-28. **测试脚本 spawn 的浏览器必须杀进程树**（`taskkill /PID x /T /F`）——
-    `proc.kill()` 只杀启动器，Edge 子进程全部存活，headless 页面继续跑 H5 游戏
-    并循环播音效，张凯听了一下午的"打鼓声"就是 119 个僵尸 Edge（2026-11-27）
+28. **【杀进程铁律·三犯后升级】任何进程都杀树 + 杀完复查归零**：一律
+    `taskkill /IM xxx /T /F`（或 /PID），杀后重新 tasklist 确认为 0。
+    `proc.kill()`/裸 `taskkill /PID` 只杀壳，子进程（音频渲染器尤甚）存活。
+    事故链：僵尸 Edge 打鼓（119个）→ 测试脚本改 /T → 但我自己杀小游戏窗口
+    时又裸杀 → 渲染子进程继续放 BGM（三犯）。收尾工具：`python tools/cc_cleanup.py`
+    （Edge 全杀 + 开发者工具 --all + WeChatAppEx 大内存 renderer 报告）
 27. **【排查铁律·三犯】用户说"不行"，第一动作是看用户眼前的报错**（翻
     `C:/Users/87999/.claude/tmp/yd_ear.log`——常驻耳朵在记；或问控制台），不是先跑
     自己的自动化测试。**张凯试玩期间先起 `node tools/yd_ear.js`**（断线自动重连）。我的测试通过
